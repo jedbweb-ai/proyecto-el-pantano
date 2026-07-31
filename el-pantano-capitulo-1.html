@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Pantano — Capítulo I</title>
+<style>
+  :root{
+    --bog-black: #0d1310;
+    --bog-deep: #141d17;
+    --parchment: #e9e2cd;
+    --parchment-dim: #cfc6a8;
+    --moss: #5f7a54;
+    --moss-dim: #3d5038;
+    --gold: #c9a86a;
+    --gold-bright: #e0bd80;
+    --rust: #8a4a3d;
+    --mist: #7d938f;
+    --ink: #1a1512;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bog-black);
+    font-family: Georgia, 'Palatino Linotype', Palatino, 'Iowan Old Style', serif;
+    color: var(--parchment);
+  }
+
+  body {
+    position: relative;
+    overflow-x: hidden;
+    padding: 40px 16px 80px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Ambient drifting fog */
+  .fog {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(95,122,84,0.14), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 80% 70%, rgba(125,147,143,0.10), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(20,29,23,0.5), transparent 70%);
+    animation: drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-2%, 1%) scale(1.05); }
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  header.masthead {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .eyebrow {
+    letter-spacing: 0.35em;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 6px;
+  }
+  h1.title {
+    font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    font-size: 32px;
+    margin: 0;
+    color: var(--gold-bright);
+    text-shadow: 0 0 18px rgba(201,168,106,0.25);
+  }
+  .chapter-sub {
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--parchment-dim);
+    text-transform: uppercase;
+  }
+
+  /* Panel de fragmentos de memoria — colapsable, debajo de la card */
+  .memory-panel {
+    margin-top: 22px;
+    border: 1px solid rgba(201,168,106,0.25);
+    border-radius: 3px;
+    background: rgba(233,226,205,0.03);
+    overflow: hidden;
+  }
+  .memory-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    color: var(--parchment-dim);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .memory-toggle:hover, .memory-toggle:focus-visible {
+    background: rgba(201,168,106,0.08);
+    color: var(--gold-bright);
+    outline: none;
+  }
+  .memory-toggle-label { flex: 1; text-align: left; }
+  .memory-toggle-count {
+    color: var(--gold);
+    font-style: italic;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+  .memory-toggle-arrow {
+    color: var(--gold);
+    display: inline-block;
+    transition: transform 0.25s ease;
+    font-size: 11px;
+  }
+  .memory-toggle.open .memory-toggle-arrow { transform: rotate(180deg); }
+
+  .memory-panel-body {
+    padding: 4px 18px 16px;
+    border-top: 1px solid rgba(201,168,106,0.15);
+  }
+  .memory-panel-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+  .memory-panel-list li {
+    padding: 7px 0;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--parchment);
+    border-bottom: 1px solid rgba(201,168,106,0.1);
+  }
+  .memory-panel-list li:last-child { border-bottom: none; }
+  .memory-panel-mark { color: var(--gold-bright); margin-right: 6px; font-style: normal; }
+  .memory-panel-empty { color: var(--mist); }
+
+  /* The parchment card */
+  .card {
+    background: linear-gradient(180deg, rgba(233,226,205,0.06), rgba(233,226,205,0.03));
+    border: 1px solid rgba(201,168,106,0.28);
+    border-radius: 3px;
+    padding: 36px 34px;
+    position: relative;
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.35),
+      0 20px 50px rgba(0,0,0,0.5);
+  }
+  .card::before, .card::after {
+    content: "";
+    position: absolute;
+    left: 14px; right: 14px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,106,0.5), transparent);
+  }
+  .card::before { top: 10px; }
+  .card::after  { bottom: 10px; }
+
+  .scene-text {
+    font-size: 18px;
+    line-height: 1.75;
+    color: var(--parchment);
+    animation: fadeIn 0.9s ease;
+  }
+  .scene-text p { margin: 0 0 16px; }
+  .scene-text p:last-child { margin-bottom: 0; }
+
+  .scene-text.with-dropcap p:first-child::first-letter {
+    font-family: 'Palatino Linotype', Georgia, serif;
+    font-size: 3.6em;
+    float: left;
+    line-height: 0.8;
+    padding: 6px 8px 0 0;
+    color: var(--gold-bright);
+    text-shadow: 0 0 14px rgba(224,189,128,0.4);
+  }
+
+  .fragment-flash {
+    display: inline-block;
+    margin-top: 4px;
+    font-style: italic;
+    color: var(--gold-bright);
+    border-top: 1px solid rgba(201,168,106,0.3);
+    padding-top: 10px;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .choices {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .choice-btn {
+    text-align: left;
+    background: rgba(95,122,84,0.08);
+    border: 1px solid var(--moss-dim);
+    color: var(--parchment);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 14px 18px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+  .choice-btn::before {
+    content: "→";
+    margin-right: 10px;
+    color: var(--gold);
+    opacity: 0.7;
+    transition: margin 0.25s ease;
+  }
+  .choice-btn:hover, .choice-btn:focus-visible {
+    background: rgba(201,168,106,0.10);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    outline: none;
+  }
+  .choice-btn:hover::before, .choice-btn:focus-visible::before {
+    margin-right: 16px;
+  }
+
+  .chapter-end .scene-text { color: var(--gold-bright); }
+  .chapter-end .card { border-color: var(--rust); }
+
+  .end-label {
+    text-align: center;
+    letter-spacing: 0.3em;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-top: 26px;
+    margin-bottom: 4px;
+  }
+  .end-title {
+    text-align: center;
+    font-size: 24px;
+    color: var(--gold-bright);
+    margin: 0 0 18px;
+    letter-spacing: 0.05em;
+  }
+  .continues {
+    text-align: center;
+    color: var(--mist);
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 26px;
+  }
+
+  .restart-btn {
+    display: block;
+    margin: 0 auto;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold-bright);
+    font-family: inherit;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 12px 26px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .restart-btn:hover {
+    background: rgba(201,168,106,0.12);
+    box-shadow: 0 0 16px rgba(201,168,106,0.3);
+  }
+
+  footer.note {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--mist);
+    letter-spacing: 0.05em;
+  }
+
+  /* Start menu */
+  .menu-welcome {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .menu-welcome p { margin: 0 0 14px; }
+  .menu-welcome p:last-child { margin-bottom: 0; }
+  .menu-lead {
+    font-size: 20px;
+    color: var(--gold-bright);
+    letter-spacing: 0.02em;
+  }
+  .menu-sub {
+    font-size: 15px;
+    color: var(--parchment-dim);
+    line-height: 1.7;
+  }
+  .menu-credit {
+    position: fixed;
+    right: 20px;
+    bottom: 16px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--mist);
+    font-style: italic;
+    z-index: 2;
+  }
+
+  /* Instructions screen */
+  .instructions-text p {
+    margin: 0 0 14px;
+  }
+  .instructions-text p:last-child { margin-bottom: 0; }
+
+  /* Audio control */
+  .sound-btn {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 3;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(13,19,16,0.6);
+    border: 1px solid rgba(201,168,106,0.4);
+    color: var(--gold-bright);
+    font-size: 15px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .sound-btn:hover, .sound-btn:focus-visible {
+    border-color: var(--gold);
+    background: rgba(201,168,106,0.14);
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fog { animation: none; }
+    .scene-text { animation: none; }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 26px 20px; }
+    h1.title { font-size: 26px; }
+    .scene-text { font-size: 16.5px; }
+    .menu-credit { position: static; text-align: right; margin-top: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="fog"></div>
+
+<div class="stage">
+
+  <!-- Pantalla de menú -->
+  <div id="menu-screen">
+    <header class="masthead">
+      <div class="eyebrow">Una historia de decisiones</div>
+      <h1 class="title">EL PANTANO</h1>
+    </header>
+
+    <main class="card">
+      <div class="scene-text menu-welcome">
+        <p class="menu-lead">Bienvenidos a El Pantano.</p>
+        <p class="menu-sub">Un viaje donde lo que importa son tus decisiones.</p>
+      </div>
+      <div class="choices">
+        <button class="choice-btn" id="btn-start">Comenzar tu viaje</button>
+        <button class="choice-btn" id="btn-instructions">Instrucciones</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pantalla de instrucciones -->
+  <div id="instructions-screen" style="display:none">
+    <header class="masthead">
+      <div class="eyebrow">Antes de empezar</div>
+      <h1 class="title" style="font-size:26px;">INSTRUCCIONES</h1>
+    </header>
+
+    <main class="card">
+      <div class="scene-text instructions-text">
+        <p>«El Pantano» es un juego estilo «elegí tu propia aventura», donde cada decisión que tomás tiene efectos distintos a lo largo de la aventura.</p>
+        <p>Elegí bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
+      </div>
+      <div class="choices">
+        <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pantalla del juego -->
+  <div id="game-screen" style="display:none">
+    <header class="masthead">
+      <div class="eyebrow">Una historia de decisiones</div>
+      <h1 class="title">EL PANTANO</h1>
+      <div class="chapter-sub">Capítulo I · El Despertar</div>
+    </header>
+
+    <main class="card" id="card">
+      <div class="scene-text with-dropcap" id="scene-text"></div>
+      <div class="choices" id="choices"></div>
+    </main>
+
+    <div class="memory-panel" id="memory-panel">
+      <button class="memory-toggle" id="memory-toggle" type="button" aria-expanded="false">
+        <span class="memory-toggle-label">Fragmentos de memoria</span>
+        <span class="memory-toggle-count" id="memory-toggle-count">0</span>
+        <span class="memory-toggle-arrow">▾</span>
+      </button>
+      <div class="memory-panel-body" id="memory-panel-body" hidden>
+        <ul class="memory-panel-list" id="memory-panel-list"></ul>
+      </div>
+    </div>
+
+    <footer class="note" id="footer-note">El pantano recuerda cada paso que das.</footer>
+  </div>
+
+  <div class="menu-credit">Creado por Julián Domenech</div>
+  <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" title="Silenciar música y efectos">🔊</button>
+</div>
+
+<script>
+(function(){
+
+  const ALL_FRAGMENTS = ["El Nombre", "El Símbolo", "La Voz"];
+
+  /* ---------- Audio: música ambiente + efectos ----------
+     Colocá tus archivos en una carpeta "audio" junto a este HTML:
+       audio/menu.mp3      -> menú, instrucciones y la escena inicial (el despertar)
+       audio/bosque.mp3    -> escenas del bosque
+       audio/pantano.mp3   -> escenas del pantano
+       audio/canto.mp3     -> escenas del canto
+       audio/final.mp3     -> la encrucijada final
+       audio/fragment.mp3  -> efecto al recuperar un fragmento de memoria
+       audio/choice.mp3    -> efecto corto al elegir una opción
+     Si un archivo no existe todavía, el juego sigue funcionando en silencio
+     para esa pista puntual (no rompe nada).
+  ------------------------------------------------------- */
+
+  const MUSIC_TRACKS = {
+    menu:    "audio/menu.mp3",
+    bosque:  "audio/bosque.mp3",
+    pantano: "audio/pantano.mp3",
+    canto:   "audio/canto.mp3",
+    final:   "audio/final.mp3"
+  };
+
+  const SFX_TRACKS = {
+    fragment: "audio/fragment.mp3",
+    choice:   "audio/choice.mp3"
+  };
+
+  const SCENE_MUSIC = {
+    inicio: "pantano",
+    bosque: "bosque", bosque_a: "bosque", bosque_b: "bosque",
+    pantano: "pantano", pantano_a: "pantano", pantano_b: "pantano",
+    canto: "canto", canto_a: "canto", canto_b: "canto",
+    encrucijada: "final"
+  };
+
+  const MUSIC_VOLUME = 0.35;
+  const SFX_VOLUME = 0.55;
+  const CROSSFADE_MS = 1400;
+
+  let musicMuted = false;
+  let currentTrackKey = null;
+  let playerA = new Audio();
+  let playerB = new Audio();
+  [playerA, playerB].forEach(p => { p.loop = true; p.volume = 0; p.preload = "auto"; });
+  let activePlayer = playerA;
+  let inactivePlayer = playerB;
+
+  function playTrack(key) {
+    if (!key || key === currentTrackKey) return;
+    const src = MUSIC_TRACKS[key];
+    if (!src) { currentTrackKey = key; return; }
+    currentTrackKey = key;
+
+    inactivePlayer.src = src;
+    inactivePlayer.currentTime = 0;
+    inactivePlayer.volume = 0;
+    const p = inactivePlayer.play();
+    if (p && p.catch) p.catch(() => {});
+
+    const steps = 20;
+    const stepTime = CROSSFADE_MS / steps;
+    let i = 0;
+    const from = activePlayer;
+    const to = inactivePlayer;
+    const fade = setInterval(() => {
+      i++;
+      const t = i / steps;
+      if (!musicMuted) {
+        to.volume = Math.min(MUSIC_VOLUME, MUSIC_VOLUME * t);
+        from.volume = Math.max(0, MUSIC_VOLUME * (1 - t));
+      }
+      if (i >= steps) {
+        clearInterval(fade);
+        from.pause();
+        activePlayer = to;
+        inactivePlayer = from;
+      }
+    }, stepTime);
+  }
+
+  function playSfx(key) {
+    if (musicMuted) return;
+    const src = SFX_TRACKS[key];
+    if (!src) return;
+    const sfx = new Audio(src);
+    sfx.volume = SFX_VOLUME;
+    const p = sfx.play();
+    if (p && p.catch) p.catch(() => {});
+  }
+
+  const soundBtn = document.getElementById("sound-btn");
+  soundBtn.onclick = () => {
+    musicMuted = !musicMuted;
+    soundBtn.textContent = musicMuted ? "🔇" : "🔊";
+    if (musicMuted) {
+      playerA.volume = 0;
+      playerB.volume = 0;
+    } else {
+      activePlayer.volume = MUSIC_VOLUME;
+    }
+  };
+  /* -------------------------------------------------- */
+
+  const scenes = {
+
+    inicio: {
+      text: [
+        "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez.",
+        "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto — una voz, o varias, cantando en una lengua que no conocés y sin embargo entendés.",
+        "¿Hacia dónde te dirigís?"
+      ],
+      choices: [
+        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
+        { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
+        { text: "Ir tras el eco del canto", next: "canto" }
+      ]
+    },
+
+    bosque: {
+      text: [
+        "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos se revelan como símbolos — espirales, ojos, runas gastadas por siglos de lluvia. En el centro de un claro encontrás una piedra cubierta de musgo, tan alta como vos, con un nombre grabado que casi podés leer: las primeras letras se parecen inquietantemente a algo tuyo.",
+        "El musgo cubre el resto de la inscripción. Podrías arrancarlo con las manos para ver más, aunque algo en la piedra te dice que no todo lo que olvidaste merece ser recordado. O podrías dejarla atrás y seguir camino, donde el bosque parece aclararse más adelante."
+      ],
+      fragment: "El Nombre",
+      choices: [
+        { text: "Arrancar el musgo y leer la piedra completa", next: "bosque_a" },
+        { text: "Dejar la piedra atrás y seguir camino", next: "bosque_b" }
+      ]
+    },
+
+    bosque_a: {
+      text: [
+        "Arrancás el musgo con las uñas doloridas. Las letras completas dicen algo que te hace tambalear hacia atrás, aunque no lograste retenerlo del todo — solo la certeza de que era tuyo, y de que dolía. Antes de poder comprenderlo mejor, un crujido entre los árboles te obliga a levantar la vista. Algo se mueve entre las sombras, algo que camina en dos patas pero no del todo como un hombre.",
+        "Contenés la respiración hasta que el crujido se aleja. El bosque vuelve a quedar en silencio, pero vos ya no estás tan seguro de estar solo."
+      ],
+      choices: [
+        { text: "Seguir avanzando, con el corazón acelerado", next: "encrucijada" }
+      ]
+    },
+
+    bosque_b: {
+      text: [
+        "Dejás la piedra atrás. El fragmento de nombre que alcanzaste a ver te sigue pesando en el pecho, como una pregunta sin respuesta. El bosque se aclara poco a poco y el suelo empieza a ablandarse otra vez — señal de que el pantano no está lejos, sin importar qué camino elijas."
+      ],
+      choices: [
+        { text: "Seguir avanzando", next: "encrucijada" }
+      ]
+    },
+
+    pantano: {
+      text: [
+        "Avanzás hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacás un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
+        "Podrías guardarte el amuleto — quizás sea tuyo, quizás explique algo — o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
+      ],
+      fragment: "El Símbolo",
+      choices: [
+        { text: "Guardarte el amuleto", next: "pantano_a" },
+        { text: "Dejarlo hundirse en el barro", next: "pantano_b" }
+      ]
+    },
+
+    pantano_a: {
+      text: [
+        "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto."
+      ],
+      choices: [
+        { text: "Seguir avanzando", next: "encrucijada" }
+      ]
+    },
+
+    pantano_b: {
+      text: [
+        "Dejás que el amuleto se hunda de nuevo. El agua se lo traga sin un solo sonido, y por un segundo te preguntás si hiciste bien. El resplandor sigue ahí adelante, indiferente a tu decisión, esperando de todas formas."
+      ],
+      choices: [
+        { text: "Seguir avanzando", next: "encrucijada" }
+      ]
+    },
+
+    canto: {
+      text: [
+        "Seguís el eco del canto hacia la derecha, donde la niebla se enrosca entre juncos altos como lanzas. La voz se hace más clara a cada paso, hasta que la ves: una figura sentada sobre una roca cubierta de flores que no deberían crecer en un pantano, con el pelo mezclado con el musgo y los ojos cerrados. Canta en una lengua antigua, y aunque no entendés las palabras, el sentido te llega igual, directo al pecho.",
+        "La figura no ha abierto los ojos, pero sabés, con una certeza incómoda, que es consciente de tu presencia."
+      ],
+      fragment: "La Voz",
+      choices: [
+        { text: "Acercarte y hablarle", next: "canto_a" },
+        { text: "Alejarte en silencio, sin interrumpir", next: "canto_b" }
+      ]
+    },
+
+    canto_a: {
+      text: [
+        "Das un paso hacia ella y el canto se corta en seco. Los ojos que se abren no son del todo humanos — son del color del agua estancada, y te miran como quien reconoce algo que hacía tiempo esperaba. «Volviste», creés escuchar, aunque su boca no parece moverse. Antes de que puedas responder, la niebla se cierra a tu alrededor y la figura desaparece."
+      ],
+      choices: [
+        { text: "Seguir camino, desconcertado", next: "encrucijada" }
+      ]
+    },
+
+    canto_b: {
+      text: [
+        "Te alejás sin hacer ruido, el corazón latiendo con una mezcla de miedo y algo parecido a la nostalgia. El canto continúa a tus espaldas, cada vez más lejano, hasta que se funde otra vez con el silencio del pantano."
+      ],
+      choices: [
+        { text: "Seguir camino", next: "encrucijada" }
+      ]
+    },
+
+    encrucijada: {
+      text: [
+        "El bosque, el pantano y el eco del canto conducen, cada uno a su manera, al mismo lugar: un claro circular donde el lodo da paso a piedra antigua cubierta de líquenes plateados. En el centro, clavada en el barro, hay una espada rota hasta la empuñadura — y más allá, atravesando la niebla, ves una luz que parpadea como una vela, aunque no hay nadie sosteniéndola.",
+        "El canto que escuchaste (o no) se detiene de golpe. El silencio que queda es peor.",
+        "Algo en este lugar sabe que estás acá."
+      ],
+      isChapterEnd: true
+    }
+
+  };
+
+  let current = "inicio";
+  let collected = [];
+
+  const menuScreen = document.getElementById("menu-screen");
+  const instructionsScreen = document.getElementById("instructions-screen");
+  const gameScreen = document.getElementById("game-screen");
+
+  document.getElementById("btn-start").onclick = () => {
+    menuScreen.style.display = "none";
+    instructionsScreen.style.display = "none";
+    gameScreen.style.display = "block";
+    playTrack(SCENE_MUSIC[current] || "menu");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  document.getElementById("btn-instructions").onclick = () => {
+    menuScreen.style.display = "none";
+    instructionsScreen.style.display = "block";
+    playTrack("menu");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  document.getElementById("btn-back-menu").onclick = () => {
+    instructionsScreen.style.display = "none";
+    menuScreen.style.display = "block";
+    playTrack("menu");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cardEl = document.getElementById("card");
+  const sceneTextEl = document.getElementById("scene-text");
+  const choicesEl = document.getElementById("choices");
+  const footerNote = document.getElementById("footer-note");
+  const memoryToggle = document.getElementById("memory-toggle");
+  const memoryToggleCount = document.getElementById("memory-toggle-count");
+  const memoryPanelBody = document.getElementById("memory-panel-body");
+  const memoryPanelList = document.getElementById("memory-panel-list");
+
+  let memoryPanelOpen = false;
+  memoryToggle.onclick = () => {
+    memoryPanelOpen = !memoryPanelOpen;
+    memoryPanelBody.hidden = !memoryPanelOpen;
+    memoryToggle.classList.toggle("open", memoryPanelOpen);
+    memoryToggle.setAttribute("aria-expanded", String(memoryPanelOpen));
+  };
+
+  function renderMemoryPanel() {
+    memoryToggleCount.textContent = collected.length;
+    memoryPanelList.innerHTML = "";
+    if (!collected.length) {
+      const li = document.createElement("li");
+      li.className = "memory-panel-empty";
+      li.textContent = "Todavía no recuperaste ningún fragmento de memoria.";
+      memoryPanelList.appendChild(li);
+      return;
+    }
+    collected.forEach(name => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span class="memory-panel-mark">✦</span>${name}`;
+      memoryPanelList.appendChild(li);
+    });
+  }
+
+  function renderScene(id, opts) {
+    const scene = scenes[id];
+    cardEl.classList.toggle("chapter-end", !!scene.isChapterEnd);
+
+    if (!opts || !opts.skipMusic) {
+      playTrack(SCENE_MUSIC[id] || "menu");
+    }
+
+    sceneTextEl.classList.remove("with-dropcap");
+    void sceneTextEl.offsetWidth; // restart animation
+    sceneTextEl.classList.add("with-dropcap");
+
+    let html = scene.text.map(p => `<p>${p}</p>`).join("");
+    const isNewFragment = scene.fragment && !collected.includes(scene.fragment);
+    if (isNewFragment) {
+      html += `<div class="fragment-flash">✦ Un fragmento de tu memoria destella, breve y doloroso: <strong>${scene.fragment}</strong></div>`;
+    }
+    sceneTextEl.innerHTML = html;
+
+    if (isNewFragment) {
+      collected.push(scene.fragment);
+      playSfx("fragment");
+    }
+    renderMemoryPanel();
+
+    choicesEl.innerHTML = "";
+
+    if (scene.isChapterEnd) {
+      const endLabel = document.createElement("div");
+      endLabel.className = "end-label";
+      endLabel.textContent = "Fin del Capítulo I";
+      choicesEl.appendChild(endLabel);
+
+      const endTitle = document.createElement("div");
+      endTitle.className = "end-title";
+      endTitle.textContent = "La niebla se cierra";
+      choicesEl.appendChild(endTitle);
+
+      const cont = document.createElement("div");
+      cont.className = "continues";
+      cont.textContent = "Fin del juego... por ahora...";
+      choicesEl.appendChild(cont);
+
+      const restartBtn = document.createElement("button");
+      restartBtn.className = "restart-btn";
+      restartBtn.textContent = "Volver a empezar el Capítulo I";
+      restartBtn.onclick = () => {
+        current = "inicio";
+        renderScene(current);
+      };
+      choicesEl.appendChild(restartBtn);
+
+      footerNote.textContent = "Cada camino deja un rastro distinto en tu memoria.";
+      return;
+    }
+
+    footerNote.textContent = "El pantano recuerda cada paso que das.";
+
+    scene.choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = choice.text;
+      btn.onclick = () => {
+        playSfx("choice");
+        current = choice.next;
+        renderScene(current);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  renderMemoryPanel();
+  renderScene(current, { skipMusic: true });
+
+})();
+</script>
+
+</body>
+</html>
