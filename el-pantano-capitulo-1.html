@@ -363,9 +363,66 @@
     outline: none;
   }
 
+  /* Transición de capítulo — pantalla en negro con "Capítulo X" */
+  .chapter-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .chapter-transition.visible { display: flex; }
+  .chapter-transition.fade-in  { animation: ctFadeIn 0.7s ease forwards; }
+  .chapter-transition.fade-out { animation: ctFadeOut 0.7s ease forwards; }
+  @keyframes ctFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ctFadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+  .chapter-transition-number {
+    font-family: 'Palatino Linotype', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 30px;
+    color: var(--gold-bright);
+    text-shadow: 0 0 18px rgba(201,168,106,0.3);
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .chapter-transition-subtitle {
+    margin-top: 14px;
+    max-width: 480px;
+    font-size: 15px;
+    line-height: 1.6;
+    font-style: italic;
+    letter-spacing: 0.03em;
+    color: var(--parchment-dim);
+    opacity: 0;
+  }
+  .chapter-transition.fade-in .chapter-transition-number {
+    animation: ctTextIn 2.2s ease forwards;
+    animation-delay: 0.6s;
+  }
+  .chapter-transition.fade-in .chapter-transition-subtitle {
+    animation: ctTextIn 2.2s ease forwards;
+    animation-delay: 1.4s;
+  }
+  @keyframes ctTextIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .fog { animation: none; }
     .scene-text { animation: none; }
+    .chapter-transition.fade-in, .chapter-transition.fade-out { animation: none; opacity: 1; }
+    .chapter-transition.fade-out { opacity: 0; }
+    .chapter-transition.fade-in .chapter-transition-number,
+    .chapter-transition.fade-in .chapter-transition-subtitle { animation: none; opacity: 1; transform: none; }
   }
 
   @media (max-width: 480px) {
@@ -449,6 +506,12 @@
   </div>
 
   <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" title="Silenciar música y efectos">🔊</button>
+
+  <!-- Transición de capítulo -->
+  <div class="chapter-transition" id="chapter-transition">
+    <div class="chapter-transition-number" id="chapter-transition-number">Capítulo 1</div>
+    <div class="chapter-transition-subtitle" id="chapter-transition-subtitle"></div>
+  </div>
 </div>
 
 <script>
@@ -457,41 +520,29 @@
   const ALL_FRAGMENTS = ["El Nombre", "El Símbolo", "La Voz"];
 
   /* ---------- Audio: música ambiente + efectos ----------
-     Colocá tus archivos en una carpeta "audio" junto a este HTML:
-       audio/menu.mp3      -> menú, instrucciones y la escena inicial (el despertar)
-       audio/bosque.mp3    -> escenas del bosque
-       audio/pantano.mp3   -> escenas del pantano
-       audio/canto.mp3     -> escenas del canto
-       audio/final.mp3     -> la encrucijada final
-       audio/fragment.mp3  -> efecto al recuperar un fragmento de memoria
-       audio/choice.mp3    -> efecto corto al elegir una opción
-     Si un archivo no existe todavía, el juego sigue funcionando en silencio
-     para esa pista puntual (no rompe nada).
+     Colocá tus archivos en una carpeta "audio" junto a este HTML.
+     Por ahora solo trabajamos: música del menú, música del Capítulo I
+     (una sola pista, todavía sin variantes por escena/elección) y el
+     sonido de click en los botones. Ver audio/README.md para el detalle.
+     Si un archivo no existe todavía, el juego sigue funcionando en
+     silencio para esa pista puntual (no rompe nada).
   ------------------------------------------------------- */
 
   const MUSIC_TRACKS = {
-    menu:    "audio/menu.mp3",
-    bosque:  "audio/bosque.mp3",
-    pantano: "audio/pantano.mp3",
-    canto:   "audio/canto.mp3",
-    final:   "audio/final.mp3"
+    menu:      "audio/atlasaudio-dark-ambient-590151.mp3",
+    capitulo1: "audio/phantomxcutzz-swamp-tension-suspense-thriller-background-music-351808.mp3"
   };
 
   const SFX_TRACKS = {
-    fragment: "audio/fragment.mp3",
-    choice:   "audio/choice.mp3"
-  };
-
-  const SCENE_MUSIC = {
-    inicio: "pantano",
-    bosque: "bosque", bosque_a: "bosque", bosque_b: "bosque",
-    pantano: "pantano", pantano_a: "pantano", pantano_b: "pantano",
-    canto: "canto", canto_a: "canto", canto_b: "canto",
-    encrucijada: "final"
+    click_start:         "audio/freesound_community-evil-demonic-laugh-6925.mp3",
+    click_instrucciones: "audio/juniorsoundays-ui-sound-22-527807.mp3",
+    click_volver:        "audio/juniorsoundays-ui-sound-22-527807.mp3",
+    click_eleccion:      "audio/juniorsoundays-ui-sound-22-527807.mp3",
+    fragment:            "audio/soundshelfstudio-deep-ui-chime-585839.mp3"
   };
 
   const MUSIC_VOLUME = 0.35;
-  const SFX_VOLUME = 0.55;
+  const SFX_VOLUME = 0.3;
   const CROSSFADE_MS = 1400;
 
   let musicMuted = false;
@@ -682,15 +733,66 @@
   const instructionsScreen = document.getElementById("instructions-screen");
   const gameScreen = document.getElementById("game-screen");
 
+  /* ---------- Transición de capítulo ----------
+     Pantalla en negro con "Capítulo X" + un subtítulo breve, usada
+     al empezar un capítulo y al terminar uno (como adelanto del
+     siguiente). El subtítulo del Capítulo I es siempre fijo; el de
+     los capítulos siguientes va a variar según qué fragmento de
+     memoria haya recuperado el jugador en el capítulo anterior.
+     NOTA: los textos de CHAPTER_2_TEASER son un borrador — falta
+     definir el contenido real del Capítulo II.
+  ------------------------------------------------------- */
+
+  const CHAPTER_2_TEASER = {
+    "El Nombre":  "Un nombre a medias, y el peso de recordarlo.",
+    "El Símbolo": "Un amuleto partido, y la pregunta de a quién pertenece.",
+    "La Voz":     "Un canto que no termina de olvidarte."
+  };
+
+  function nextChapterSubtitle() {
+    return CHAPTER_2_TEASER[collected[0]] || "";
+  }
+
+  const transitionEl = document.getElementById("chapter-transition");
+  const transitionNumberEl = document.getElementById("chapter-transition-number");
+  const transitionSubtitleEl = document.getElementById("chapter-transition-subtitle");
+  const TRANSITION_HOLD_MS_DEFAULT = 5200;
+  const TRANSITION_FADE_MS = 700;
+
+  function showChapterTransition({ number, subtitle, onComplete, holdMs }) {
+    transitionNumberEl.textContent = `Capítulo ${number}`;
+    transitionSubtitleEl.textContent = subtitle || "";
+    transitionEl.classList.remove("fade-out");
+    transitionEl.classList.add("visible", "fade-in");
+
+    setTimeout(() => {
+      if (onComplete) onComplete();
+      transitionEl.classList.remove("fade-in");
+      transitionEl.classList.add("fade-out");
+      setTimeout(() => {
+        transitionEl.classList.remove("visible", "fade-out");
+      }, TRANSITION_FADE_MS);
+    }, holdMs || TRANSITION_HOLD_MS_DEFAULT);
+  }
+
   document.getElementById("btn-start").onclick = () => {
-    menuScreen.style.display = "none";
-    instructionsScreen.style.display = "none";
-    gameScreen.style.display = "block";
-    playTrack(SCENE_MUSIC[current] || "menu");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    playSfx("click_start");
+    showChapterTransition({
+      number: 1,
+      subtitle: "«El hombre está condenado a ser libre; porque una vez arrojado al mundo, es responsable de todo lo que hace.»",
+      holdMs: 7000,
+      onComplete: () => {
+        menuScreen.style.display = "none";
+        instructionsScreen.style.display = "none";
+        gameScreen.style.display = "block";
+        playTrack("capitulo1");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
   };
 
   document.getElementById("btn-instructions").onclick = () => {
+    playSfx("click_instrucciones");
     menuScreen.style.display = "none";
     instructionsScreen.style.display = "block";
     playTrack("menu");
@@ -698,6 +800,7 @@
   };
 
   document.getElementById("btn-back-menu").onclick = () => {
+    playSfx("click_volver");
     instructionsScreen.style.display = "none";
     menuScreen.style.display = "block";
     playTrack("menu");
@@ -738,13 +841,45 @@
     });
   }
 
-  function renderScene(id, opts) {
+  function renderChapterEndCard() {
+    choicesEl.innerHTML = "";
+
+    const endLabel = document.createElement("div");
+    endLabel.className = "end-label";
+    endLabel.textContent = "Fin del Capítulo I";
+    choicesEl.appendChild(endLabel);
+
+    const endTitle = document.createElement("div");
+    endTitle.className = "end-title";
+    endTitle.textContent = "La niebla se cierra";
+    choicesEl.appendChild(endTitle);
+
+    const cont = document.createElement("div");
+    cont.className = "continues";
+    cont.textContent = "Fin del juego... por ahora...";
+    choicesEl.appendChild(cont);
+
+    const restartBtn = document.createElement("button");
+    restartBtn.className = "restart-btn";
+    restartBtn.textContent = "Volver al menú principal";
+    restartBtn.onclick = () => {
+      playSfx("click_eleccion");
+      collected = [];
+      current = "inicio";
+      renderScene(current);
+      gameScreen.style.display = "none";
+      menuScreen.style.display = "block";
+      playTrack("menu");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    choicesEl.appendChild(restartBtn);
+
+    footerNote.textContent = "Cada camino deja un rastro distinto en tu memoria.";
+  }
+
+  function renderScene(id) {
     const scene = scenes[id];
     cardEl.classList.toggle("chapter-end", !!scene.isChapterEnd);
-
-    if (!opts || !opts.skipMusic) {
-      playTrack(SCENE_MUSIC[id] || "menu");
-    }
 
     sceneTextEl.classList.remove("with-dropcap");
     void sceneTextEl.offsetWidth; // restart animation
@@ -759,38 +894,27 @@
 
     if (isNewFragment) {
       collected.push(scene.fragment);
-      playSfx("fragment");
+      // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
     }
     renderMemoryPanel();
 
     choicesEl.innerHTML = "";
 
     if (scene.isChapterEnd) {
-      const endLabel = document.createElement("div");
-      endLabel.className = "end-label";
-      endLabel.textContent = "Fin del Capítulo I";
-      choicesEl.appendChild(endLabel);
-
-      const endTitle = document.createElement("div");
-      endTitle.className = "end-title";
-      endTitle.textContent = "La niebla se cierra";
-      choicesEl.appendChild(endTitle);
-
-      const cont = document.createElement("div");
-      cont.className = "continues";
-      cont.textContent = "Fin del juego... por ahora...";
-      choicesEl.appendChild(cont);
-
-      const restartBtn = document.createElement("button");
-      restartBtn.className = "restart-btn";
-      restartBtn.textContent = "Volver a empezar el Capítulo I";
-      restartBtn.onclick = () => {
-        current = "inicio";
-        renderScene(current);
+      const continueBtn = document.createElement("button");
+      continueBtn.className = "choice-btn";
+      continueBtn.textContent = "Continuar";
+      continueBtn.onclick = () => {
+        playSfx("click_eleccion");
+        showChapterTransition({
+          number: 2,
+          subtitle: nextChapterSubtitle(),
+          onComplete: renderChapterEndCard
+        });
       };
-      choicesEl.appendChild(restartBtn);
+      choicesEl.appendChild(continueBtn);
 
-      footerNote.textContent = "Cada camino deja un rastro distinto en tu memoria.";
+      footerNote.textContent = "El pantano recuerda cada paso que das.";
       return;
     }
 
@@ -801,7 +925,7 @@
       btn.className = "choice-btn";
       btn.textContent = choice.text;
       btn.onclick = () => {
-        playSfx("choice");
+        playSfx("click_eleccion");
         current = choice.next;
         renderScene(current);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -811,7 +935,7 @@
   }
 
   renderMemoryPanel();
-  renderScene(current, { skipMusic: true });
+  renderScene(current);
 
 })();
 </script>
