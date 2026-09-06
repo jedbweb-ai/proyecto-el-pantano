@@ -543,6 +543,9 @@
 
   const MUSIC_VOLUME = 0.35;
   const SFX_VOLUME = 0.3;
+  const SFX_VOLUME_OVERRIDES = {
+    click_start: 0.39 // risa demoníaca, 30% más alta que el resto de los efectos
+  };
   const CROSSFADE_MS = 1400;
 
   let musicMuted = false;
@@ -591,7 +594,7 @@
     const src = SFX_TRACKS[key];
     if (!src) return;
     const sfx = new Audio(src);
-    sfx.volume = SFX_VOLUME;
+    sfx.volume = SFX_VOLUME_OVERRIDES[key] !== undefined ? SFX_VOLUME_OVERRIDES[key] : SFX_VOLUME;
     const p = sfx.play();
     if (p && p.catch) p.catch(() => {});
   }
