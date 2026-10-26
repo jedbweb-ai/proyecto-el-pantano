@@ -257,6 +257,9 @@
   .mq-item:hover { filter: brightness(1.35); }
   .mq-metal { fill: #3b3a32; stroke: var(--gold); stroke-width: 1.2; stroke-linejoin: round; }
   .mq-leather { fill: #3d3324; stroke: rgba(201,168,106,0.6); stroke-width: 1.2; }
+  .mq-cloth { fill: #34352a; stroke: rgba(201,168,106,0.5); stroke-width: 1.2; stroke-linejoin: round; }
+  .mq-patch { fill: #4a3f2c; stroke: rgba(201,168,106,0.45); stroke-width: 1; stroke-dasharray: 2 1.5; }
+  .mq-seam { fill: none; stroke: rgba(201,168,106,0.35); stroke-width: 1; }
   .mq-glow { fill: rgba(196,224,170,0.22); }
   .mq-cord { fill: none; stroke: #7a6340; stroke-width: 1.4; }
   .mq-strap { fill: none; stroke: #4a3d2a; stroke-width: 4; stroke-linecap: round; }
@@ -1491,27 +1494,31 @@
      "requires" y "take" de las escenas.
   ------------------------------------------------------- */
 
-  // at: dónde se dibuja el objeto sobre la silueta (coordenadas del SVG)
+  // at: dónde se dibuja el objeto sobre la silueta (coordenadas del SVG).
+  // layer: "back" se dibuja detrás del cuerpo; "clothes" (ropa puesta) va
+  // sobre el cuerpo pero debajo de lo demás (cinturón, bolsillos, colgante).
   const SLOTS = [
     { id: "cabeza",    label: "Cabeza",             place: "En la cabeza",              type: "cabeza",   at: [[100, 30]] },
     { id: "cuello",    label: "Cuello",             place: "Colgado del cuello",        type: "cuello",   at: [[100, 104]] },
-    { id: "ropa",      label: "Abrigo",             place: "Puesto como abrigo",        type: "ropa",     at: [[100, 122]] },
+    { id: "ropa",      label: "Abrigo",             place: "Puesto como abrigo",        type: "ropa",     at: [[100, 122]], layer: "clothes" },
     { id: "manoIzq",   label: "Mano izquierda",     place: "En la mano izquierda",      type: "mano",     at: [[49, 212]], rotate: -24 },
     { id: "manoDer",   label: "Mano derecha",       place: "En la mano derecha",        type: "mano",     at: [[151, 212]], rotate: 24 },
     { id: "cinturon",  label: "Cinturón",           place: "En el cinturón",            type: "cinturon", at: [[100, 164]] },
+    { id: "piernas",   label: "Piernas",            place: "Puesto en las piernas",     type: "piernas",  at: [[100, 250]], layer: "clothes" },
     { id: "bolsillo1", label: "Bolsillo izquierdo", place: "En el bolsillo izquierdo",  type: "bolsillo", at: [[87, 184]], scale: 0.55 },
     { id: "bolsillo2", label: "Bolsillo derecho",   place: "En el bolsillo derecho",    type: "bolsillo", at: [[113, 184]], scale: 0.55 },
-    { id: "espalda",   label: "Espalda",            place: "A la espalda",              type: "espalda",  at: [[100, 124]], behind: true },
+    { id: "espalda",   label: "Espalda",            place: "A la espalda",              type: "espalda",  at: [[100, 124]], layer: "back" },
     { id: "pies",      label: "Pies",               place: "En los pies",               type: "pies",     at: [[82, 346], [118, 346]] }
   ];
   const SLOT_BY_ID = Object.fromEntries(SLOTS.map(s => [s.id, s]));
 
   // Catálogo de objetos. "ref" es el nombre con artículo para usar en frases. "fits": en qué tipo de lugar puede ir cada uno
   // ("mano", "cuello", "cinturon", "bolsillo", "espalda", "cabeza", "ropa",
-  // "pies" o "mochila" = adentro de la mochila). "hands: 2" ocupa las dos
+  // "piernas", "pies" o "mochila" = adentro de la mochila). "hands: 2" ocupa las dos
   // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
   // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
-  // La espada y la mochila todavía no aparecen en la historia: quedan listas.
+  // La espada, la mochila y el pantalón todavía no aparecen en la historia:
+  // se pueden probar con el modo prueba (ver testItemsFromUrl).
   const ITEMS = {
     amuleto: {
       name: "Amuleto partido",
@@ -1542,6 +1549,21 @@
       capacity: 4,
       art: `<rect class="mq-leather" x="-38" y="-36" width="76" height="72" rx="12"/>
             <path class="mq-leather" d="M-30 -30 Q0 -40 30 -30 L28 -6 Q0 2 -28 -6 Z"/>`
+    },
+    pantalon_viejo: {
+      name: "Pantalón viejo",
+      ref: "el pantalón viejo",
+      desc: "Tela gruesa, gastada y remendada, con el ruedo deshilachado. Huele a humedad, pero abriga.",
+      fits: ["piernas", "mano", "mochila"],
+      pose: {
+        manoIzq: "translate(46 236) rotate(-8) scale(0.3)",
+        manoDer: "translate(154 236) rotate(8) scale(0.3)"
+      },
+      art: `<path class="mq-cloth" d="M-21 -86 Q0 -92 21 -86 L23 -50 L22 0 L24 84 L7 86 L4 -28 Q0 -34 -4 -28 L-7 86 L-24 84 L-22 0 L-23 -50 Z"/>
+            <path class="mq-seam" d="M-21 -78 Q0 -84 21 -78"/>
+            <path class="mq-patch" d="M10 8 L19 7 L20 20 L11 21 Z"/>
+            <path class="mq-patch" d="M-19 -46 L-11 -47 L-10 -38 L-18 -37 Z"/>
+            <path class="mq-seam" d="M-24 84 l3 4 l3 -4 l3 4 l3 -4 l3 4 M7 86 l3 4 l3 -4 l3 4 l3 -4 l3 4"/>`
     }
   };
 
@@ -1557,7 +1579,7 @@
 
   let equipment = emptyEquipment();
   let backpack = [];          // lo que hay adentro de la mochila
-  let dropped = {};           // escena → objetos soltados ahí: [{ id, contents }]
+  let dropped = initialDropped(); // escena → objetos soltados ahí: [{ id, contents }]
   let chapterEnded = false;   // al terminar el capítulo el inventario queda de solo lectura
   let openInvItem = null;     // objeto desplegado en la lista del inventario
   let highlightFragment = null;
@@ -1566,10 +1588,23 @@
     return Object.fromEntries(SLOTS.map(s => [s.id, null]));
   }
 
+  // Modo prueba: con ?objetos=pantalon_viejo,espada_rota en la URL, esos
+  // objetos aparecen en el suelo de la primera escena para probarlos sin
+  // tocar la historia. Sin el parámetro, el juego queda igual que siempre.
+  function testItemsFromUrl() {
+    const param = new URLSearchParams(location.search).get("objetos") || "";
+    return param.split(",").map(id => id.trim()).filter(id => ITEMS[id]);
+  }
+
+  function initialDropped() {
+    const items = testItemsFromUrl();
+    return items.length ? { inicio: items.map(id => ({ id, contents: [] })) } : {};
+  }
+
   function resetInventory() {
     equipment = emptyEquipment();
     backpack = [];
-    dropped = {};
+    dropped = initialDropped();
     chapterEnded = false;
     invBtn.classList.remove("has-new");
   }
@@ -1707,16 +1742,15 @@
   }
 
   function renderMannequin() {
-    const back = [];
-    const front = [];
-    if (equipment.espalda) front.push(BACK_STRAPS);
-    if (equipment.cuello) front.push(NECK_CORD);
+    const layers = { back: [], clothes: [], front: [] };
+    if (equipment.espalda) layers.front.push(BACK_STRAPS);
+    if (equipment.cuello) layers.front.push(NECK_CORD);
     const drawn = new Set(); // un objeto a dos manos se dibuja una sola vez
     SLOTS.forEach(slot => {
       const id = equipment[slot.id];
       if (!id || drawn.has(id)) return;
       drawn.add(id);
-      slot.at.forEach((_, i) => (slot.behind ? back : front).push(itemArt(id, slot, i)));
+      slot.at.forEach((_, i) => layers[slot.layer || "front"].push(itemArt(id, slot, i)));
     });
 
     // Fragmentos: destellos en arco sobre la cabeza vacía; se encienden al recordarlos
@@ -1731,7 +1765,8 @@
         : `<circle class="mq-frag-off" cx="${x}" cy="${y}" r="3.5"/>`;
     }).join("");
 
-    invSvg.innerHTML = MANNEQUIN_AURA + back.join("") + MANNEQUIN_BODY + front.join("") + frags;
+    invSvg.innerHTML = MANNEQUIN_AURA + layers.back.join("") + MANNEQUIN_BODY +
+      layers.clothes.join("") + layers.front.join("") + frags;
   }
 
   /* --- Panel del inventario --- */
