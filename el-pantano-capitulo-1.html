@@ -90,70 +90,211 @@
     text-transform: uppercase;
   }
 
-  /* Panel de fragmentos de memoria — colapsable, debajo de la card */
-  .memory-panel {
-    margin-top: 22px;
-    border: 1px solid rgba(201,168,106,0.25);
-    border-radius: 3px;
-    background: rgba(233,226,205,0.03);
-    overflow: hidden;
-  }
-  .memory-toggle {
-    width: 100%;
+  /* ---------- Inventario: la silueta con lo que llevás encima ---------- */
+  .inv-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    background: transparent;
-    border: none;
-    color: var(--parchment-dim);
-    font-family: inherit;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 64px 16px 24px;
+    background: rgba(5,8,6,0.84);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    overflow-y: auto;
+    animation: ctFadeIn 0.35s ease;
   }
-  .memory-toggle:hover, .memory-toggle:focus-visible {
-    background: rgba(201,168,106,0.08);
+  .inv-overlay[hidden] { display: none; }
+  .inv-panel {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    background: linear-gradient(180deg, #18211b, #111813);
+    border: 1px solid rgba(201,168,106,0.35);
+    border-radius: 3px;
+    padding: 26px 26px 22px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.35);
+  }
+  .inv-title {
+    margin: 0 0 4px;
+    padding: 0 34px; /* deja lugar a la × de cerrar */
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
     color: var(--gold-bright);
     outline: none;
   }
-  .memory-toggle-label { flex: 1; text-align: left; }
-  .memory-toggle-count {
-    color: var(--gold);
+  .inv-sub {
+    margin: 0 0 18px;
+    text-align: center;
+    font-size: 13px;
     font-style: italic;
-    letter-spacing: 0.02em;
-    text-transform: none;
+    color: var(--mist);
   }
-  .memory-toggle-arrow {
-    color: var(--gold);
-    display: inline-block;
-    transition: transform 0.25s ease;
+  .inv-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--parchment-dim);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .inv-close:hover, .inv-close:focus-visible { color: var(--gold-bright); outline: none; }
+  .inv-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
+  }
+  .inv-figure { text-align: center; }
+  .inv-figure svg {
+    width: 100%;
+    max-width: 240px;
+    max-height: 58vh;
+    height: auto;
+    overflow: visible;
+  }
+  .inv-fragments {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--parchment-dim);
+  }
+  .inv-fragments-title {
     font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 6px;
   }
-  .memory-toggle.open .memory-toggle-arrow { transform: rotate(180deg); }
-
-  .memory-panel-body {
-    padding: 4px 18px 16px;
-    border-top: 1px solid rgba(201,168,106,0.15);
-  }
-  .memory-panel-list {
-    list-style: none;
-    margin: 12px 0 0;
-    padding: 0;
-  }
-  .memory-panel-list li {
-    padding: 7px 0;
+  .inv-fragment {
     font-style: italic;
+    color: var(--gold-bright);
+    padding: 2px 6px;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+  .inv-fragment.is-highlight { background: rgba(201,168,106,0.16); }
+  .inv-fragments-empty { font-style: italic; color: var(--mist); }
+
+  .inv-section-title {
+    margin: 18px 0 4px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+  .inv-slots { list-style: none; margin: 0; padding: 0; }
+  .inv-slot { border-bottom: 1px solid rgba(201,168,106,0.12); }
+  .inv-slot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    width: 100%;
+    padding: 9px 6px;
+    background: transparent;
+    border: none;
+    font-family: inherit;
     font-size: 14px;
     color: var(--parchment);
-    border-bottom: 1px solid rgba(201,168,106,0.1);
+    text-align: left;
   }
-  .memory-panel-list li:last-child { border-bottom: none; }
-  .memory-panel-mark { color: var(--gold-bright); margin-right: 6px; font-style: normal; }
-  .memory-panel-empty { color: var(--mist); }
+  button.inv-slot-row { cursor: pointer; transition: background 0.2s ease; }
+  button.inv-slot-row:hover, button.inv-slot-row:focus-visible,
+  button.inv-slot-row[aria-expanded="true"] {
+    background: rgba(201,168,106,0.08);
+    outline: none;
+  }
+  .inv-slot-label {
+    flex-shrink: 0;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+  .inv-slot-item { font-style: italic; color: var(--gold-bright); text-align: right; }
+  .inv-slot-empty { color: rgba(125,147,143,0.55); }
+  .inv-actions {
+    padding: 2px 6px 12px;
+    font-size: 13px;
+    color: var(--parchment-dim);
+  }
+  .inv-actions p { margin: 0 0 8px; font-style: italic; line-height: 1.55; }
+  .inv-actions-label { margin-right: 4px; color: var(--mist); }
+  .inv-action-btn {
+    margin: 0 6px 6px 0;
+    padding: 6px 12px;
+    background: rgba(95,122,84,0.1);
+    border: 1px solid var(--moss-dim);
+    border-radius: 2px;
+    color: var(--parchment);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .inv-action-btn:hover, .inv-action-btn:focus-visible {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    outline: none;
+  }
+  .inv-action-btn.is-drop { border-color: rgba(138,74,61,0.6); }
+
+  /* Maniquí (SVG) */
+  .mq-limb-edge { fill: none; stroke: rgba(201,168,106,0.45); stroke-width: 15; stroke-linecap: round; }
+  .mq-limb { fill: none; stroke: #26302a; stroke-width: 12; stroke-linecap: round; }
+  .mq-part { fill: #26302a; stroke: rgba(201,168,106,0.45); stroke-width: 1.5; }
+  .mq-joint { fill: #1c241f; stroke: rgba(201,168,106,0.35); stroke-width: 1.2; }
+  .mq-item { cursor: pointer; transition: filter 0.2s ease; }
+  .mq-item:hover { filter: brightness(1.35); }
+  .mq-metal { fill: #3b3a32; stroke: var(--gold); stroke-width: 1.2; stroke-linejoin: round; }
+  .mq-leather { fill: #3d3324; stroke: rgba(201,168,106,0.6); stroke-width: 1.2; }
+  .mq-glow { fill: rgba(196,224,170,0.22); }
+  .mq-cord { fill: none; stroke: #7a6340; stroke-width: 1.4; }
+  .mq-strap { fill: none; stroke: #4a3d2a; stroke-width: 4; stroke-linecap: round; }
+  .mq-frag { cursor: pointer; }
+  .mq-frag-on { fill: var(--gold-bright); }
+  .mq-frag-halo {
+    fill: rgba(224,189,128,0.3);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fragPulse 2.8s ease-in-out infinite alternate;
+  }
+  .mq-frag-off { fill: none; stroke: rgba(125,147,143,0.5); stroke-width: 1; stroke-dasharray: 2 2.5; }
+  @keyframes fragPulse {
+    from { opacity: 0.4; transform: scale(0.8); }
+    to   { opacity: 1;   transform: scale(1.25); }
+  }
+
+  /* "¿Dónde lo llevás?" y opciones bloqueadas */
+  .placement-prompt { margin: 0 0 2px; font-size: 16px; color: var(--parchment); }
+  .placement-prompt strong { color: var(--gold-bright); font-weight: normal; font-style: italic; }
+  .placement-hint { margin: 0 0 4px; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--mist); }
+  .choice-reason {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--mist);
+  }
+  .choice-btn.is-secondary { background: transparent; border-style: dashed; color: var(--parchment-dim); }
+  .choice-btn:disabled,
+  .choice-btn:disabled:hover {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background: rgba(95,122,84,0.04);
+    border-color: var(--moss-dim);
+    color: var(--parchment-dim);
+  }
+  .choice-btn:disabled::before { margin-right: 10px; }
 
   /* The parchment card */
   .card {
@@ -614,8 +755,8 @@
   }
   .instructions-text p:last-child { margin-bottom: 0; }
 
-  /* Audio control */
-  .sound-btn {
+  /* Botones flotantes: sonido e inventario */
+  .sound-btn, .inv-btn {
     position: fixed;
     top: 16px;
     right: 20px;
@@ -634,11 +775,29 @@
     cursor: pointer;
     transition: all 0.25s ease;
   }
-  .sound-btn:hover, .sound-btn:focus-visible {
+  .sound-btn:hover, .sound-btn:focus-visible,
+  .inv-btn:hover, .inv-btn:focus-visible {
     border-color: var(--gold);
     background: rgba(201,168,106,0.14);
     outline: none;
   }
+  .inv-btn { right: 62px; }
+  .inv-btn[hidden] { display: none; }
+  .inv-btn svg { width: 17px; height: 17px; }
+  /* Punto que avisa que hay algo nuevo (objeto o fragmento) */
+  .inv-btn.has-new::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px var(--gold-bright);
+    animation: newDot 1.4s ease-in-out infinite alternate;
+  }
+  @keyframes newDot { from { opacity: 0.5; } to { opacity: 1; } }
 
   /* Transición de capítulo — pantalla en negro con "Capítulo X" */
   .chapter-transition {
@@ -725,6 +884,13 @@
     .scene-art-img { transition: none; transform: scale(var(--art-scale, 1)); }
     .fx-spores, .fx-fireflies, .fx-ripples, .fx-shadow { display: none; }
     .fx-mist { opacity: var(--fx-strength, 0.9); }
+    .mq-frag-halo, .inv-btn.has-new::after, .inv-overlay { animation: none; }
+  }
+
+  @media (max-width: 600px) {
+    .inv-panel { padding: 22px 16px 18px; }
+    .inv-layout { grid-template-columns: 1fr; gap: 14px; }
+    .inv-figure svg { max-width: 190px; max-height: 42vh; }
   }
 
   @media (max-width: 480px) {
@@ -774,6 +940,7 @@
       <div class="scene-text instructions-text">
         <p>«El Pantano» es un juego estilo «elegí tu propia aventura», donde cada decisión que tomás tiene efectos distintos a lo largo de la aventura.</p>
         <p>Elegí bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
+        <p>Todo lo que encontrás lo llevás encima, y dónde lo llevás también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Tocá la silueta, arriba a la derecha, para ver qué cargás y los fragmentos de memoria que fuiste recuperando.</p>
       </div>
       <div class="choices">
         <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
@@ -799,21 +966,36 @@
       <div class="choices" id="choices"></div>
     </main>
 
-    <div class="memory-panel" id="memory-panel">
-      <button class="memory-toggle" id="memory-toggle" type="button" aria-expanded="false">
-        <span class="memory-toggle-label">Fragmentos de memoria</span>
-        <span class="memory-toggle-count" id="memory-toggle-count">0</span>
-        <span class="memory-toggle-arrow">▾</span>
-      </button>
-      <div class="memory-panel-body" id="memory-panel-body" hidden>
-        <ul class="memory-panel-list" id="memory-panel-list"></ul>
-      </div>
-    </div>
-
     <footer class="note" id="footer-note">El pantano recuerda cada paso que das.</footer>
   </div>
 
   <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" aria-pressed="false" title="Silenciar música y efectos">🔊</button>
+
+  <button class="inv-btn" id="inv-btn" type="button" aria-label="Ver lo que llevás encima" title="Lo que llevás encima" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="5" r="3.3" fill="currentColor"/>
+      <path d="M6.5 22 L8 10.6 Q12 8.4 16 10.6 L17.5 22 Z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <!-- Inventario: silueta sin rostro con los objetos y los fragmentos de memoria -->
+  <div class="inv-overlay" id="inv-overlay" hidden>
+    <div class="inv-panel" role="dialog" aria-modal="true" aria-labelledby="inv-title">
+      <button class="inv-close" id="inv-close" type="button" aria-label="Cerrar">×</button>
+      <h2 class="inv-title" id="inv-title" tabindex="-1">Lo que llevás encima</h2>
+      <p class="inv-sub">No sabés quién sos. Solo lo que cargás.</p>
+      <div class="inv-layout">
+        <div class="inv-figure">
+          <svg id="inv-svg" viewBox="0 -16 200 384" role="img" aria-label="Silueta de un maniquí sin rostro con los objetos que llevás encima"></svg>
+          <div class="inv-fragments" id="inv-fragments"></div>
+        </div>
+        <div>
+          <ul class="inv-slots" id="inv-slots"></ul>
+          <div id="inv-backpack"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Transición de capítulo -->
   <div class="chapter-transition" id="chapter-transition">
@@ -998,14 +1180,16 @@
       ],
       fragment: "El Símbolo",
       choices: [
-        { text: "Guardarte el amuleto", next: "pantano_a" },
+        { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
         { text: "Dejarlo hundirse en el barro", next: "pantano_b" }
       ]
     },
 
     pantano_a: {
+      // El texto cambia según dónde decidió llevar el amuleto el jugador
       text: [
-        "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto."
+        { when: () => inv.isIn("amuleto", "cuello"), text: "Del amuleto todavía cuelga un resto de cordón de cuero. Te lo pasás por la cabeza y las dos mitades quedan contra tu pecho, frías como piedras de río. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto." },
+        { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto." }
       ],
       choices: [
         { text: "Seguir avanzando", next: "encrucijada" }
@@ -1290,9 +1474,429 @@
   const gameScreen = document.getElementById("game-screen");
 
   function focusFirstButton(container) {
-    const btn = container.querySelector("button");
+    const btn = container.querySelector("button:not(:disabled)");
     if (btn) btn.focus({ preventScroll: true });
   }
+
+  /* ---------- Inventario: lo que llevás encima ----------
+     El inventario es la silueta de un maniquí sin rostro. Cada objeto
+     ocupa un lugar del cuerpo y cada lugar tiene capacidad limitada:
+     una cosa por mano (o las dos manos para algo grande), un colgante,
+     el cinturón, dos bolsillos, la espalda (una mochila, que a su vez
+     tiene espacio adentro), la cabeza, el abrigo y los pies.
+     Al agarrar algo, el jugador elige dónde llevarlo; si no hay lugar,
+     elige qué soltar. Lo que se suelta queda en esa escena y se puede
+     recoger. Dónde se lleva cada cosa puede cambiar textos y opciones
+     de la historia: ver inv.has / inv.isIn y los campos "when",
+     "requires" y "take" de las escenas.
+  ------------------------------------------------------- */
+
+  // at: dónde se dibuja el objeto sobre la silueta (coordenadas del SVG)
+  const SLOTS = [
+    { id: "cabeza",    label: "Cabeza",             place: "En la cabeza",              type: "cabeza",   at: [[100, 30]] },
+    { id: "cuello",    label: "Cuello",             place: "Colgado del cuello",        type: "cuello",   at: [[100, 104]] },
+    { id: "ropa",      label: "Abrigo",             place: "Puesto como abrigo",        type: "ropa",     at: [[100, 122]] },
+    { id: "manoIzq",   label: "Mano izquierda",     place: "En la mano izquierda",      type: "mano",     at: [[49, 212]], rotate: -24 },
+    { id: "manoDer",   label: "Mano derecha",       place: "En la mano derecha",        type: "mano",     at: [[151, 212]], rotate: 24 },
+    { id: "cinturon",  label: "Cinturón",           place: "En el cinturón",            type: "cinturon", at: [[100, 164]] },
+    { id: "bolsillo1", label: "Bolsillo izquierdo", place: "En el bolsillo izquierdo",  type: "bolsillo", at: [[87, 184]], scale: 0.55 },
+    { id: "bolsillo2", label: "Bolsillo derecho",   place: "En el bolsillo derecho",    type: "bolsillo", at: [[113, 184]], scale: 0.55 },
+    { id: "espalda",   label: "Espalda",            place: "A la espalda",              type: "espalda",  at: [[100, 124]], behind: true },
+    { id: "pies",      label: "Pies",               place: "En los pies",               type: "pies",     at: [[82, 346], [118, 346]] }
+  ];
+  const SLOT_BY_ID = Object.fromEntries(SLOTS.map(s => [s.id, s]));
+
+  // Catálogo de objetos. "ref" es el nombre con artículo para usar en frases. "fits": en qué tipo de lugar puede ir cada uno
+  // ("mano", "cuello", "cinturon", "bolsillo", "espalda", "cabeza", "ropa",
+  // "pies" o "mochila" = adentro de la mochila). "hands: 2" ocupa las dos
+  // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
+  // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
+  // La espada y la mochila todavía no aparecen en la historia: quedan listas.
+  const ITEMS = {
+    amuleto: {
+      name: "Amuleto partido",
+      ref: "el amuleto partido",
+      desc: "Metal ennegrecido, partido en dos mitades que todavía encajan. Está frío, más frío que el pantano.",
+      fits: ["mano", "cuello"],
+      art: `<circle class="mq-glow" r="12"/>
+            <circle class="mq-metal" cy="-9.5" r="1.8"/>
+            <path class="mq-metal" d="M-1.5 -8 A8 8 0 0 0 -1.5 8 L-3 3 L-0.5 0 L-3 -3 Z"/>
+            <path class="mq-metal" d="M1.5 -8 A8 8 0 0 1 1.5 8 L0 3 L2.5 0 L0 -3 Z"/>`
+    },
+    espada_rota: {
+      name: "Espada rota",
+      ref: "la espada rota",
+      desc: "Partida a mitad de la hoja. Lo que queda todavía corta.",
+      fits: ["mano", "cinturon"],
+      pose: { cinturon: "translate(126 172) rotate(170) scale(0.85)" },
+      art: `<path class="mq-metal" d="M-3 -9 L-3 -40 L-1 -44 L1 -39 L3 -42 L3 -9 Z"/>
+            <rect class="mq-metal" x="-10" y="-10" width="20" height="3.5" rx="1"/>
+            <rect class="mq-leather" x="-2" y="-6.5" width="4" height="12" rx="1"/>
+            <circle class="mq-metal" cy="8" r="2.6"/>`
+    },
+    mochila: {
+      name: "Mochila de cuero",
+      ref: "la mochila",
+      desc: "Cuero viejo, endurecido por la humedad. Le entran algunas cosas.",
+      fits: ["espalda"],
+      capacity: 4,
+      art: `<rect class="mq-leather" x="-38" y="-36" width="76" height="72" rx="12"/>
+            <path class="mq-leather" d="M-30 -30 Q0 -40 30 -30 L28 -6 Q0 2 -28 -6 Z"/>`
+    }
+  };
+
+  const FRAGMENT_ARC = { cx: 100, cy: 40, r: 46 }; // arco de destellos sobre la cabeza
+
+  const invBtn = document.getElementById("inv-btn");
+  const invOverlay = document.getElementById("inv-overlay");
+  const invTitle = document.getElementById("inv-title");
+  const invSvg = document.getElementById("inv-svg");
+  const invFragmentsEl = document.getElementById("inv-fragments");
+  const invSlotsEl = document.getElementById("inv-slots");
+  const invBackpackEl = document.getElementById("inv-backpack");
+
+  let equipment = emptyEquipment();
+  let backpack = [];          // lo que hay adentro de la mochila
+  let dropped = {};           // escena → objetos soltados ahí: [{ id, contents }]
+  let chapterEnded = false;   // al terminar el capítulo el inventario queda de solo lectura
+  let openInvItem = null;     // objeto desplegado en la lista del inventario
+  let highlightFragment = null;
+
+  function emptyEquipment() {
+    return Object.fromEntries(SLOTS.map(s => [s.id, null]));
+  }
+
+  function resetInventory() {
+    equipment = emptyEquipment();
+    backpack = [];
+    dropped = {};
+    chapterEnded = false;
+    invBtn.classList.remove("has-new");
+  }
+
+  function slotsHolding(id) {
+    return SLOTS.filter(s => equipment[s.id] === id).map(s => s.id);
+  }
+
+  function backpackCapacity() {
+    const carried = equipment.espalda && ITEMS[equipment.espalda];
+    return carried && carried.capacity ? carried.capacity : 0;
+  }
+
+  // Consultas para usar desde las escenas. "where" puede ser un lugar
+  // puntual ("manoIzq"), un tipo de lugar ("mano", "cuello") o "mochila".
+  const inv = {
+    has: id => slotsHolding(id).length > 0 || backpack.includes(id),
+    isIn: (id, where) => where === "mochila"
+      ? backpack.includes(id)
+      : slotsHolding(id).some(s => s === where || SLOT_BY_ID[s].type === where)
+  };
+
+  function currentPlacementKey(id) {
+    return backpack.includes(id) ? "mochila" : slotsHolding(id).join("+");
+  }
+
+  function makePlacement(slotIds, id, label) {
+    const blockers = [...new Set(slotIds.map(s => equipment[s]).filter(other => other && other !== id))];
+    return {
+      key: slotIds.join("+"),
+      slots: slotIds,
+      label: label || SLOT_BY_ID[slotIds[0]].place,
+      short: slotIds.map(s => SLOT_BY_ID[s].label).join(" y "),
+      blockers,
+      disabled: null
+    };
+  }
+
+  // Todos los lugares donde puede ir un objeto. "blockers" es lo que
+  // habría que soltar para usar ese lugar.
+  function placementsFor(id) {
+    const item = ITEMS[id];
+    const list = [];
+    item.fits.forEach(type => {
+      if (type === "mochila") {
+        const capacity = backpackCapacity();
+        if (!capacity || equipment.espalda === id) return;
+        list.push({
+          key: "mochila", slots: [], label: "Adentro de la mochila", short: "Mochila", blockers: [],
+          disabled: backpack.length >= capacity && !backpack.includes(id) ? "La mochila está llena" : null
+        });
+        return;
+      }
+      const slotIds = SLOTS.filter(s => s.type === type).map(s => s.id);
+      if (type === "mano" && item.hands === 2) {
+        list.push(makePlacement(slotIds, id, "En las dos manos"));
+      } else {
+        slotIds.forEach(s => list.push(makePlacement([s], id)));
+      }
+    });
+    return list;
+  }
+
+  function removeItem(id) {
+    slotsHolding(id).forEach(s => { equipment[s] = null; });
+    backpack = backpack.filter(other => other !== id);
+  }
+
+  function placeItem(id, placement) {
+    removeItem(id);
+    if (placement.key === "mochila") backpack.push(id);
+    else placement.slots.forEach(s => { equipment[s] = id; });
+  }
+
+  // Lo soltado queda en la escena actual; una mochila se va con lo que tiene adentro
+  function dropItem(id) {
+    const entry = { id, contents: [] };
+    if (equipment.espalda === id && ITEMS[id].capacity) {
+      entry.contents = backpack;
+      backpack = [];
+    }
+    removeItem(id);
+    (dropped[current] = dropped[current] || []).push(entry);
+  }
+
+  function itemNames(ids) {
+    return ids.map(id => ITEMS[id].ref).join(" y ");
+  }
+
+  function markInventoryNew() {
+    invBtn.classList.add("has-new");
+  }
+
+  /* --- Dibujo del maniquí --- */
+
+  const MANNEQUIN_LIMBS = "M66 92 L56 146 M56 150 L50 200 M134 92 L144 146 M144 150 L150 200 " +
+                          "M88 202 L86 266 M86 272 L84 340 M112 202 L114 266 M114 272 L116 340";
+  const MANNEQUIN_AURA = `
+    <defs>
+      <radialGradient id="mq-aura" cx="50%" cy="45%" r="50%">
+        <stop offset="0%" stop-color="#5f7a54" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#5f7a54" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="100" cy="176" rx="98" ry="196" fill="url(#mq-aura)"/>`;
+  const MANNEQUIN_BODY = `
+    <path class="mq-limb-edge" d="${MANNEQUIN_LIMBS}"/>
+    <path class="mq-limb" d="${MANNEQUIN_LIMBS}"/>
+    <rect class="mq-part" x="94" y="58" width="12" height="20" rx="4"/>
+    <path class="mq-part" d="M72 84 Q100 76 128 84 L122 150 Q100 158 78 150 Z"/>
+    <ellipse class="mq-joint" cx="100" cy="160" rx="13" ry="6"/>
+    <path class="mq-part" d="M80 166 Q100 160 120 166 L118 196 Q100 206 82 196 Z"/>
+    <circle class="mq-joint" cx="66" cy="90" r="8"/>
+    <circle class="mq-joint" cx="134" cy="90" r="8"/>
+    <circle class="mq-joint" cx="56" cy="148" r="6.5"/>
+    <circle class="mq-joint" cx="144" cy="148" r="6.5"/>
+    <circle class="mq-joint" cx="88" cy="200" r="7"/>
+    <circle class="mq-joint" cx="112" cy="200" r="7"/>
+    <circle class="mq-joint" cx="86" cy="269" r="6.5"/>
+    <circle class="mq-joint" cx="114" cy="269" r="6.5"/>
+    <ellipse class="mq-part" cx="49" cy="210" rx="7" ry="10"/>
+    <ellipse class="mq-part" cx="151" cy="210" rx="7" ry="10"/>
+    <ellipse class="mq-part" cx="82" cy="346" rx="13" ry="6"/>
+    <ellipse class="mq-part" cx="118" cy="346" rx="13" ry="6"/>
+    <ellipse class="mq-part" cx="100" cy="40" rx="19" ry="23"/>`;
+  const NECK_CORD = `<path class="mq-cord" d="M93 66 Q93 88 100 96 Q107 88 107 66"/>`;
+  const BACK_STRAPS = `<path class="mq-strap" d="M78 88 L84 146 M122 88 L116 146"/>`;
+
+  function itemArt(id, slot, index) {
+    const item = ITEMS[id];
+    const [x, y] = slot.at[index];
+    const transform = (item.pose && item.pose[slot.id]) ||
+      `translate(${x} ${y}) rotate(${slot.rotate || 0}) scale(${slot.scale || 1})`;
+    return `<g class="mq-item" data-item="${id}" transform="${transform}"><title>${item.name}</title>${item.art}</g>`;
+  }
+
+  function renderMannequin() {
+    const back = [];
+    const front = [];
+    if (equipment.espalda) front.push(BACK_STRAPS);
+    if (equipment.cuello) front.push(NECK_CORD);
+    const drawn = new Set(); // un objeto a dos manos se dibuja una sola vez
+    SLOTS.forEach(slot => {
+      const id = equipment[slot.id];
+      if (!id || drawn.has(id)) return;
+      drawn.add(id);
+      slot.at.forEach((_, i) => (slot.behind ? back : front).push(itemArt(id, slot, i)));
+    });
+
+    // Fragmentos: destellos en arco sobre la cabeza vacía; se encienden al recordarlos
+    const n = ALL_FRAGMENTS.length;
+    const frags = ALL_FRAGMENTS.map((name, i) => {
+      const angle = Math.PI * (-5 / 6 + (n > 1 ? (4 / 6) * i / (n - 1) : 2 / 6));
+      const x = (FRAGMENT_ARC.cx + FRAGMENT_ARC.r * Math.cos(angle)).toFixed(1);
+      const y = (FRAGMENT_ARC.cy + FRAGMENT_ARC.r * Math.sin(angle)).toFixed(1);
+      return collected.includes(name)
+        ? `<g class="mq-frag" data-fragment="${name}"><title>${name}</title>` +
+          `<circle class="mq-frag-halo" cx="${x}" cy="${y}" r="9"/><circle class="mq-frag-on" cx="${x}" cy="${y}" r="3.5"/></g>`
+        : `<circle class="mq-frag-off" cx="${x}" cy="${y}" r="3.5"/>`;
+    }).join("");
+
+    invSvg.innerHTML = MANNEQUIN_AURA + back.join("") + MANNEQUIN_BODY + front.join("") + frags;
+  }
+
+  /* --- Panel del inventario --- */
+
+  function renderFragmentsList() {
+    const title = `<div class="inv-fragments-title">Fragmentos de memoria · ${collected.length}/${ALL_FRAGMENTS.length}</div>`;
+    invFragmentsEl.innerHTML = title + (collected.length
+      ? collected.map(name =>
+          `<span class="inv-fragment${name === highlightFragment ? " is-highlight" : ""}">✦ ${name}</span>`).join(" ")
+      : `<span class="inv-fragments-empty">Todavía no recordás nada.</span>`);
+  }
+
+  function renderItemActions(id) {
+    const box = document.createElement("div");
+    box.className = "inv-actions";
+    const desc = document.createElement("p");
+    desc.textContent = ITEMS[id].desc;
+    box.appendChild(desc);
+    if (chapterEnded) return box;
+
+    const here = currentPlacementKey(id);
+    const moves = placementsFor(id).filter(p => p.key !== here && !p.blockers.length && !p.disabled);
+    if (moves.length) {
+      const label = document.createElement("span");
+      label.className = "inv-actions-label";
+      label.textContent = "Pasar a:";
+      box.appendChild(label);
+      moves.forEach(p => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "inv-action-btn";
+        btn.textContent = p.short;
+        btn.onclick = () => {
+          placeItem(id, p);
+          afterInventoryChange(id);
+        };
+        box.appendChild(btn);
+      });
+    } else {
+      const none = document.createElement("p");
+      none.textContent = "No tenés otro lugar libre donde llevarlo.";
+      box.appendChild(none);
+    }
+
+    const dropBtn = document.createElement("button");
+    dropBtn.type = "button";
+    dropBtn.className = "inv-action-btn is-drop";
+    dropBtn.textContent = "Soltar acá";
+    dropBtn.onclick = () => {
+      dropItem(id);
+      openInvItem = null;
+      afterInventoryChange(null);
+    };
+    box.appendChild(dropBtn);
+    return box;
+  }
+
+  function inventoryRow(label, id, note) {
+    const li = document.createElement("li");
+    li.className = "inv-slot";
+    const row = document.createElement(id && !note ? "button" : "div");
+    row.className = "inv-slot-row";
+    const value = id
+      ? `<span class="inv-slot-item">${note || ITEMS[id].name}</span>`
+      : `<span class="inv-slot-item inv-slot-empty">—</span>`;
+    row.innerHTML = `<span class="inv-slot-label">${label}</span>${value}`;
+    if (id && !note) {
+      row.type = "button";
+      row.dataset.item = id;
+      row.setAttribute("aria-expanded", String(openInvItem === id));
+      row.onclick = () => {
+        openInvItem = openInvItem === id ? null : id;
+        renderInventory();
+        focusInventoryItem(id);
+      };
+    }
+    li.appendChild(row);
+    if (id && !note && openInvItem === id) li.appendChild(renderItemActions(id));
+    return li;
+  }
+
+  function renderInventoryList() {
+    invSlotsEl.innerHTML = "";
+    const listed = new Set();
+    SLOTS.forEach(slot => {
+      const id = equipment[slot.id];
+      // La segunda mano de un objeto a dos manos solo indica que está ocupada
+      const note = id && listed.has(id) ? `Ocupada por ${ITEMS[id].ref}` : null;
+      if (id) listed.add(id);
+      invSlotsEl.appendChild(inventoryRow(slot.label, id, note));
+    });
+
+    invBackpackEl.innerHTML = "";
+    const capacity = backpackCapacity();
+    if (!capacity) return;
+    const title = document.createElement("div");
+    title.className = "inv-section-title";
+    title.textContent = `Adentro de la mochila · ${backpack.length}/${capacity}`;
+    invBackpackEl.appendChild(title);
+    const list = document.createElement("ul");
+    list.className = "inv-slots";
+    if (!backpack.length) list.appendChild(inventoryRow("Vacía", null));
+    backpack.forEach(id => list.appendChild(inventoryRow("Objeto", id)));
+    invBackpackEl.appendChild(list);
+  }
+
+  function renderInventory() {
+    renderMannequin();
+    renderFragmentsList();
+    renderInventoryList();
+  }
+
+  function focusInventoryItem(id) {
+    const row = id && invOverlay.querySelector(`.inv-slot-row[data-item="${id}"]`);
+    (row || invTitle).focus({ preventScroll: true });
+  }
+
+  function afterInventoryChange(focusId) {
+    playSfx("click_eleccion");
+    renderInventory();
+    refreshChoices(); // las opciones de la escena pueden depender de dónde llevás cada cosa
+    focusInventoryItem(focusId);
+  }
+
+  function openInventory() {
+    invBtn.classList.remove("has-new");
+    openInvItem = null;
+    highlightFragment = null;
+    renderInventory();
+    invOverlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    invTitle.focus({ preventScroll: true });
+  }
+
+  function closeInventory(returnFocus = true) {
+    if (invOverlay.hidden) return;
+    invOverlay.hidden = true;
+    document.body.style.overflow = "";
+    if (returnFocus) invBtn.focus({ preventScroll: true });
+  }
+
+  invBtn.onclick = () => {
+    playSfx("click_instrucciones");
+    openInventory();
+  };
+  document.getElementById("inv-close").onclick = () => closeInventory();
+  invOverlay.addEventListener("click", e => {
+    if (e.target === invOverlay) closeInventory();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !invOverlay.hidden) closeInventory();
+  });
+  invSvg.addEventListener("click", e => {
+    const itemEl = e.target.closest("[data-item]");
+    const fragEl = e.target.closest("[data-fragment]");
+    if (itemEl) {
+      openInvItem = itemEl.dataset.item;
+      renderInventory();
+      focusInventoryItem(openInvItem);
+    } else if (fragEl) {
+      highlightFragment = fragEl.dataset.fragment;
+      renderFragmentsList();
+    }
+  });
+  /* -------------------------------------------------- */
 
   // Los navegadores no dejan sonar audio hasta que el usuario interactúa:
   // la música del menú arranca con el primer clic o tecla, salvo que sea
@@ -1387,6 +1991,7 @@
         menuScreen.style.display = "none";
         instructionsScreen.style.display = "none";
         gameScreen.style.display = "block";
+        invBtn.hidden = false;
         playTrack("capitulo1");
         window.scrollTo({ top: 0, behavior: "smooth" });
         if (viaKeyboard) focusFirstButton(choicesEl);
@@ -1419,18 +2024,6 @@
   const sceneTextEl = document.getElementById("scene-text");
   const choicesEl = document.getElementById("choices");
   const footerNote = document.getElementById("footer-note");
-  const memoryToggle = document.getElementById("memory-toggle");
-  const memoryToggleCount = document.getElementById("memory-toggle-count");
-  const memoryPanelBody = document.getElementById("memory-panel-body");
-  const memoryPanelList = document.getElementById("memory-panel-list");
-
-  let memoryPanelOpen = false;
-  memoryToggle.onclick = () => {
-    memoryPanelOpen = !memoryPanelOpen;
-    memoryPanelBody.hidden = !memoryPanelOpen;
-    memoryToggle.classList.toggle("open", memoryPanelOpen);
-    memoryToggle.setAttribute("aria-expanded", String(memoryPanelOpen));
-  };
 
   // Tras mostrar opciones nuevas se ignoran los clics un instante: si no, el
   // segundo clic de un doble clic cae sobre la opción que aparece en el mismo lugar.
@@ -1445,24 +2038,142 @@
     return performance.now() < choicesUnlockAt;
   }
 
-  function renderMemoryPanel() {
-    memoryToggleCount.textContent = collected.length;
-    memoryPanelList.innerHTML = "";
-    if (!collected.length) {
-      const li = document.createElement("li");
-      li.className = "memory-panel-empty";
-      li.textContent = "Todavía no recuperaste ningún fragmento de memoria.";
-      memoryPanelList.appendChild(li);
-      return;
+  // Qué está mostrando el área de opciones (las de la escena o el "¿dónde lo
+  // llevás?"), para poder redibujarla cuando cambia el inventario.
+  let choicesView = null;
+
+  function refreshChoices() {
+    if (choicesView) choicesView(false);
+  }
+
+  function makeChoiceButton(text, reason) {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.textContent = text;
+    if (reason) {
+      const small = document.createElement("span");
+      small.className = "choice-reason";
+      small.textContent = reason;
+      btn.appendChild(small);
     }
-    collected.forEach(name => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span class="memory-panel-mark">✦</span>${name}`;
-      memoryPanelList.appendChild(li);
+    return btn;
+  }
+
+  // La primera vez que el jugador agarra algo se explica la mecánica
+  let placementHintShown = false;
+
+  function renderPlacementChoices(entry, onPlaced, viaKeyboard, showHint = !placementHintShown) {
+    placementHintShown = true;
+    choicesView = kb => renderPlacementChoices(entry, onPlaced, kb, showHint);
+    const item = ITEMS[entry.id];
+    choicesEl.innerHTML = "";
+    lockChoices();
+
+    const prompt = document.createElement("p");
+    prompt.className = "placement-prompt";
+    prompt.innerHTML = `¿Dónde llevás <strong>${item.ref}</strong>?`;
+    choicesEl.appendChild(prompt);
+    if (showHint) {
+      const hint = document.createElement("p");
+      hint.className = "placement-hint";
+      hint.textContent = "Dónde llevás cada cosa importa: puede abrir o cerrar caminos. Después podés reorganizarlo tocando la silueta, arriba a la derecha.";
+      choicesEl.appendChild(hint);
+    }
+
+    placementsFor(entry.id).forEach(p => {
+      const reason = p.disabled || (p.blockers.length ? `Tenés que soltar ${itemNames(p.blockers)}` : null);
+      const btn = makeChoiceButton(p.label, reason);
+      btn.disabled = !!p.disabled;
+      btn.onclick = e => {
+        if (choicesLocked()) return;
+        playSfx("click_eleccion");
+        p.blockers.forEach(dropItem);
+        placeItem(entry.id, p);
+        if (entry.contents.length) backpack = entry.contents;
+        markInventoryNew();
+        onPlaced(e.detail === 0);
+      };
+      choicesEl.appendChild(btn);
     });
+
+    const cancel = makeChoiceButton("Mejor no");
+    cancel.classList.add("is-secondary");
+    cancel.onclick = e => {
+      if (choicesLocked()) return;
+      playSfx("click_volver");
+      renderChoices(current, e.detail === 0);
+    };
+    choicesEl.appendChild(cancel);
+
+    if (viaKeyboard) focusFirstButton(choicesEl);
+  }
+
+  function isShown(entry) {
+    return typeof entry === "string" || !entry.when || entry.when();
+  }
+
+  function renderChoices(id, viaKeyboard = false) {
+    choicesView = kb => renderChoices(id, kb);
+    const scene = scenes[id];
+    choicesEl.innerHTML = "";
+    lockChoices();
+
+    if (scene.isChapterEnd) {
+      const continueBtn = makeChoiceButton("Continuar");
+      continueBtn.onclick = e => {
+        if (choicesLocked()) return;
+        const started = showChapterTransition({
+          number: 2,
+          subtitle: nextChapterSubtitle(),
+          onComplete: () => renderChapterEndCard(e.detail === 0)
+        });
+        if (started) playSfx("click_eleccion");
+      };
+      choicesEl.appendChild(continueBtn);
+    } else {
+      scene.choices.filter(isShown).forEach(choice => {
+        // requires: la opción se ve pero queda bloqueada, con el motivo
+        const blockedReason = choice.requires && !choice.requires.test() ? choice.requires.reason : null;
+        const btn = makeChoiceButton(choice.text, blockedReason);
+        btn.disabled = !!blockedReason;
+        btn.onclick = e => {
+          if (choicesLocked()) return;
+          playSfx("click_eleccion");
+          const go = kb => {
+            current = choice.next;
+            renderScene(current, kb);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          };
+          // take: la opción agarra un objeto; primero se elige dónde llevarlo
+          if (choice.take) renderPlacementChoices({ id: choice.take, contents: [] }, go, e.detail === 0);
+          else go(e.detail === 0);
+        };
+        choicesEl.appendChild(btn);
+        preloadArt(choice.next);
+      });
+    }
+
+    // Lo que el jugador soltó en esta escena se puede volver a recoger
+    (dropped[id] || []).forEach(entry => {
+      const btn = makeChoiceButton(`Recoger ${ITEMS[entry.id].ref}`);
+      btn.classList.add("is-secondary");
+      btn.onclick = e => {
+        if (choicesLocked()) return;
+        playSfx("click_eleccion");
+        renderPlacementChoices(entry, kb => {
+          dropped[id] = dropped[id].filter(other => other !== entry);
+          renderChoices(id, kb);
+        }, e.detail === 0);
+      };
+      choicesEl.appendChild(btn);
+    });
+
+    if (viaKeyboard) focusFirstButton(choicesEl);
   }
 
   function renderChapterEndCard(viaKeyboard) {
+    choicesView = null;
+    chapterEnded = true;
     choicesEl.innerHTML = "";
     lockChoices();
 
@@ -1489,6 +2200,9 @@
       playSfx("click_eleccion");
       collected = [];
       current = "inicio";
+      resetInventory();
+      closeInventory(false);
+      invBtn.hidden = true;
       gameScreen.style.display = "none";
       menuScreen.style.display = "block";
       renderScene(current);
@@ -1508,7 +2222,8 @@
     renderSceneArt(SCENE_ART[id]);
     restartAnimation(sceneTextEl);
 
-    let html = scene.text.map(p => `<p>${p}</p>`).join("");
+    // Un párrafo puede ser texto o { when, text }: solo se muestra si "when" se cumple
+    let html = scene.text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
     const isNewFragment = scene.fragment && !collected.includes(scene.fragment);
     if (isNewFragment) {
       html += `<div class="fragment-flash">✦ Un fragmento de tu memoria destella, breve y doloroso: <strong>${scene.fragment}</strong></div>`;
@@ -1517,46 +2232,12 @@
 
     if (isNewFragment) {
       collected.push(scene.fragment);
+      markInventoryNew();
       // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
     }
-    renderMemoryPanel();
 
     footerNote.textContent = "El pantano recuerda cada paso que das.";
-    choicesEl.innerHTML = "";
-    lockChoices();
-
-    if (scene.isChapterEnd) {
-      const continueBtn = document.createElement("button");
-      continueBtn.className = "choice-btn";
-      continueBtn.textContent = "Continuar";
-      continueBtn.onclick = e => {
-        if (choicesLocked()) return;
-        const started = showChapterTransition({
-          number: 2,
-          subtitle: nextChapterSubtitle(),
-          onComplete: () => renderChapterEndCard(e.detail === 0)
-        });
-        if (started) playSfx("click_eleccion");
-      };
-      choicesEl.appendChild(continueBtn);
-    } else {
-      scene.choices.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = choice.text;
-        btn.onclick = e => {
-          if (choicesLocked()) return;
-          playSfx("click_eleccion");
-          current = choice.next;
-          renderScene(current, e.detail === 0);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        };
-        choicesEl.appendChild(btn);
-        preloadArt(choice.next);
-      });
-    }
-
-    if (viaKeyboard) focusFirstButton(choicesEl);
+    renderChoices(id, viaKeyboard);
   }
 
   renderScene(current);
