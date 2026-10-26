@@ -281,6 +281,7 @@
   .placement-prompt { margin: 0 0 2px; font-size: 16px; color: var(--parchment); }
   .placement-prompt strong { color: var(--gold-bright); font-weight: normal; font-style: italic; }
   .placement-hint { margin: 0 0 4px; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--mist); }
+  .placement-notice { margin: 0 0 4px; font-size: 15px; font-style: italic; color: var(--gold-bright); }
   .choice-reason {
     display: block;
     margin-top: 4px;
@@ -1517,6 +1518,7 @@
   // "piernas", "pies" o "mochila" = adentro de la mochila). "hands: 2" ocupa las dos
   // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
   // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
+  // "takeText": aviso al agarrarlo cuando tiene un solo lugar y se pone directo.
   // La espada, la mochila y el pantalón todavía no aparecen en la historia:
   // se pueden probar con el modo prueba (ver testItemsFromUrl).
   const ITEMS = {
@@ -1554,11 +1556,8 @@
       name: "Pantalón viejo",
       ref: "el pantalón viejo",
       desc: "Tela gruesa, gastada y remendada, con el ruedo deshilachado. Huele a humedad, pero abriga.",
-      fits: ["piernas", "mano", "mochila"],
-      pose: {
-        manoIzq: "translate(46 236) rotate(-8) scale(0.3)",
-        manoDer: "translate(154 236) rotate(8) scale(0.3)"
-      },
+      fits: ["piernas"],
+      takeText: "Te pusiste el pantalón viejo.",
       art: `<path class="mq-cloth" d="M-21 -86 Q0 -92 21 -86 L23 -50 L22 0 L24 84 L7 86 L4 -28 Q0 -34 -4 -28 L-7 86 L-24 84 L-22 0 L-23 -50 Z"/>
             <path class="mq-seam" d="M-21 -78 Q0 -84 21 -78"/>
             <path class="mq-patch" d="M10 8 L19 7 L20 20 L11 21 Z"/>
@@ -1805,7 +1804,8 @@
         };
         box.appendChild(btn);
       });
-    } else {
+    } else if (placementsFor(id).length > 1) {
+      // Solo se avisa si el objeto podría ir a otro lado pero está todo ocupado
       const none = document.createElement("p");
       none.textContent = "No tenés otro lugar libre donde llevarlo.";
       box.appendChild(none);
@@ -2097,6 +2097,32 @@
   // La primera vez que el jugador agarra algo se explica la mecánica
   let placementHintShown = false;
 
+  // Aviso corto que se muestra arriba de las opciones la próxima vez que se dibujan
+  let pendingNotice = null;
+
+  function placeEntry(entry, placement) {
+    placement.blockers.forEach(dropItem);
+    placeItem(entry.id, placement);
+    if (entry.contents.length) backpack = entry.contents;
+    markInventoryNew();
+  }
+
+  // Si el objeto tiene un solo lugar posible y está libre (por ejemplo, un
+  // pantalón solo va en las piernas), se lo pone directo y se avisa con su
+  // "takeText". Si hay que elegir o soltar algo, se pregunta dónde llevarlo.
+  function takeItem(entry, onPlaced, viaKeyboard) {
+    const options = placementsFor(entry.id);
+    const only = options.length === 1 ? options[0] : null;
+    if (only && !only.blockers.length && !only.disabled) {
+      const item = ITEMS[entry.id];
+      placeEntry(entry, only);
+      pendingNotice = item.takeText || `Ahora llevás ${item.ref} ${only.label.toLowerCase()}.`;
+      onPlaced(viaKeyboard);
+      return;
+    }
+    renderPlacementChoices(entry, onPlaced, viaKeyboard);
+  }
+
   function renderPlacementChoices(entry, onPlaced, viaKeyboard, showHint = !placementHintShown) {
     placementHintShown = true;
     choicesView = kb => renderPlacementChoices(entry, onPlaced, kb, showHint);
@@ -2122,10 +2148,7 @@
       btn.onclick = e => {
         if (choicesLocked()) return;
         playSfx("click_eleccion");
-        p.blockers.forEach(dropItem);
-        placeItem(entry.id, p);
-        if (entry.contents.length) backpack = entry.contents;
-        markInventoryNew();
+        placeEntry(entry, p);
         onPlaced(e.detail === 0);
       };
       choicesEl.appendChild(btn);
@@ -2153,6 +2176,14 @@
     choicesEl.innerHTML = "";
     lockChoices();
 
+    if (pendingNotice) {
+      const notice = document.createElement("p");
+      notice.className = "placement-notice";
+      notice.textContent = `✦ ${pendingNotice}`;
+      choicesEl.appendChild(notice);
+      pendingNotice = null;
+    }
+
     if (scene.isChapterEnd) {
       const continueBtn = makeChoiceButton("Continuar");
       continueBtn.onclick = e => {
@@ -2179,8 +2210,8 @@
             renderScene(current, kb);
             window.scrollTo({ top: 0, behavior: "smooth" });
           };
-          // take: la opción agarra un objeto; primero se elige dónde llevarlo
-          if (choice.take) renderPlacementChoices({ id: choice.take, contents: [] }, go, e.detail === 0);
+          // take: la opción agarra un objeto (ver takeItem)
+          if (choice.take) takeItem({ id: choice.take, contents: [] }, go, e.detail === 0);
           else go(e.detail === 0);
         };
         choicesEl.appendChild(btn);
@@ -2195,7 +2226,7 @@
       btn.onclick = e => {
         if (choicesLocked()) return;
         playSfx("click_eleccion");
-        renderPlacementChoices(entry, kb => {
+        takeItem(entry, kb => {
           dropped[id] = dropped[id].filter(other => other !== entry);
           renderChoices(id, kb);
         }, e.detail === 0);
