@@ -15,10 +15,8 @@
     --gold: #c9a86a;
     --gold-bright: #e0bd80;
     --rust: #8a4a3d;
-    --amber: #d49a4e;          /* opciones que agregan un objeto */
-    --amber-bright: #ebb873;
-    --memory: #8fb4c8;         /* opciones y destellos de memoria */
-    --memory-bright: #bcd8e6;
+    --amber-bright: #ebb873;   /* avisos de objetos (los colores de las decisiones están en CHOICE_TYPES) */
+    --memory-bright: #bcd8e6;  /* lista de fragmentos de memoria */
     --mist: #7d938f;
     --ink: #1a1512;
   }
@@ -282,46 +280,29 @@
   }
   .choice-btn.is-secondary { background: transparent; border-style: dashed; color: var(--parchment-dim); }
 
-  /* Tipos de opción: objeto ◆ (agrega algo al inventario), recuerdo ✦ (deja
-     un fragmento de memoria) o las dos cosas a la vez (degradado) */
-  .choice-btn.is-item {
-    border-color: rgba(212,154,78,0.55);
-    background: rgba(212,154,78,0.08);
-  }
-  .choice-btn.is-item::before { content: "◆"; color: var(--amber); opacity: 1; }
-  .choice-btn.is-item:hover, .choice-btn.is-item:focus-visible {
-    border-color: var(--amber);
-    background: rgba(212,154,78,0.16);
-    color: var(--amber-bright);
-  }
-  .choice-btn.is-memory {
-    border-color: rgba(143,180,200,0.5);
-    background: rgba(143,180,200,0.07);
-  }
-  .choice-btn.is-memory::before { content: "✦"; color: var(--memory); opacity: 1; }
-  .choice-btn.is-memory:hover, .choice-btn.is-memory:focus-visible {
-    border-color: var(--memory);
-    background: rgba(143,180,200,0.14);
-    color: var(--memory-bright);
-  }
-  /* El borde en degradado necesita un fondo opaco encima (los tonos imitan
-     el ámbar y el azul translúcidos sobre la card) */
-  .choice-btn.is-item.is-memory {
+  /* Tipos de decisión (ver CHOICE_TYPES en el script). Cada tipo aporta un
+     color (--c1 / --c2, como "r,g,b") y un ícono. Con un solo tipo el borde
+     es de ese color; con varios pasa en degradado del primero al último.
+     El borde en degradado necesita un fondo opaco debajo: #1a211c imita la card. */
+  .choice-btn.is-typed {
     border-color: transparent;
     background:
-      linear-gradient(90deg, #2d2d21, #26302d) padding-box,
-      linear-gradient(90deg, rgba(212,154,78,0.6), rgba(143,180,200,0.6)) border-box;
+      linear-gradient(90deg, rgba(var(--c1), 0.09), rgba(var(--c2), 0.09)) padding-box,
+      linear-gradient(#1a211c, #1a211c) padding-box,
+      linear-gradient(90deg, rgba(var(--c1), 0.55), rgba(var(--c2), 0.55)) border-box;
   }
-  .choice-btn.is-item.is-memory:hover, .choice-btn.is-item.is-memory:focus-visible {
+  .choice-btn.is-typed:hover, .choice-btn.is-typed:focus-visible {
     border-color: transparent;
     background:
-      linear-gradient(90deg, #3b3725, #2f3b3b) padding-box,
-      linear-gradient(90deg, var(--amber), var(--memory)) border-box;
-    color: var(--parchment);
+      linear-gradient(90deg, rgba(var(--c1), 0.17), rgba(var(--c2), 0.17)) padding-box,
+      linear-gradient(#1a211c, #1a211c) padding-box,
+      linear-gradient(90deg, rgb(var(--c1)), rgb(var(--c2))) border-box;
+    color: var(--c-text);
   }
-  .choice-btn.is-item.is-memory::before {
-    content: "◆✦";
-    background: linear-gradient(90deg, var(--amber), var(--memory));
+  .choice-btn.is-typed::before {
+    content: attr(data-icon);
+    opacity: 1;
+    background: linear-gradient(90deg, rgb(var(--c1)), rgb(var(--c2)));
     -webkit-background-clip: text;
             background-clip: text;
     color: transparent;
@@ -376,18 +357,6 @@
     padding: 6px 8px 0 0;
     color: var(--gold-bright);
     text-shadow: 0 0 14px rgba(224,189,128,0.4);
-  }
-
-  .fragment-flash {
-    display: block;
-    width: fit-content;
-    margin-top: 4px;
-    font-style: italic;
-    color: var(--memory-bright);
-    border-top: 1px solid rgba(143,180,200,0.3);
-    padding-top: 10px;
-    font-size: 15px;
-    letter-spacing: 0.02em;
   }
 
   @keyframes fadeIn {
@@ -1176,9 +1145,9 @@
         "¿Hacia dónde te dirigís?"
       ],
       choices: [
-        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
-        { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
-        { text: "Ir tras el eco del canto", next: "canto" }
+        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque", memory: "El Nombre" },
+        { text: "Seguir hacia el resplandor del pantano", next: "pantano", memory: "El Símbolo" },
+        { text: "Ir tras el eco del canto", next: "canto", memory: "La Voz" }
       ]
     },
 
@@ -1187,7 +1156,6 @@
         "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos se revelan como símbolos — espirales, ojos, runas gastadas por siglos de lluvia. En el centro de un claro encontrás una piedra cubierta de musgo, tan alta como vos, con un nombre grabado que casi podés leer: las primeras letras se parecen inquietantemente a algo tuyo.",
         "El musgo cubre el resto de la inscripción. Podrías arrancarlo con las manos para ver más, aunque algo en la piedra te dice que no todo lo que olvidaste merece ser recordado. O podrías dejarla atrás y seguir camino, donde el bosque parece aclararse más adelante."
       ],
-      fragment: "El Nombre",
       choices: [
         { text: "Arrancar el musgo y leer la piedra completa", next: "bosque_a" },
         { text: "Dejar la piedra atrás y seguir camino", next: "bosque_b" }
@@ -1218,7 +1186,6 @@
         "Avanzás hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacás un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
         "Podrías guardarte el amuleto — quizás sea tuyo, quizás explique algo — o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
       ],
-      fragment: "El Símbolo",
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
         { text: "Dejarlo hundirse en el barro", next: "pantano_b", memory: "Lo que dejaste ir" }
@@ -1250,7 +1217,6 @@
         "Seguís el eco del canto hacia la derecha, donde la niebla se enrosca entre juncos altos como lanzas. La voz se hace más clara a cada paso, hasta que la ves: una figura sentada sobre una roca cubierta de flores que no deberían crecer en un pantano, con el pelo mezclado con el musgo y los ojos cerrados. Canta en una lengua antigua, y aunque no entendés las palabras, el sentido te llega igual, directo al pecho.",
         "La figura no ha abierto los ojos, pero sabés, con una certeza incómoda, que es consciente de tu presencia."
       ],
-      fragment: "La Voz",
       choices: [
         { text: "Acercarte y hablarle", next: "canto_a" },
         { text: "Alejarte en silencio, sin interrumpir", next: "canto_b" }
@@ -2096,6 +2062,35 @@
     if (choicesView) choicesView(false);
   }
 
+  // Tipos de decisión: color ("r,g,b"), color del texto al pasar el mouse e
+  // ícono. Para sumar un tipo nuevo alcanza con agregarlo acá e indicar en
+  // las opciones cuándo se aplica (ver choiceTypes). Una opción puede tener
+  // varios tipos a la vez: el borde y el ícono pasan en degradado.
+  const CHOICE_TYPES = {
+    item:   { icon: "◆", rgb: "212,154,78",  text: "#ebb873" }, // agrega algo al inventario
+    memory: { icon: "✦", rgb: "143,180,200", text: "#bcd8e6" }  // deja un fragmento de memoria
+  };
+
+  // Tipos de una opción de la historia: los que se deducen solos ("take" →
+  // objeto, "memory" → recuerdo) más los que se indiquen con "types: [...]"
+  function choiceTypes(choice) {
+    const types = [];
+    if (choice.take) types.push("item");
+    if (choice.memory) types.push("memory");
+    (choice.types || []).forEach(t => { if (!types.includes(t)) types.push(t); });
+    return types;
+  }
+
+  function applyChoiceTypes(btn, types) {
+    const defs = types.map(t => CHOICE_TYPES[t]).filter(Boolean);
+    if (!defs.length) return;
+    btn.classList.add("is-typed");
+    btn.dataset.icon = defs.map(d => d.icon).join("");
+    btn.style.setProperty("--c1", defs[0].rgb);
+    btn.style.setProperty("--c2", defs[defs.length - 1].rgb);
+    btn.style.setProperty("--c-text", defs.length > 1 ? "var(--parchment)" : defs[0].text);
+  }
+
   function makeChoiceButton(text, reason) {
     const btn = document.createElement("button");
     btn.className = "choice-btn";
@@ -2115,17 +2110,14 @@
   // Aviso corto que se muestra arriba de las opciones la próxima vez que se dibujan
   let pendingNotice = null;
 
-  // Fragmentos ganados desde que se dibujó la última escena: se muestran
-  // como destello en el texto de la escena siguiente.
-  let pendingFragments = [];
-
-  // Un fragmento se gana al llegar a una escena ("fragment") o al elegir
-  // una opción ("memory"). No hay un total fijo: son las cosas que hizo el jugador.
+  // Un fragmento se gana al elegir una opción con "memory". No hay un total
+  // fijo: son las cosas que fue haciendo el jugador. No se anuncia en el texto;
+  // solo se enciende el aviso del inventario.
   function gainFragment(name) {
     if (!name || collected.includes(name)) return;
     collected.push(name);
-    pendingFragments.push(name);
     markInventoryNew();
+    // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
   }
 
   function placeEntry(entry, placement) {
@@ -2230,9 +2222,7 @@
         const blockedReason = choice.requires && !choice.requires.test() ? choice.requires.reason : null;
         const btn = makeChoiceButton(choice.text, blockedReason);
         btn.disabled = !!blockedReason;
-        // Marca visual del tipo de opción: agarra un objeto y/o deja un recuerdo
-        if (choice.take) btn.classList.add("is-item");
-        if (choice.memory) btn.classList.add("is-memory");
+        applyChoiceTypes(btn, choiceTypes(choice));
         btn.onclick = e => {
           if (choicesLocked()) return;
           playSfx("click_eleccion");
@@ -2254,7 +2244,7 @@
     // Lo que el jugador soltó en esta escena se puede volver a recoger
     (dropped[id] || []).forEach(entry => {
       const btn = makeChoiceButton(`Recoger ${ITEMS[entry.id].ref}`);
-      btn.classList.add("is-item");
+      applyChoiceTypes(btn, ["item"]);
       btn.onclick = e => {
         if (choicesLocked()) return;
         playSfx("click_eleccion");
@@ -2321,13 +2311,7 @@
     restartAnimation(sceneTextEl);
 
     // Un párrafo puede ser texto o { when, text }: solo se muestra si "when" se cumple
-    let html = scene.text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
-    gainFragment(scene.fragment);
-    html += pendingFragments.map(name =>
-      `<div class="fragment-flash">✦ Un fragmento de tu memoria destella, breve y doloroso: <strong>${name}</strong></div>`).join("");
-    pendingFragments = [];
-    // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
-    sceneTextEl.innerHTML = html;
+    sceneTextEl.innerHTML = scene.text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
 
     footerNote.textContent = "El pantano recuerda cada paso que das.";
     renderChoices(id, viaKeyboard);
