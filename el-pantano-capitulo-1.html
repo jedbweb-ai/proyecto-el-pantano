@@ -15,6 +15,10 @@
     --gold: #c9a86a;
     --gold-bright: #e0bd80;
     --rust: #8a4a3d;
+    --amber: #d49a4e;          /* opciones que agregan un objeto */
+    --amber-bright: #ebb873;
+    --memory: #8fb4c8;         /* opciones y destellos de memoria */
+    --memory-bright: #bcd8e6;
     --mist: #7d938f;
     --ink: #1a1512;
   }
@@ -174,14 +178,14 @@
     color: var(--mist);
     margin-bottom: 6px;
   }
-  .inv-fragment {
-    font-style: italic;
-    color: var(--gold-bright);
-    padding: 2px 6px;
-    border-radius: 2px;
-    transition: background 0.3s ease;
+  .inv-fragments-list {
+    display: inline-block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
   }
-  .inv-fragment.is-highlight { background: rgba(201,168,106,0.16); }
+  .inv-fragments-list li { padding: 2px 0; font-style: italic; color: var(--memory-bright); }
   .inv-fragments-empty { font-style: italic; color: var(--mist); }
 
   .inv-section-title {
@@ -263,25 +267,12 @@
   .mq-glow { fill: rgba(196,224,170,0.22); }
   .mq-cord { fill: none; stroke: #7a6340; stroke-width: 1.4; }
   .mq-strap { fill: none; stroke: #4a3d2a; stroke-width: 4; stroke-linecap: round; }
-  .mq-frag { cursor: pointer; }
-  .mq-frag-on { fill: var(--gold-bright); }
-  .mq-frag-halo {
-    fill: rgba(224,189,128,0.3);
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: fragPulse 2.8s ease-in-out infinite alternate;
-  }
-  .mq-frag-off { fill: none; stroke: rgba(125,147,143,0.5); stroke-width: 1; stroke-dasharray: 2 2.5; }
-  @keyframes fragPulse {
-    from { opacity: 0.4; transform: scale(0.8); }
-    to   { opacity: 1;   transform: scale(1.25); }
-  }
 
   /* "¿Dónde lo llevás?" y opciones bloqueadas */
   .placement-prompt { margin: 0 0 2px; font-size: 16px; color: var(--parchment); }
   .placement-prompt strong { color: var(--gold-bright); font-weight: normal; font-style: italic; }
   .placement-hint { margin: 0 0 4px; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--mist); }
-  .placement-notice { margin: 0 0 4px; font-size: 15px; font-style: italic; color: var(--gold-bright); }
+  .placement-notice { margin: 0 0 4px; font-size: 15px; font-style: italic; color: var(--amber-bright); }
   .choice-reason {
     display: block;
     margin-top: 4px;
@@ -290,6 +281,51 @@
     color: var(--mist);
   }
   .choice-btn.is-secondary { background: transparent; border-style: dashed; color: var(--parchment-dim); }
+
+  /* Tipos de opción: objeto ◆ (agrega algo al inventario), recuerdo ✦ (deja
+     un fragmento de memoria) o las dos cosas a la vez (degradado) */
+  .choice-btn.is-item {
+    border-color: rgba(212,154,78,0.55);
+    background: rgba(212,154,78,0.08);
+  }
+  .choice-btn.is-item::before { content: "◆"; color: var(--amber); opacity: 1; }
+  .choice-btn.is-item:hover, .choice-btn.is-item:focus-visible {
+    border-color: var(--amber);
+    background: rgba(212,154,78,0.16);
+    color: var(--amber-bright);
+  }
+  .choice-btn.is-memory {
+    border-color: rgba(143,180,200,0.5);
+    background: rgba(143,180,200,0.07);
+  }
+  .choice-btn.is-memory::before { content: "✦"; color: var(--memory); opacity: 1; }
+  .choice-btn.is-memory:hover, .choice-btn.is-memory:focus-visible {
+    border-color: var(--memory);
+    background: rgba(143,180,200,0.14);
+    color: var(--memory-bright);
+  }
+  /* El borde en degradado necesita un fondo opaco encima (los tonos imitan
+     el ámbar y el azul translúcidos sobre la card) */
+  .choice-btn.is-item.is-memory {
+    border-color: transparent;
+    background:
+      linear-gradient(90deg, #2d2d21, #26302d) padding-box,
+      linear-gradient(90deg, rgba(212,154,78,0.6), rgba(143,180,200,0.6)) border-box;
+  }
+  .choice-btn.is-item.is-memory:hover, .choice-btn.is-item.is-memory:focus-visible {
+    border-color: transparent;
+    background:
+      linear-gradient(90deg, #3b3725, #2f3b3b) padding-box,
+      linear-gradient(90deg, var(--amber), var(--memory)) border-box;
+    color: var(--parchment);
+  }
+  .choice-btn.is-item.is-memory::before {
+    content: "◆✦";
+    background: linear-gradient(90deg, var(--amber), var(--memory));
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
   .choice-btn:disabled,
   .choice-btn:disabled:hover {
     cursor: not-allowed;
@@ -343,11 +379,12 @@
   }
 
   .fragment-flash {
-    display: inline-block;
+    display: block;
+    width: fit-content;
     margin-top: 4px;
     font-style: italic;
-    color: var(--gold-bright);
-    border-top: 1px solid rgba(201,168,106,0.3);
+    color: var(--memory-bright);
+    border-top: 1px solid rgba(143,180,200,0.3);
     padding-top: 10px;
     font-size: 15px;
     letter-spacing: 0.02em;
@@ -888,7 +925,7 @@
     .scene-art-img { transition: none; transform: scale(var(--art-scale, 1)); }
     .fx-spores, .fx-fireflies, .fx-ripples, .fx-shadow { display: none; }
     .fx-mist { opacity: var(--fx-strength, 0.9); }
-    .mq-frag-halo, .inv-btn.has-new::after, .inv-overlay { animation: none; }
+    .inv-btn.has-new::after, .inv-overlay { animation: none; }
   }
 
   @media (max-width: 600px) {
@@ -945,6 +982,7 @@
         <p>«El Pantano» es un juego estilo «elegí tu propia aventura», donde cada decisión que tomás tiene efectos distintos a lo largo de la aventura.</p>
         <p>Elegí bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
         <p>Todo lo que encontrás lo llevás encima, y dónde lo llevás también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Tocá la silueta, arriba a la derecha, para ver qué cargás y los fragmentos de memoria que fuiste recuperando.</p>
+        <p>Las opciones marcadas con ◆ te dan algo para llevar; las marcadas con ✦ dejan un fragmento de memoria. Algunas hacen las dos cosas.</p>
       </div>
       <div class="choices">
         <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
@@ -1011,8 +1049,6 @@
 
 <script>
 (function(){
-
-  const ALL_FRAGMENTS = ["El Nombre", "El Símbolo", "La Voz"];
 
   /* ---------- Audio: música ambiente + efectos ----------
      Colocá tus archivos en una carpeta "audio" junto a este HTML.
@@ -1185,7 +1221,7 @@
       fragment: "El Símbolo",
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
-        { text: "Dejarlo hundirse en el barro", next: "pantano_b" }
+        { text: "Dejarlo hundirse en el barro", next: "pantano_b", memory: "Lo que dejaste ir" }
       ]
     },
 
@@ -1566,8 +1602,6 @@
     }
   };
 
-  const FRAGMENT_ARC = { cx: 100, cy: 40, r: 46 }; // arco de destellos sobre la cabeza
-
   const invBtn = document.getElementById("inv-btn");
   const invOverlay = document.getElementById("inv-overlay");
   const invTitle = document.getElementById("inv-title");
@@ -1581,7 +1615,6 @@
   let dropped = initialDropped(); // escena → objetos soltados ahí: [{ id, contents }]
   let chapterEnded = false;   // al terminar el capítulo el inventario queda de solo lectura
   let openInvItem = null;     // objeto desplegado en la lista del inventario
-  let highlightFragment = null;
 
   function emptyEquipment() {
     return Object.fromEntries(SLOTS.map(s => [s.id, null]));
@@ -1752,29 +1785,17 @@
       slot.at.forEach((_, i) => layers[slot.layer || "front"].push(itemArt(id, slot, i)));
     });
 
-    // Fragmentos: destellos en arco sobre la cabeza vacía; se encienden al recordarlos
-    const n = ALL_FRAGMENTS.length;
-    const frags = ALL_FRAGMENTS.map((name, i) => {
-      const angle = Math.PI * (-5 / 6 + (n > 1 ? (4 / 6) * i / (n - 1) : 2 / 6));
-      const x = (FRAGMENT_ARC.cx + FRAGMENT_ARC.r * Math.cos(angle)).toFixed(1);
-      const y = (FRAGMENT_ARC.cy + FRAGMENT_ARC.r * Math.sin(angle)).toFixed(1);
-      return collected.includes(name)
-        ? `<g class="mq-frag" data-fragment="${name}"><title>${name}</title>` +
-          `<circle class="mq-frag-halo" cx="${x}" cy="${y}" r="9"/><circle class="mq-frag-on" cx="${x}" cy="${y}" r="3.5"/></g>`
-        : `<circle class="mq-frag-off" cx="${x}" cy="${y}" r="3.5"/>`;
-    }).join("");
-
     invSvg.innerHTML = MANNEQUIN_AURA + layers.back.join("") + MANNEQUIN_BODY +
-      layers.clothes.join("") + layers.front.join("") + frags;
+      layers.clothes.join("") + layers.front.join("");
   }
 
   /* --- Panel del inventario --- */
 
+  // Los fragmentos no tienen un total fijo: se listan a medida que se ganan
   function renderFragmentsList() {
-    const title = `<div class="inv-fragments-title">Fragmentos de memoria · ${collected.length}/${ALL_FRAGMENTS.length}</div>`;
+    const title = `<div class="inv-fragments-title">Fragmentos de memoria · ${collected.length}</div>`;
     invFragmentsEl.innerHTML = title + (collected.length
-      ? collected.map(name =>
-          `<span class="inv-fragment${name === highlightFragment ? " is-highlight" : ""}">✦ ${name}</span>`).join(" ")
+      ? `<ol class="inv-fragments-list">${collected.map(name => `<li>✦ ${name}</li>`).join("")}</ol>`
       : `<span class="inv-fragments-empty">Todavía no recordás nada.</span>`);
   }
 
@@ -1894,7 +1915,6 @@
   function openInventory() {
     invBtn.classList.remove("has-new");
     openInvItem = null;
-    highlightFragment = null;
     renderInventory();
     invOverlay.hidden = false;
     document.body.style.overflow = "hidden";
@@ -1921,15 +1941,10 @@
   });
   invSvg.addEventListener("click", e => {
     const itemEl = e.target.closest("[data-item]");
-    const fragEl = e.target.closest("[data-fragment]");
-    if (itemEl) {
-      openInvItem = itemEl.dataset.item;
-      renderInventory();
-      focusInventoryItem(openInvItem);
-    } else if (fragEl) {
-      highlightFragment = fragEl.dataset.fragment;
-      renderFragmentsList();
-    }
+    if (!itemEl) return;
+    openInvItem = itemEl.dataset.item;
+    renderInventory();
+    focusInventoryItem(openInvItem);
   });
   /* -------------------------------------------------- */
 
@@ -2100,6 +2115,19 @@
   // Aviso corto que se muestra arriba de las opciones la próxima vez que se dibujan
   let pendingNotice = null;
 
+  // Fragmentos ganados desde que se dibujó la última escena: se muestran
+  // como destello en el texto de la escena siguiente.
+  let pendingFragments = [];
+
+  // Un fragmento se gana al llegar a una escena ("fragment") o al elegir
+  // una opción ("memory"). No hay un total fijo: son las cosas que hizo el jugador.
+  function gainFragment(name) {
+    if (!name || collected.includes(name)) return;
+    collected.push(name);
+    pendingFragments.push(name);
+    markInventoryNew();
+  }
+
   function placeEntry(entry, placement) {
     placement.blockers.forEach(dropItem);
     placeItem(entry.id, placement);
@@ -2179,7 +2207,7 @@
     if (pendingNotice) {
       const notice = document.createElement("p");
       notice.className = "placement-notice";
-      notice.textContent = `✦ ${pendingNotice}`;
+      notice.textContent = `◆ ${pendingNotice}`;
       choicesEl.appendChild(notice);
       pendingNotice = null;
     }
@@ -2202,10 +2230,14 @@
         const blockedReason = choice.requires && !choice.requires.test() ? choice.requires.reason : null;
         const btn = makeChoiceButton(choice.text, blockedReason);
         btn.disabled = !!blockedReason;
+        // Marca visual del tipo de opción: agarra un objeto y/o deja un recuerdo
+        if (choice.take) btn.classList.add("is-item");
+        if (choice.memory) btn.classList.add("is-memory");
         btn.onclick = e => {
           if (choicesLocked()) return;
           playSfx("click_eleccion");
           const go = kb => {
+            gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
             current = choice.next;
             renderScene(current, kb);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2222,7 +2254,7 @@
     // Lo que el jugador soltó en esta escena se puede volver a recoger
     (dropped[id] || []).forEach(entry => {
       const btn = makeChoiceButton(`Recoger ${ITEMS[entry.id].ref}`);
-      btn.classList.add("is-secondary");
+      btn.classList.add("is-item");
       btn.onclick = e => {
         if (choicesLocked()) return;
         playSfx("click_eleccion");
@@ -2290,17 +2322,12 @@
 
     // Un párrafo puede ser texto o { when, text }: solo se muestra si "when" se cumple
     let html = scene.text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
-    const isNewFragment = scene.fragment && !collected.includes(scene.fragment);
-    if (isNewFragment) {
-      html += `<div class="fragment-flash">✦ Un fragmento de tu memoria destella, breve y doloroso: <strong>${scene.fragment}</strong></div>`;
-    }
+    gainFragment(scene.fragment);
+    html += pendingFragments.map(name =>
+      `<div class="fragment-flash">✦ Un fragmento de tu memoria destella, breve y doloroso: <strong>${name}</strong></div>`).join("");
+    pendingFragments = [];
+    // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
     sceneTextEl.innerHTML = html;
-
-    if (isNewFragment) {
-      collected.push(scene.fragment);
-      markInventoryNew();
-      // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
-    }
 
     footerNote.textContent = "El pantano recuerda cada paso que das.";
     renderChoices(id, viaKeyboard);
