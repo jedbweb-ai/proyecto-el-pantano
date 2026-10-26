@@ -160,7 +160,9 @@
     background: linear-gradient(180deg, rgba(233,226,205,0.06), rgba(233,226,205,0.03));
     border: 1px solid rgba(201,168,106,0.28);
     border-radius: 3px;
-    padding: 36px 34px;
+    --card-pad-y: 36px;
+    --card-pad-x: 34px;
+    padding: var(--card-pad-y) var(--card-pad-x);
     position: relative;
     box-shadow:
       inset 0 0 60px rgba(0,0,0,0.35),
@@ -209,6 +211,281 @@
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Se agrega y se quita al instante para reiniciar una animación */
+  .no-anim { animation: none !important; }
+
+  /* ---------- Ilustración de escena ----------
+     Dos <img> apiladas para hacer crossfade entre escenas, una capa de
+     efectos animados encima (niebla, brillos, partículas…) y una viñeta.
+     Si la imagen todavía no existe queda un fondo provisorio y los
+     efectos siguen funcionando igual. */
+  .scene-art {
+    position: relative;
+    margin: calc(-1 * var(--card-pad-y)) calc(-1 * var(--card-pad-x)) 28px;
+    aspect-ratio: 16 / 9;
+    max-height: 46vh;
+    overflow: hidden;
+    border-radius: 3px 3px 0 0;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 45%, rgba(95,122,84,0.22), transparent 70%),
+      linear-gradient(180deg, #1b2620 0%, #101712 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  }
+  .scene-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse 85% 80% at 50% 45%, transparent 55%, rgba(13,19,16,0.7) 100%);
+  }
+  .scene-art-img {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--art-focus, 50% 50%);
+    transform-origin: var(--art-focus, 50% 50%);
+    opacity: 0;
+    transition: opacity 0.9s ease;
+    animation: kenBurns 26s ease-in-out infinite alternate;
+  }
+  .scene-art-img.is-active { opacity: 1; }
+  .scene-art-img.is-broken { visibility: hidden; }
+  @keyframes kenBurns {
+    from { transform: scale(var(--art-scale, 1)); }
+    to   { transform: scale(calc(var(--art-scale, 1) * 1.07)) translate(-1%, -0.6%); }
+  }
+  .scene-art-missing {
+    display: none;
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    z-index: 3;
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0.06em;
+    color: var(--mist);
+  }
+  .scene-art.is-missing .scene-art-missing { display: block; }
+
+  /* Capa de efectos: se reemplaza en cada escena con un fundido */
+  .scene-art-fx {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+    animation: fxIn 0.9s ease both;
+  }
+  .scene-art-fx.is-leaving { animation: fxOut 0.9s ease forwards; }
+  @keyframes fxIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fxOut { from { opacity: 1; } to { opacity: 0; } }
+  .fx { position: absolute; }
+
+  /* Niebla: dos bandas que se desplazan en sentidos opuestos, en loop sin cortes */
+  .fx-fog {
+    inset: 0;
+    opacity: calc(0.7 * var(--fx-strength, 1));
+  }
+  .fx-fog::before, .fx-fog::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 200%;
+    background-size: 50% 100%;
+    background-repeat: repeat-x;
+    animation: fogDrift 80s linear infinite;
+  }
+  .fx-fog::before {
+    background-image:
+      radial-gradient(ellipse 30% 24% at 25% 70%, rgba(205,215,200,0.28), transparent 70%),
+      radial-gradient(ellipse 26% 18% at 70% 52%, rgba(205,215,200,0.18), transparent 70%);
+  }
+  .fx-fog::after {
+    background-image:
+      radial-gradient(ellipse 40% 28% at 45% 86%, rgba(175,192,182,0.32), transparent 70%),
+      radial-gradient(ellipse 20% 14% at 85% 36%, rgba(175,192,182,0.14), transparent 70%);
+    animation-duration: 120s;
+    animation-direction: reverse;
+  }
+  @keyframes fogDrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* Brillo: una luz que late (resplandor del agua, rayos entre los árboles) */
+  .fx-glow {
+    left: var(--fx-x, 50%);
+    top: var(--fx-y, 50%);
+    width: var(--fx-size, 30%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--fx-color, rgba(196,224,170,0.6)), transparent 65%);
+    transform: translate(-50%, -50%);
+    opacity: calc(0.6 * var(--fx-strength, 1));
+    animation: glowPulse var(--fx-speed, 5s) ease-in-out infinite alternate;
+  }
+  @keyframes glowPulse {
+    from { opacity: calc(0.35 * var(--fx-strength, 1)); transform: translate(-50%, -50%) scale(0.92); }
+    to   { opacity: calc(0.8 * var(--fx-strength, 1));  transform: translate(-50%, -50%) scale(1.08); }
+  }
+
+  /* Esporas: puntitos que suben lento. Cada una es una columna de toda la
+     altura que se traslada, así el recorrido se mide en % de la imagen. */
+  .fx-spores { inset: 0; }
+  .fx-spore {
+    position: absolute;
+    top: 100%;
+    left: var(--l);
+    width: var(--s, 3px);
+    height: 100%;
+    animation: sporeRise var(--d, 16s) linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .fx-spore::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: var(--s, 3px);
+    height: var(--s, 3px);
+    border-radius: 50%;
+    background: rgba(232,226,190,0.8);
+    box-shadow: 0 0 6px rgba(232,226,190,0.5);
+  }
+  @keyframes sporeRise {
+    0%   { transform: translate(0, 0); opacity: 0; }
+    15%  { opacity: 0.85; }
+    80%  { opacity: 0.6; }
+    100% { transform: translate(var(--drift, 20px), -105%); opacity: 0; }
+  }
+
+  /* Luciérnagas: deambulan y titilan */
+  .fx-fireflies { inset: 0; }
+  .fx-firefly {
+    position: absolute;
+    left: var(--l);
+    top: var(--t);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(226,236,150,0.95);
+    box-shadow: 0 0 8px 2px rgba(206,228,118,0.55);
+    opacity: 0;
+    animation:
+      fireflyWander var(--d, 9s) ease-in-out infinite alternate,
+      fireflyBlink var(--b, 3.4s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s), var(--delay-b, 0s);
+  }
+  @keyframes fireflyWander {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(var(--dx, 20px), var(--dy, -14px)); }
+  }
+  @keyframes fireflyBlink {
+    0%, 100% { opacity: 0; }
+    45%      { opacity: 1; }
+    60%      { opacity: 0.85; }
+  }
+
+  /* Ondas en el agua */
+  .fx-ripples {
+    left: var(--fx-x, 50%);
+    top: var(--fx-y, 70%);
+    width: var(--fx-size, 28%);
+    aspect-ratio: 3 / 1;
+    transform: translate(-50%, -50%);
+  }
+  .fx-ripple {
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid rgba(220,230,210,0.5);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ripple var(--fx-speed, 4.5s) ease-out infinite;
+    animation-delay: calc(var(--fx-speed, 4.5s) * var(--i, 0) / 3);
+  }
+  @keyframes ripple {
+    from { transform: scale(0.12); opacity: 0.8; }
+    to   { transform: scale(1); opacity: 0; }
+  }
+
+  /* Sombra: una silueta borrosa que cruza entre los árboles cada tanto */
+  .fx-shadow {
+    inset: 0;
+    opacity: 0;
+    animation: shadowPass var(--fx-speed, 16s) ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
+  .fx-shadow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--fx-y, 20%);
+    width: 7%;
+    height: 60%;
+    background:
+      radial-gradient(ellipse 30% 7% at 50% 9%, rgba(4,7,5,0.9) 60%, transparent 100%),
+      radial-gradient(ellipse 50% 42% at 50% 55%, rgba(4,7,5,0.85), transparent 72%);
+    filter: blur(4px);
+  }
+  @keyframes shadowPass {
+    0%   { transform: translateX(-12%); opacity: 0; }
+    6%   { opacity: var(--fx-strength, 0.9); }
+    46%  { opacity: var(--fx-strength, 0.9); }
+    52%  { transform: translateX(105%); opacity: 0; }
+    100% { transform: translateX(105%); opacity: 0; }
+  }
+
+  /* Llama: núcleo que parpadea irregular + halo que respira */
+  .fx-flame {
+    left: var(--fx-x, 50%);
+    top: var(--fx-y, 45%);
+    width: var(--fx-size, 6%);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+  }
+  .fx-flame::before, .fx-flame::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+  }
+  .fx-flame::before {
+    inset: 0;
+    background: radial-gradient(circle, rgba(255,226,160,0.95) 0 18%, rgba(240,170,90,0.55) 38%, transparent 70%);
+    animation: flameFlicker 2.3s linear infinite;
+  }
+  .fx-flame::after {
+    inset: -220%;
+    background: radial-gradient(circle, rgba(232,176,100,0.22), transparent 60%);
+    animation: flameHalo 3.8s ease-in-out infinite alternate;
+  }
+  @keyframes flameFlicker {
+    0%, 100% { opacity: 0.9;  transform: scale(1); }
+    18%      { opacity: 0.65; transform: scale(0.93, 0.97); }
+    34%      { opacity: 1;    transform: scale(1.06, 1.1); }
+    52%      { opacity: 0.75; transform: scale(0.96); }
+    71%      { opacity: 1;    transform: scale(1.04, 1.08); }
+    86%      { opacity: 0.7;  transform: scale(0.95); }
+  }
+  @keyframes flameHalo {
+    from { opacity: 0.6; transform: scale(0.94); }
+    to   { opacity: 1;   transform: scale(1.06); }
+  }
+
+  /* Bruma que se cierra desde los bordes (una sola vez) */
+  .fx-mist {
+    inset: -12%;
+    background: radial-gradient(ellipse 60% 55% at 50% 48%, transparent 25%, rgba(188,200,194,0.6) 80%);
+    opacity: 0;
+    animation: mistClose var(--fx-speed, 9s) ease-in forwards;
+    animation-delay: 1.2s;
+  }
+  @keyframes mistClose {
+    from { opacity: 0; transform: scale(1.18); }
+    to   { opacity: var(--fx-strength, 0.9); transform: scale(1); }
   }
 
   .choices {
@@ -415,6 +692,22 @@
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  .chapter-transition { cursor: pointer; }
+  .chapter-transition-hint {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 28px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mist);
+    opacity: 0;
+  }
+  .chapter-transition.fade-in .chapter-transition-hint {
+    animation: ctHintIn 1.2s ease forwards;
+    animation-delay: 3.2s;
+  }
+  @keyframes ctHintIn { to { opacity: 0.7; } }
 
   @media (prefers-reduced-motion: reduce) {
     .fog { animation: none; }
@@ -423,10 +716,20 @@
     .chapter-transition.fade-out { opacity: 0; }
     .chapter-transition.fade-in .chapter-transition-number,
     .chapter-transition.fade-in .chapter-transition-subtitle { animation: none; opacity: 1; transform: none; }
+    .chapter-transition.fade-in .chapter-transition-hint { animation: none; opacity: 0.7; }
+    .scene-art-img,
+    .scene-art-fx,
+    .scene-art-fx *,
+    .scene-art-fx *::before,
+    .scene-art-fx *::after { animation: none !important; }
+    .scene-art-img { transition: none; transform: scale(var(--art-scale, 1)); }
+    .fx-spores, .fx-fireflies, .fx-ripples, .fx-shadow { display: none; }
+    .fx-mist { opacity: var(--fx-strength, 0.9); }
   }
 
   @media (max-width: 480px) {
-    .card { padding: 26px 20px; }
+    .card { --card-pad-y: 26px; --card-pad-x: 20px; }
+    .scene-art { aspect-ratio: 3 / 2; }
     h1.title { font-size: 26px; }
     .scene-text { font-size: 16.5px; }
     .menu-credit { position: static; text-align: right; margin-top: 22px; }
@@ -487,7 +790,12 @@
     </header>
 
     <main class="card" id="card">
-      <div class="scene-text with-dropcap" id="scene-text"></div>
+      <div class="scene-art" id="scene-art" role="img" aria-label="">
+        <img class="scene-art-img" alt="" decoding="async">
+        <img class="scene-art-img" alt="" decoding="async">
+        <span class="scene-art-missing" id="scene-art-missing" aria-hidden="true"></span>
+      </div>
+      <div class="scene-text with-dropcap" id="scene-text" aria-live="polite"></div>
       <div class="choices" id="choices"></div>
     </main>
 
@@ -505,12 +813,13 @@
     <footer class="note" id="footer-note">El pantano recuerda cada paso que das.</footer>
   </div>
 
-  <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" title="Silenciar música y efectos">🔊</button>
+  <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" aria-pressed="false" title="Silenciar música y efectos">🔊</button>
 
   <!-- Transición de capítulo -->
   <div class="chapter-transition" id="chapter-transition">
     <div class="chapter-transition-number" id="chapter-transition-number">Capítulo 1</div>
     <div class="chapter-transition-subtitle" id="chapter-transition-subtitle"></div>
+    <div class="chapter-transition-hint" aria-hidden="true">Tocá para continuar</div>
   </div>
 </div>
 
@@ -547,53 +856,78 @@
     click_start: 0.39 // risa demoníaca, 30% más alta que el resto de los efectos
   };
   const CROSSFADE_MS = 1400;
+  const FADE_STEP_MS = 50;
 
-  let musicMuted = false;
+  let soundMuted = false;
   let currentTrackKey = null;
-  let playerA = new Audio();
-  let playerB = new Audio();
-  [playerA, playerB].forEach(p => { p.loop = true; p.volume = 0; p.preload = "auto"; });
-  let activePlayer = playerA;
-  let inactivePlayer = playerB;
+  let musicFadeTimer = null;
+  const musicPlayers = {}; // un <audio> por pista, creado la primera vez que se pide
+
+  function getMusicPlayer(key) {
+    const src = MUSIC_TRACKS[key];
+    if (!src) return null;
+    if (!musicPlayers[key]) {
+      const player = new Audio(src);
+      player.loop = true;
+      player.preload = "auto";
+      player.volume = 0;
+      player.muted = soundMuted;
+      musicPlayers[key] = player;
+    }
+    return musicPlayers[key];
+  }
+
+  // Empieza a descargar una pista antes de que haga falta (p. ej. durante una transición)
+  function preloadTrack(key) {
+    getMusicPlayer(key);
+  }
 
   function playTrack(key) {
     if (!key || key === currentTrackKey) return;
-    const src = MUSIC_TRACKS[key];
-    if (!src) { currentTrackKey = key; return; }
     currentTrackKey = key;
 
-    inactivePlayer.src = src;
-    inactivePlayer.currentTime = 0;
-    inactivePlayer.volume = 0;
-    const p = inactivePlayer.play();
-    if (p && p.catch) p.catch(() => {});
+    const target = getMusicPlayer(key);
+    if (target && target.paused) {
+      target.currentTime = 0;
+      const p = target.play();
+      // Si el navegador bloquea la reproducción, se libera la pista para reintentar después
+      if (p && p.catch) p.catch(() => { if (currentTrackKey === key) currentTrackKey = null; });
+    }
 
-    const steps = 20;
-    const stepTime = CROSSFADE_MS / steps;
-    let i = 0;
-    const from = activePlayer;
-    const to = inactivePlayer;
-    const fade = setInterval(() => {
-      i++;
-      const t = i / steps;
-      if (!musicMuted) {
-        to.volume = Math.min(MUSIC_VOLUME, MUSIC_VOLUME * t);
-        from.volume = Math.max(0, MUSIC_VOLUME * (1 - t));
-      }
-      if (i >= steps) {
-        clearInterval(fade);
-        from.pause();
-        activePlayer = to;
-        inactivePlayer = from;
-      }
-    }, stepTime);
+    // Crossfade: cada reproductor va desde su volumen actual hacia su objetivo.
+    // Si llega otro playTrack a mitad del fundido, este se cancela y el nuevo
+    // arranca desde donde quedaron los volúmenes.
+    clearInterval(musicFadeTimer);
+    const players = Object.values(musicPlayers);
+    const startVolumes = players.map(p => p.volume);
+    const startedAt = performance.now();
+    musicFadeTimer = setInterval(() => {
+      const t = Math.min(1, (performance.now() - startedAt) / CROSSFADE_MS);
+      players.forEach((p, i) => {
+        const goal = p === target ? MUSIC_VOLUME : 0;
+        p.volume = startVolumes[i] + (goal - startVolumes[i]) * t;
+      });
+      if (t < 1) return;
+      clearInterval(musicFadeTimer);
+      players.forEach(p => { if (p !== target) p.pause(); });
+    }, FADE_STEP_MS);
   }
 
+  // Los efectos se descargan una sola vez al cargar la página; cada vez que suenan
+  // se reproduce una copia, así pueden superponerse sin volver a pedir el archivo.
+  const sfxSources = {};
+  Object.values(SFX_TRACKS).forEach(src => {
+    if (sfxSources[src]) return;
+    const base = new Audio(src);
+    base.preload = "auto";
+    sfxSources[src] = base;
+  });
+
   function playSfx(key) {
-    if (musicMuted) return;
+    if (soundMuted) return;
     const src = SFX_TRACKS[key];
     if (!src) return;
-    const sfx = new Audio(src);
+    const sfx = sfxSources[src].cloneNode();
     sfx.volume = SFX_VOLUME_OVERRIDES[key] !== undefined ? SFX_VOLUME_OVERRIDES[key] : SFX_VOLUME;
     const p = sfx.play();
     if (p && p.catch) p.catch(() => {});
@@ -601,14 +935,13 @@
 
   const soundBtn = document.getElementById("sound-btn");
   soundBtn.onclick = () => {
-    musicMuted = !musicMuted;
-    soundBtn.textContent = musicMuted ? "🔇" : "🔊";
-    if (musicMuted) {
-      playerA.volume = 0;
-      playerB.volume = 0;
-    } else {
-      activePlayer.volume = MUSIC_VOLUME;
-    }
+    soundMuted = !soundMuted;
+    Object.values(musicPlayers).forEach(p => { p.muted = soundMuted; });
+    const label = soundMuted ? "Activar música y efectos" : "Silenciar música y efectos";
+    soundBtn.textContent = soundMuted ? "🔇" : "🔊";
+    soundBtn.setAttribute("aria-pressed", String(soundMuted));
+    soundBtn.setAttribute("aria-label", label);
+    soundBtn.title = label;
   };
   /* -------------------------------------------------- */
 
@@ -729,12 +1062,250 @@
 
   };
 
+  /* ---------- Ilustraciones por escena ----------
+     Cada escena puede tener una imagen (carpeta "img") y una lista de
+     efectos animados que se dibujan encima. Ver img/README.md para los
+     archivos, los prompts para generarlas y cómo ajustar los efectos.
+       src     archivo dentro de img/
+       alt     descripción para lectores de pantalla
+       scale   zoom base (1 = imagen completa); sirve para reencuadrar
+               la misma imagen en dos escenas distintas
+       focus   punto que queda fijo al hacer zoom ("50% 50%" = centro)
+       fx      efectos: "fog", "glow", "spores", "fireflies", "ripples",
+               "shadow", "flame", "mist". Como texto usan sus valores por
+               defecto; como objeto aceptan x, y, size, color, speed,
+               strength y count (cantidad de partículas).
+  ------------------------------------------------------- */
+
+  const ART_DIR = "img/";
+
+  const SCENE_ART = {
+    inicio: {
+      src: "inicio.webp",
+      alt: "Una figura hundida hasta las rodillas en el lodo, envuelta en niebla. A la izquierda, un bosque oscuro; al frente, un resplandor extraño sobre el agua.",
+      fx: ["fog", { type: "glow", x: "60%", y: "46%", size: "26%" }]
+    },
+    bosque: {
+      src: "bosque.webp",
+      alt: "Un claro en un bosque de troncos tallados con espirales y runas. En el centro, una piedra alta cubierta de musgo.",
+      fx: ["fog", "spores", { type: "glow", x: "50%", y: "12%", size: "55%", color: "rgba(226,232,196,0.35)", speed: "7s" }]
+    },
+    bosque_a: {
+      src: "bosque-sombra.webp",
+      alt: "Entre los árboles, en la penumbra, se recorta una silueta alta que camina en dos patas, pero no del todo como un hombre.",
+      fx: ["fog", "shadow"]
+    },
+    bosque_b: {
+      src: "bosque.webp",
+      scale: 1.18,
+      focus: "75% 50%",
+      alt: "Más adelante el bosque se aclara y la niebla se vuelve más pálida.",
+      fx: [{ type: "fog", strength: 1.4 }, { type: "spores", count: 8 }]
+    },
+    pantano: {
+      src: "pantano-amuleto.webp",
+      alt: "Una mano emerge del agua turbia sosteniendo un amuleto ennegrecido, partido en dos mitades. Al fondo, el agua brilla.",
+      fx: ["fog", { type: "glow", x: "56%", y: "36%", size: "30%" }, { type: "ripples", x: "40%", y: "66%" }]
+    },
+    pantano_a: {
+      src: "pantano.webp",
+      scale: 1.12,
+      focus: "55% 42%",
+      alt: "El resplandor sobre el agua se intensifica, como si algo hubiera notado el gesto.",
+      fx: ["fog", { type: "glow", x: "55%", y: "42%", size: "48%", strength: 1.6, speed: "2.4s" }]
+    },
+    pantano_b: {
+      src: "pantano.webp",
+      alt: "El agua oscura se cierra sobre el amuleto. A lo lejos, el resplandor sigue esperando.",
+      fx: ["fog", { type: "glow", x: "55%", y: "42%", size: "28%" }, { type: "ripples", x: "50%", y: "64%", size: "34%", speed: "5.5s" }]
+    },
+    canto: {
+      src: "canto.webp",
+      scale: 1.15,
+      focus: "62% 48%",
+      alt: "Entre juncos altos y niebla, una figura pálida canta con los ojos cerrados, sentada sobre una roca cubierta de flores.",
+      fx: ["fog", "fireflies"]
+    },
+    canto_a: {
+      src: "canto-ojos.webp",
+      alt: "Unos ojos que no son del todo humanos, del color del agua estancada, miran fijo. La niebla se cierra alrededor.",
+      fx: ["fog", "mist"]
+    },
+    canto_b: {
+      src: "canto.webp",
+      alt: "La figura queda atrás, cada vez más lejos entre los juncos y la niebla.",
+      fx: [{ type: "fog", strength: 1.4 }, { type: "fireflies", count: 5 }, { type: "mist", strength: 0.45 }]
+    },
+    encrucijada: {
+      src: "encrucijada.webp",
+      alt: "Un claro circular de piedra antigua con líquenes plateados. En el centro, una espada rota clavada en el barro; más allá, una llama flota sola en la niebla.",
+      fx: ["fog", { type: "flame", x: "68%", y: "40%" }]
+    }
+  };
+
+  const FX_VARS = ["x", "y", "size", "color", "speed", "strength"];
+
+  function rand(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  // Efectos con partículas: cuántas se crean y con qué variación cada una
+  const FX_PARTICLES = {
+    spores: {
+      count: 14,
+      className: "fx-spore",
+      vars: () => ({
+        "--l": `${rand(2, 98).toFixed(1)}%`,
+        "--s": `${rand(2, 4).toFixed(1)}px`,
+        "--d": `${rand(12, 22).toFixed(1)}s`,
+        "--delay": `${(-rand(0, 22)).toFixed(1)}s`,
+        "--drift": `${rand(-30, 30).toFixed(0)}px`
+      })
+    },
+    fireflies: {
+      count: 10,
+      className: "fx-firefly",
+      vars: () => ({
+        "--l": `${rand(8, 92).toFixed(1)}%`,
+        "--t": `${rand(18, 70).toFixed(1)}%`,
+        "--dx": `${rand(-40, 40).toFixed(0)}px`,
+        "--dy": `${rand(-30, 30).toFixed(0)}px`,
+        "--d": `${rand(6, 12).toFixed(1)}s`,
+        "--b": `${rand(2.4, 4.6).toFixed(1)}s`,
+        "--delay": `${(-rand(0, 12)).toFixed(1)}s`,
+        "--delay-b": `${(-rand(0, 5)).toFixed(1)}s`
+      })
+    },
+    ripples: {
+      count: 3,
+      className: "fx-ripple",
+      vars: i => ({ "--i": String(i) })
+    }
+  };
+
+  function buildFxLayer(fxList) {
+    const layer = document.createElement("div");
+    layer.className = "scene-art-fx";
+    (fxList || []).forEach(item => {
+      const fx = typeof item === "string" ? { type: item } : item;
+      const el = document.createElement("div");
+      el.className = `fx fx-${fx.type}`;
+      FX_VARS.forEach(name => {
+        if (fx[name] !== undefined) el.style.setProperty(`--fx-${name}`, fx[name]);
+      });
+      const particles = FX_PARTICLES[fx.type];
+      if (particles) {
+        const count = fx.count !== undefined ? fx.count : particles.count;
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement("span");
+          p.className = particles.className;
+          Object.entries(particles.vars(i)).forEach(([k, v]) => p.style.setProperty(k, v));
+          el.appendChild(p);
+        }
+      }
+      layer.appendChild(el);
+    });
+    return layer;
+  }
+
+  const artEl = document.getElementById("scene-art");
+  const artImgs = artEl.querySelectorAll(".scene-art-img");
+  const artMissingEl = document.getElementById("scene-art-missing");
+  const FX_FADE_MS = 900;
+  let activeArtIndex = 0;
+  let currentArtKey = null;
+  let artRequestId = 0;
+  const preloadedArt = new Set();
+
+  function restartAnimation(el) {
+    el.classList.add("no-anim");
+    void el.offsetWidth;
+    el.classList.remove("no-anim");
+  }
+
+  function swapArtFx(fxList) {
+    artEl.querySelectorAll(".scene-art-fx:not(.is-leaving)").forEach(layer => {
+      layer.classList.add("is-leaving");
+      setTimeout(() => layer.remove(), FX_FADE_MS);
+    });
+    artEl.insertBefore(buildFxLayer(fxList), artMissingEl);
+  }
+
+  function renderSceneArt(art) {
+    artEl.hidden = !art;
+    if (!art) { currentArtKey = null; return; }
+    artEl.setAttribute("aria-label", art.alt || "");
+    swapArtFx(art.fx);
+
+    const scale = art.scale || 1;
+    const focus = art.focus || "50% 50%";
+    const key = `${art.src}|${scale}|${focus}`;
+    if (key === currentArtKey) return;
+    currentArtKey = key;
+
+    // Se carga en la capa oculta y recién cuando está lista se hace el crossfade
+    const requestId = ++artRequestId;
+    const incoming = artImgs[1 - activeArtIndex];
+    const outgoing = artImgs[activeArtIndex];
+    const url = ART_DIR + art.src;
+
+    const reveal = loaded => {
+      if (requestId !== artRequestId) return; // otra escena tomó el lugar mientras cargaba
+      incoming.onload = incoming.onerror = null;
+      incoming.style.setProperty("--art-scale", scale);
+      incoming.style.setProperty("--art-focus", focus);
+      incoming.classList.toggle("is-broken", !loaded);
+      artEl.classList.toggle("is-missing", !loaded);
+      artMissingEl.textContent = loaded ? "" : `Ilustración pendiente · ${url}`;
+      restartAnimation(incoming);
+      incoming.classList.add("is-active");
+      outgoing.classList.remove("is-active");
+      activeArtIndex = 1 - activeArtIndex;
+    };
+
+    if (incoming.getAttribute("src") === url && incoming.complete) {
+      reveal(incoming.naturalWidth > 0);
+    } else {
+      incoming.onload = () => reveal(true);
+      incoming.onerror = () => reveal(false);
+      incoming.src = url;
+    }
+  }
+
+  // Descarga de antemano la imagen de una escena a la que el jugador puede ir
+  function preloadArt(sceneId) {
+    const art = SCENE_ART[sceneId];
+    if (!art || preloadedArt.has(art.src)) return;
+    preloadedArt.add(art.src);
+    const img = new Image();
+    img.src = ART_DIR + art.src;
+  }
+  /* -------------------------------------------------- */
+
   let current = "inicio";
   let collected = [];
 
   const menuScreen = document.getElementById("menu-screen");
   const instructionsScreen = document.getElementById("instructions-screen");
   const gameScreen = document.getElementById("game-screen");
+
+  function focusFirstButton(container) {
+    const btn = container.querySelector("button");
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  // Los navegadores no dejan sonar audio hasta que el usuario interactúa:
+  // la música del menú arranca con el primer clic o tecla, salvo que sea
+  // "Comenzar tu viaje", que pasa directo a la música del capítulo.
+  function startMenuMusicOnce(e) {
+    document.removeEventListener("click", startMenuMusicOnce, true);
+    document.removeEventListener("keydown", startMenuMusicOnce, true);
+    if (menuScreen.style.display === "none") return;
+    if (e.target.closest && e.target.closest("#btn-start")) return;
+    playTrack("menu");
+  }
+  document.addEventListener("click", startMenuMusicOnce, true);
+  document.addEventListener("keydown", startMenuMusicOnce, true);
 
   /* ---------- Transición de capítulo ----------
      Pantalla en negro con "Capítulo X" + un subtítulo breve, usada
@@ -761,26 +1332,54 @@
   const transitionSubtitleEl = document.getElementById("chapter-transition-subtitle");
   const TRANSITION_HOLD_MS_DEFAULT = 5200;
   const TRANSITION_FADE_MS = 700;
+  const TRANSITION_SKIP_AFTER_MS = 1200; // evita saltearla sin querer con el mismo clic que la abrió
 
+  let finishTransition = null;
+  let transitionStartedAt = 0;
+  let transitionHideTimer = null;
+
+  // Devuelve false si ya hay una transición en curso (evita duplicarla con doble clic)
   function showChapterTransition({ number, subtitle, onComplete, holdMs }) {
+    if (finishTransition) return false;
+    clearTimeout(transitionHideTimer);
     transitionNumberEl.textContent = `Capítulo ${number}`;
     transitionSubtitleEl.textContent = subtitle || "";
     transitionEl.classList.remove("fade-out");
     transitionEl.classList.add("visible", "fade-in");
+    transitionStartedAt = performance.now();
 
-    setTimeout(() => {
+    const holdTimer = setTimeout(finish, holdMs || TRANSITION_HOLD_MS_DEFAULT);
+    function finish() {
+      clearTimeout(holdTimer);
+      finishTransition = null;
       if (onComplete) onComplete();
       transitionEl.classList.remove("fade-in");
       transitionEl.classList.add("fade-out");
-      setTimeout(() => {
+      transitionHideTimer = setTimeout(() => {
         transitionEl.classList.remove("visible", "fade-out");
       }, TRANSITION_FADE_MS);
-    }, holdMs || TRANSITION_HOLD_MS_DEFAULT);
+    }
+    finishTransition = finish;
+    return true;
   }
 
-  document.getElementById("btn-start").onclick = () => {
-    playSfx("click_start");
-    showChapterTransition({
+  // Tocar la pantalla (o Enter / Espacio / Escape) saltea el resto de la espera
+  function skipTransition() {
+    if (finishTransition && performance.now() - transitionStartedAt > TRANSITION_SKIP_AFTER_MS) {
+      finishTransition();
+    }
+  }
+  transitionEl.addEventListener("click", skipTransition);
+  document.addEventListener("keydown", e => {
+    if (finishTransition && ["Enter", " ", "Escape"].includes(e.key)) {
+      e.preventDefault();
+      skipTransition();
+    }
+  });
+
+  document.getElementById("btn-start").onclick = e => {
+    const viaKeyboard = e.detail === 0;
+    const started = showChapterTransition({
       number: 1,
       subtitle: "«El hombre está condenado a ser libre; porque una vez arrojado al mundo, es responsable de todo lo que hace.»",
       holdMs: 7000,
@@ -790,24 +1389,30 @@
         gameScreen.style.display = "block";
         playTrack("capitulo1");
         window.scrollTo({ top: 0, behavior: "smooth" });
+        if (viaKeyboard) focusFirstButton(choicesEl);
       }
     });
+    if (!started) return;
+    playSfx("click_start");
+    preloadTrack("capitulo1"); // se descarga mientras dura la pantalla negra
   };
 
-  document.getElementById("btn-instructions").onclick = () => {
+  document.getElementById("btn-instructions").onclick = e => {
     playSfx("click_instrucciones");
     menuScreen.style.display = "none";
     instructionsScreen.style.display = "block";
     playTrack("menu");
     window.scrollTo({ top: 0, behavior: "smooth" });
+    if (e.detail === 0) focusFirstButton(instructionsScreen);
   };
 
-  document.getElementById("btn-back-menu").onclick = () => {
+  document.getElementById("btn-back-menu").onclick = e => {
     playSfx("click_volver");
     instructionsScreen.style.display = "none";
     menuScreen.style.display = "block";
     playTrack("menu");
     window.scrollTo({ top: 0, behavior: "smooth" });
+    if (e.detail === 0) focusFirstButton(menuScreen);
   };
 
   const cardEl = document.getElementById("card");
@@ -827,6 +1432,19 @@
     memoryToggle.setAttribute("aria-expanded", String(memoryPanelOpen));
   };
 
+  // Tras mostrar opciones nuevas se ignoran los clics un instante: si no, el
+  // segundo clic de un doble clic cae sobre la opción que aparece en el mismo lugar.
+  const CHOICE_LOCK_MS = 450;
+  let choicesUnlockAt = 0;
+
+  function lockChoices() {
+    choicesUnlockAt = performance.now() + CHOICE_LOCK_MS;
+  }
+
+  function choicesLocked() {
+    return performance.now() < choicesUnlockAt;
+  }
+
   function renderMemoryPanel() {
     memoryToggleCount.textContent = collected.length;
     memoryPanelList.innerHTML = "";
@@ -844,8 +1462,9 @@
     });
   }
 
-  function renderChapterEndCard() {
+  function renderChapterEndCard(viaKeyboard) {
     choicesEl.innerHTML = "";
+    lockChoices();
 
     const endLabel = document.createElement("div");
     endLabel.className = "end-label";
@@ -865,28 +1484,29 @@
     const restartBtn = document.createElement("button");
     restartBtn.className = "restart-btn";
     restartBtn.textContent = "Volver al menú principal";
-    restartBtn.onclick = () => {
+    restartBtn.onclick = e => {
+      if (choicesLocked()) return;
       playSfx("click_eleccion");
       collected = [];
       current = "inicio";
-      renderScene(current);
       gameScreen.style.display = "none";
       menuScreen.style.display = "block";
+      renderScene(current);
       playTrack("menu");
       window.scrollTo({ top: 0, behavior: "smooth" });
+      if (e.detail === 0) focusFirstButton(menuScreen);
     };
     choicesEl.appendChild(restartBtn);
 
     footerNote.textContent = "Cada camino deja un rastro distinto en tu memoria.";
+    if (viaKeyboard) focusFirstButton(choicesEl);
   }
 
-  function renderScene(id) {
+  function renderScene(id, viaKeyboard = false) {
     const scene = scenes[id];
     cardEl.classList.toggle("chapter-end", !!scene.isChapterEnd);
-
-    sceneTextEl.classList.remove("with-dropcap");
-    void sceneTextEl.offsetWidth; // restart animation
-    sceneTextEl.classList.add("with-dropcap");
+    renderSceneArt(SCENE_ART[id]);
+    restartAnimation(sceneTextEl);
 
     let html = scene.text.map(p => `<p>${p}</p>`).join("");
     const isNewFragment = scene.fragment && !collected.includes(scene.fragment);
@@ -901,43 +1521,44 @@
     }
     renderMemoryPanel();
 
+    footerNote.textContent = "El pantano recuerda cada paso que das.";
     choicesEl.innerHTML = "";
+    lockChoices();
 
     if (scene.isChapterEnd) {
       const continueBtn = document.createElement("button");
       continueBtn.className = "choice-btn";
       continueBtn.textContent = "Continuar";
-      continueBtn.onclick = () => {
-        playSfx("click_eleccion");
-        showChapterTransition({
+      continueBtn.onclick = e => {
+        if (choicesLocked()) return;
+        const started = showChapterTransition({
           number: 2,
           subtitle: nextChapterSubtitle(),
-          onComplete: renderChapterEndCard
+          onComplete: () => renderChapterEndCard(e.detail === 0)
         });
+        if (started) playSfx("click_eleccion");
       };
       choicesEl.appendChild(continueBtn);
-
-      footerNote.textContent = "El pantano recuerda cada paso que das.";
-      return;
+    } else {
+      scene.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.textContent = choice.text;
+        btn.onclick = e => {
+          if (choicesLocked()) return;
+          playSfx("click_eleccion");
+          current = choice.next;
+          renderScene(current, e.detail === 0);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        choicesEl.appendChild(btn);
+        preloadArt(choice.next);
+      });
     }
 
-    footerNote.textContent = "El pantano recuerda cada paso que das.";
-
-    scene.choices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      btn.textContent = choice.text;
-      btn.onclick = () => {
-        playSfx("click_eleccion");
-        current = choice.next;
-        renderScene(current);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      };
-      choicesEl.appendChild(btn);
-    });
+    if (viaKeyboard) focusFirstButton(choicesEl);
   }
 
-  renderMemoryPanel();
   renderScene(current);
 
 })();
