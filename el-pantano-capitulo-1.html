@@ -2003,22 +2003,11 @@
   /* ---------- Transición de capítulo ----------
      Pantalla en negro con "Capítulo X" + un subtítulo breve, usada
      al empezar un capítulo y al terminar uno (como adelanto del
-     siguiente). El subtítulo del Capítulo I es siempre fijo; el de
-     los capítulos siguientes va a variar según qué fragmento de
-     memoria haya recuperado el jugador en el capítulo anterior.
-     NOTA: los textos de CHAPTER_2_TEASER son un borrador — falta
-     definir el contenido real del Capítulo II.
+     siguiente). Cada capítulo tiene una frase fija de algún filósofo
+     o persona importante, igual para todos los jugadores.
   ------------------------------------------------------- */
 
-  const CHAPTER_2_TEASER = {
-    "El Nombre":  "Un nombre a medias, y el peso de recordarlo.",
-    "El Símbolo": "Un amuleto partido, y la pregunta de a quién pertenece.",
-    "La Voz":     "Un canto que no termina de olvidarte."
-  };
-
-  function nextChapterSubtitle() {
-    return CHAPTER_2_TEASER[collected[0]] || "";
-  }
+  const CHAPTER_2_SUBTITLE = "«La única manera de lidiar con un mundo sin libertad es volverse tan absolutamente libre que la propia existencia sea un acto de rebelión.»";
 
   const transitionEl = document.getElementById("chapter-transition");
   const transitionNumberEl = document.getElementById("chapter-transition-number");
@@ -2350,7 +2339,7 @@
         if (choicesLocked()) return;
         const started = showChapterTransition({
           number: 2,
-          subtitle: nextChapterSubtitle(),
+          subtitle: CHAPTER_2_SUBTITLE,
           onComplete: () => renderChapterEndCard(e.detail === 0)
         });
         if (started) playSfx("click_eleccion");

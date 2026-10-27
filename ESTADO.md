@@ -65,7 +65,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ### Otros
 - **Ventana al comenzar:** «Este viaje no es apto para personas sensibles. ¿Estás seguro de empezar?».
-- **Transición de capítulo:** se puede saltear con un clic, Enter o Espacio.
+- **Transición de capítulo:** se puede saltear con un clic, Enter o Espacio. Cada capítulo muestra una frase fija: la del Capítulo 1 es de Sartre; la del Capítulo 2 (`CHAPTER_2_SUBTITLE`) es «La única manera de lidiar con un mundo sin libertad…».
 - **Bugs corregidos:**
   - el fundido del texto no se repetía entre escenas;
   - el doble clic disparaba dos veces la transición;
@@ -88,7 +88,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho — no solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
-- [ ] Definir el contenido real del Capítulo II. Los adelantos de `CHAPTER_2_TEASER` dependen del primer fragmento obtenido y todavía usan los nombres viejos (El Nombre, El Símbolo, La Voz), que ya no se ganan: por ahora la transición final sale sin subtítulo.
+- [ ] Definir el contenido real del Capítulo II.
 
 ### Diseño
 - [ ] Ubicación del aviso flotante de fragmento: por ahora está arriba, sobre el título; probablemente se cambie.
