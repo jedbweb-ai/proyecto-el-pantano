@@ -1210,9 +1210,9 @@
         "¿Hacia dónde te dirigís?"
       ],
       choices: [
-        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque", memory: "El Nombre" },
-        { text: "Seguir hacia el resplandor del pantano", next: "pantano", memory: "El Símbolo" },
-        { text: "Ir tras el eco del canto", next: "canto", memory: "La Voz" }
+        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
+        { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
+        { text: "Ir tras el eco del canto", next: "canto" }
       ]
     },
 
@@ -1254,7 +1254,9 @@
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
         { text: "Dejarlo hundirse en el barro", next: "pantano_b", memory: "Lo que dejaste ir" }
-      ]
+      ],
+      // items: objetos tirados en la escena, con la opción "Recoger…" abajo
+      items: ["pantalon_viejo"]
     },
 
     pantano_a: {
@@ -1586,7 +1588,7 @@
   // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
   // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
   // "takeText": aviso al agarrarlo cuando tiene un solo lugar y se pone directo.
-  // La espada, la mochila y el pantalón todavía no aparecen en la historia:
+  // La espada y la mochila todavía no aparecen en la historia:
   // se pueden probar con el modo prueba (ver testItemsFromUrl).
   const ITEMS = {
     amuleto: {
@@ -1659,9 +1661,16 @@
     return param.split(",").map(id => id.trim()).filter(id => ITEMS[id]);
   }
 
+  // Al empezar, en el suelo están los objetos de cada escena ("items")
+  // más los del modo prueba en la primera escena.
   function initialDropped() {
-    const items = testItemsFromUrl();
-    return items.length ? { inicio: items.map(id => ({ id, contents: [] })) } : {};
+    const lying = {};
+    Object.entries(scenes).forEach(([sceneId, scene]) => {
+      if (scene.items) lying[sceneId] = scene.items.map(id => ({ id, contents: [] }));
+    });
+    const test = testItemsFromUrl().map(id => ({ id, contents: [] }));
+    if (test.length) lying.inicio = (lying.inicio || []).concat(test);
+    return lying;
   }
 
   function resetInventory() {

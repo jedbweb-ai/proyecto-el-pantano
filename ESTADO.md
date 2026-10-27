@@ -33,7 +33,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Objeto | Dónde puede ir | ¿Está en la historia? |
 |---|---|---|
 | Amuleto partido | Mano izquierda, mano derecha o cuello | Sí: "Guardarte el amuleto" |
-| Pantalón viejo | Solo piernas (se pone directo) | No, solo en modo prueba |
+| Pantalón viejo | Solo piernas (se pone directo) | Sí: tirado en el pantano, con "Recoger el pantalón viejo" abajo de las opciones |
 | Espada rota | Mano o cinturón | No, solo en modo prueba |
 | Mochila de cuero | Espalda (4 lugares adentro) | No, solo en modo prueba |
 
@@ -45,16 +45,13 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - **Para sumar un tipo nuevo:** se agrega una línea en `CHOICE_TYPES`, con su color y su ícono, y se marca en las opciones con `types: ["nombre"]`.
 
 ### Fragmentos de memoria
-- Se ganan solo al **elegir** una opción con `memory`. No hay un total fijo.
+- Se ganan solo al **elegir** una opción con `memory`. No hay un total fijo. Tienen que salir de decisiones importantes: las tres primeras opciones (bosque, resplandor, canto) no dan ninguno.
 - Al ganar uno aparece un aviso flotante arriba («✦ Fragmento de memoria · nombre»), que se va solo; si lo tocás, abre el inventario. No queda escrito dentro de la historia.
 - En el inventario se listan como «Fragmentos de memoria · N».
 - Los actuales:
 
 | Fragmento | Opción que lo da |
 |---|---|
-| El Nombre | Adentrarte en el bosque |
-| El Símbolo | Seguir hacia el resplandor |
-| La Voz | Ir tras el eco del canto |
 | Lo que dejaste ir | Dejarlo hundirse en el barro |
 
 ### Herramientas para escribir la historia (objeto `scenes`)
@@ -63,6 +60,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `when: () => …`: la opción o el párrafo solo aparece si se cumple la condición. Por ejemplo, `inv.isIn("amuleto", "cuello")`.
 - `requires: { test, reason }`: la opción se ve, pero queda bloqueada y muestra el motivo.
 - `types: [...]`: tipos de decisión extra.
+- `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos.
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
 
 ### Otros
@@ -84,13 +82,13 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ### Historia (lo próximo)
 - [ ] Revisar y modificar textos, recorridos y opciones de la historia.
-- [ ] Cambiar los nombres de los fragmentos de memoria: El Nombre, El Símbolo, La Voz y Lo que dejaste ir son provisorios.
+- [ ] Definir qué decisiones importantes dan fragmentos de memoria y cómo se llaman. Hoy solo queda «Lo que dejaste ir» (provisorio).
 - [ ] Definir los nuevos tipos de decisión y sus colores.
-- [ ] Decidir dónde aparecen en la historia el pantalón viejo, la espada rota y la mochila. Recordar: **los lugares de cada objeto los define Julián**.
+- [ ] Decidir dónde aparecen en la historia la espada rota y la mochila. Recordar: **los lugares de cada objeto los define Julián**.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho — no solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
-- [ ] Definir el contenido real del Capítulo II. Los adelantos de `CHAPTER_2_TEASER` son borradores y dependen del primer fragmento obtenido.
+- [ ] Definir el contenido real del Capítulo II. Los adelantos de `CHAPTER_2_TEASER` dependen del primer fragmento obtenido y todavía usan los nombres viejos (El Nombre, El Símbolo, La Voz), que ya no se ganan: por ahora la transición final sale sin subtítulo.
 
 ### Diseño
 - [ ] Ubicación del aviso flotante de fragmento: por ahora está arriba, sobre el título; probablemente se cambie.
