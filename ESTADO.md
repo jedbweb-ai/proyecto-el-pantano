@@ -1,4 +1,4 @@
-# El Pantano — Estado del proyecto
+# El Pantano: estado del proyecto
 
 Última actualización: 28 de octubre de 2026.
 Juego publicado en: https://jedbweb-ai.github.io/proyecto-el-pantano/
@@ -70,6 +70,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - **Al volver al inicio** desde el bosque se ve otro texto («Desandás el camino de árboles marcados…»), con las mismas tres opciones. El pantalón sigue tirado ahí si no se recogió.
 - **Al volver a elegir el bosque**, la opción dice «Volver al bosque de troncos tallados» y lleva directo a la cabaña, con un texto corto.
 
+### Estilo de los textos
+- Se sacaron todos los guiones largos (—) del juego y de los README. Las frases se reescribieron con punto, coma o dos puntos.
+- De acá en adelante, lo que dicta Julián se adapta al estilo del juego y se pasa por el skill The Humanizer (reglas en `CLAUDE.md`).
+
 ### Otros
 - **Ventana al comenzar:** «Este viaje no es apto para personas sensibles. ¿Estás seguro de empezar?».
 - **Transición de capítulo:** se puede saltear con un clic, Enter o Espacio. Cada capítulo muestra una frase fija: la del Capítulo 1 es de Sartre; la del Capítulo 2 (`CHAPTER_2_SUBTITLE`) es «La única manera de lidiar con un mundo sin libertad…».
@@ -94,7 +98,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Definir los nuevos tipos de decisión y sus colores.
 - [ ] Decidir dónde aparecen en la historia la espada rota y la mochila. Recordar: **los lugares de cada objeto los define Julián**.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
-- [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho — no solo el del amuleto», pero en ese caso el amuleto está en el puño.
+- [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
 - [ ] Definir el contenido real del Capítulo II.
 
@@ -108,6 +112,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Rehacer los prompts de `img/README.md` para la rama nueva del bosque: `bosque.webp` ahora es la cabaña (no la piedra), y `bosque-sombra.webp` ya no se usa. Faltan las imágenes de `cabana` y `bosque_camino`.
 
 ### Audio
+- [ ] **Sonidos a buscar** (se agregan todos juntos al final). Escena u opción, y qué sonido:
+  - (todavía ninguno)
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 

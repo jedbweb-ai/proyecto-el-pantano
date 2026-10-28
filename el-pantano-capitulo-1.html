@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>El Pantano — Capítulo I</title>
+<title>El Pantano · Capítulo I</title>
 <style>
   :root{
     --bog-black: #0d1310;
@@ -816,7 +816,7 @@
   @keyframes newDot { from { opacity: 0.5; } to { opacity: 1; } }
 
 
-  /* Transición de capítulo — pantalla en negro con "Capítulo X" */
+  /* Transición de capítulo: pantalla en negro con "Capítulo X" */
   .chapter-transition {
     position: fixed;
     inset: 0;
@@ -1161,7 +1161,7 @@
       text: [
         // Primera vez: el despertar
         { when: () => !visited.has("inicio"), text: "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez." },
-        { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto — una voz, o varias, cantando en una lengua que no conocés y sin embargo entendés." },
+        { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto. Es una voz, o varias, que cantan en una lengua que no conocés y que sin embargo entendés." },
         // Al volver desde el bosque
         { when: () => visited.has("inicio"), text: "Desandás el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
         "¿Hacia dónde te dirigís?"
@@ -1179,7 +1179,7 @@
     bosque: {
       text: [
         // Primera vez: la entrada completa al bosque
-        { when: () => !visited.has("bosque"), text: "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos se revelan como símbolos — espirales, ojos, runas gastadas por siglos de lluvia." },
+        { when: () => !visited.has("bosque"), text: "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos resultan ser símbolos: espirales, ojos y runas gastadas por siglos de lluvia." },
         { when: () => !visited.has("bosque"), text: "Seguís caminando, guiado por el rastro de árboles marcados, como si alguien los hubiera tallado para que nadie se perdiera… o para que todos terminaran en el mismo lugar. Entre la niebla aparece una cabaña. Es una cabaña de pantano, vieja y medio derrumbada: las tablas, hinchadas de humedad, se pudren sobre pilotes torcidos; el techo se hunde hacia un costado y la única ventana es un hueco negro, tapado a medias con trapos." },
         { when: () => !visited.has("bosque"), text: "Al acercarte escuchás unos ruidos pequeños que vienen de adentro: algo que raspa la madera, se detiene y vuelve a raspar." },
         // Si vuelve desde el pantano, va directo a la cabaña
@@ -1211,7 +1211,7 @@
     pantano: {
       text: [
         "Avanzás hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacás un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
-        "Podrías guardarte el amuleto — quizás sea tuyo, quizás explique algo — o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
+        "Podrías guardarte el amuleto, que quizás sea tuyo o quizás explique algo, o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
       ],
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
@@ -1222,8 +1222,8 @@
     pantano_a: {
       // El texto cambia según dónde decidió llevar el amuleto el jugador
       text: [
-        { when: () => inv.isIn("amuleto", "cuello"), text: "Del amuleto todavía cuelga un resto de cordón de cuero. Te lo pasás por la cabeza y las dos mitades quedan contra tu pecho, frías como piedras de río. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto." },
-        { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho — no solo el del amuleto." }
+        { when: () => inv.isIn("amuleto", "cuello"), text: "Del amuleto todavía cuelga un resto de cordón de cuero. Te lo pasás por la cabeza y las dos mitades quedan contra tu pecho, frías como piedras de río. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho, y no es solo el del amuleto." },
+        { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho, y no es solo el del amuleto." }
       ],
       choices: [
         { text: "Seguir avanzando", next: "encrucijada" }
@@ -1252,7 +1252,7 @@
 
     canto_a: {
       text: [
-        "Das un paso hacia ella y el canto se corta en seco. Los ojos que se abren no son del todo humanos — son del color del agua estancada, y te miran como quien reconoce algo que hacía tiempo esperaba. «Volviste», creés escuchar, aunque su boca no parece moverse. Antes de que puedas responder, la niebla se cierra a tu alrededor y la figura desaparece."
+        "Das un paso hacia ella y el canto se corta en seco. Los ojos que se abren no son del todo humanos. Tienen el color del agua estancada y te miran como quien reconoce algo que hacía tiempo esperaba. «Volviste», creés escuchar, aunque su boca no parece moverse. Antes de que puedas responder, la niebla se cierra a tu alrededor y la figura desaparece."
       ],
       choices: [
         { text: "Seguir camino, desconcertado", next: "encrucijada" }
@@ -1270,7 +1270,7 @@
 
     encrucijada: {
       text: [
-        "El bosque, el pantano y el eco del canto conducen, cada uno a su manera, al mismo lugar: un claro circular donde el lodo da paso a piedra antigua cubierta de líquenes plateados. En el centro, clavada en el barro, hay una espada rota hasta la empuñadura — y más allá, atravesando la niebla, ves una luz que parpadea como una vela, aunque no hay nadie sosteniéndola.",
+        "El bosque, el pantano y el eco del canto conducen, cada uno a su manera, al mismo lugar: un claro circular donde el lodo da paso a piedra antigua cubierta de líquenes plateados. En el centro, clavada en el barro, hay una espada rota hasta la empuñadura. Más allá, atravesando la niebla, ves una luz que parpadea como una vela, aunque no hay nadie sosteniéndola.",
         "El canto que escuchaste (o no) se detiene de golpe. El silencio que queda es peor.",
         "Algo en este lugar sabe que estás acá."
       ],

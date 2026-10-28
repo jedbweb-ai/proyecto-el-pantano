@@ -1,4 +1,4 @@
-# Carpeta de imágenes — El Pantano
+# Carpeta de imágenes de El Pantano
 
 Colocá acá las ilustraciones con estos nombres exactos. Si una falta, la escena muestra un fondo provisorio con la leyenda «Ilustración pendiente», y los efectos animados (niebla, brillos, partículas) siguen funcionando encima. Nada se rompe.
 
