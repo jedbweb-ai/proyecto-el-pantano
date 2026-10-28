@@ -1,6 +1,6 @@
 # El Pantano — Estado del proyecto
 
-Última actualización: 26 de octubre de 2026.
+Última actualización: 28 de octubre de 2026.
 Juego publicado en: https://jedbweb-ai.github.io/proyecto-el-pantano/
 
 Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `img/` y el audio en `audio/`; cada carpeta tiene su propio README.
@@ -33,13 +33,13 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Objeto | Dónde puede ir | ¿Está en la historia? |
 |---|---|---|
 | Amuleto partido | Mano izquierda, mano derecha o cuello | Sí: "Guardarte el amuleto" |
-| Pantalón viejo | Solo piernas (se pone directo) | Sí: tirado en el pantano, con "Recoger el pantalón viejo" abajo de las opciones |
+| Pantalón viejo | Solo piernas (se pone directo) | Sí: tirado en la escena de inicio, con "Recoger el pantalón viejo" junto a las tres primeras opciones (bosque, resplandor, canto) |
 | Espada rota | Mano o cinturón | No, solo en modo prueba |
 | Mochila de cuero | Espalda (4 lugares adentro) | No, solo en modo prueba |
 
 ### Tipos de decisión (`CHOICE_TYPES`)
 - **Normal:** verde con →.
-- **Objeto ◆ (ámbar):** agrega algo al inventario. Se usa en las opciones con `take` y en "Recoger…".
+- **Objeto ◆:** agrega algo al inventario. Se usa en las opciones con `take` (como "Guardarte el amuleto") y en "Recoger…": las dos se ven exactamente igual. No se inventa otro color para recoger objetos.
 - **Recuerdo ✦ (azul pálido):** deja un fragmento de memoria. Se usa en las opciones con `memory`.
 - **Varios tipos a la vez:** el borde y los íconos pasan en degradado.
 - **Para sumar un tipo nuevo:** se agrega una línea en `CHOICE_TYPES`, con su color y su ícono, y se marca en las opciones con `types: ["nombre"]`.

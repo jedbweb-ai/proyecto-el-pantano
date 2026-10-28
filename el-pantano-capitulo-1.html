@@ -1213,7 +1213,9 @@
         { text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
         { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
         { text: "Ir tras el eco del canto", next: "canto" }
-      ]
+      ],
+      // items: objetos tirados en la escena, con la opción "Recoger…" abajo
+      items: ["pantalon_viejo"]
     },
 
     bosque: {
@@ -1254,9 +1256,7 @@
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
         { text: "Dejarlo hundirse en el barro", next: "pantano_b", memory: "Lo que dejaste ir" }
-      ],
-      // items: objetos tirados en la escena, con la opción "Recoger…" abajo
-      items: ["pantalon_viejo"]
+      ]
     },
 
     pantano_a: {
