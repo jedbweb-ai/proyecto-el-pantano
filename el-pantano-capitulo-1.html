@@ -815,48 +815,6 @@
   }
   @keyframes newDot { from { opacity: 0.5; } to { opacity: 1; } }
 
-  /* Aviso flotante (por ejemplo, al obtener un fragmento de memoria). Toma el
-     color del tipo de decisión que lo provocó (--c, como "r,g,b"). */
-  .toast-area {
-    position: fixed;
-    top: 62px;
-    left: 0;
-    right: 0;
-    z-index: 30;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 0 16px;
-    pointer-events: none;
-  }
-  .toast {
-    pointer-events: auto;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    max-width: 100%;
-    padding: 10px 18px;
-    background: rgba(13,19,16,0.92);
-    border: 1px solid rgba(var(--c), 0.55);
-    border-radius: 2px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 18px rgba(var(--c), 0.18);
-    font-family: inherit;
-    color: var(--parchment);
-    cursor: pointer;
-    animation: toastIn 0.45s ease both;
-  }
-  .toast.is-leaving { animation: toastOut 0.5s ease forwards; }
-  .toast-icon { color: rgb(var(--c)); }
-  .toast-label {
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--mist);
-  }
-  .toast-text { font-size: 15px; font-style: italic; color: var(--c-text); }
-  @keyframes toastIn  { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-6px); } }
 
   /* Transición de capítulo — pantalla en negro con "Capítulo X" */
   .chapter-transition {
@@ -944,7 +902,6 @@
     .fx-spores, .fx-fireflies, .fx-ripples, .fx-shadow { display: none; }
     .fx-mist { opacity: var(--fx-strength, 0.9); }
     .inv-btn.has-new::after, .inv-overlay { animation: none; }
-    .toast, .toast.is-leaving { animation: none; }
   }
 
   @media (max-width: 600px) {
@@ -1050,9 +1007,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Avisos flotantes (fragmento obtenido, etc.) -->
-  <div class="toast-area" id="toast-area" role="status" aria-live="polite"></div>
 
   <!-- Inventario: silueta sin rostro con los objetos y los fragmentos de memoria -->
   <div class="inv-overlay" id="inv-overlay" hidden>
@@ -2208,44 +2162,22 @@
   // La primera vez que el jugador agarra algo se explica la mecánica
   let placementHintShown = false;
 
-  // Aviso corto que se muestra arriba de las opciones la próxima vez que se dibujan
-  let pendingNotice = null;
+  // Avisos cortos que se muestran arriba de las opciones la próxima vez que se
+  // dibujan, con el ícono y el color de su tipo de decisión ("item", "memory"…)
+  let pendingNotices = [];
 
-  // Aviso flotante con el color del tipo de decisión ("memory", "item"…).
-  // Desaparece solo; tocarlo abre el inventario.
-  const toastArea = document.getElementById("toast-area");
-  const TOAST_MS = 3600;
-
-  function showToast(type, label, text) {
-    const def = CHOICE_TYPES[type];
-    const toast = document.createElement("button");
-    toast.type = "button";
-    toast.className = "toast";
-    toast.style.setProperty("--c", def.rgb);
-    toast.style.setProperty("--c-text", def.text);
-    toast.innerHTML = `<span class="toast-icon">${def.icon}</span><span class="toast-label">${label}</span><span class="toast-text"></span>`;
-    toast.querySelector(".toast-text").textContent = text;
-    const dismiss = () => {
-      if (toast.classList.contains("is-leaving")) return;
-      toast.classList.add("is-leaving");
-      setTimeout(() => toast.remove(), 500);
-    };
-    toast.onclick = () => {
-      dismiss();
-      if (!invBtn.hidden) openInventory();
-    };
-    toastArea.appendChild(toast);
-    setTimeout(dismiss, TOAST_MS);
+  function addNotice(type, text) {
+    pendingNotices.push({ type, text });
   }
 
   // Un fragmento se gana al elegir una opción con "memory". No hay un total
-  // fijo: son las cosas que fue haciendo el jugador. No se escribe dentro de
-  // la historia: aparece un aviso flotante y se enciende el del inventario.
+  // fijo: son las cosas que fue haciendo el jugador. Se avisa arriba de las
+  // opciones, igual que al agarrar un objeto, y se enciende el del inventario.
   function gainFragment(name) {
     if (!name || collected.includes(name)) return;
     collected.push(name);
     markInventoryNew();
-    showToast("memory", "Fragmento de memoria", name);
+    addNotice("memory", `Fragmento de memoria: ${name}.`);
     // Sonido de fragmento desactivado por ahora (queda listo en SFX_TRACKS.fragment para reactivar más adelante)
   }
 
@@ -2265,7 +2197,7 @@
     if (only && !only.blockers.length && !only.disabled) {
       const item = ITEMS[entry.id];
       placeEntry(entry, only);
-      pendingNotice = item.takeText || `Ahora llevás ${item.ref} ${only.label.toLowerCase()}.`;
+      addNotice("item", item.takeText || `Ahora llevás ${item.ref} ${only.label.toLowerCase()}.`);
       onPlaced(viaKeyboard);
       return;
     }
@@ -2325,13 +2257,15 @@
     choicesEl.innerHTML = "";
     lockChoices();
 
-    if (pendingNotice) {
+    pendingNotices.forEach(({ type, text }) => {
+      const def = CHOICE_TYPES[type];
       const notice = document.createElement("p");
       notice.className = "placement-notice";
-      notice.textContent = `◆ ${pendingNotice}`;
+      notice.style.color = def.text;
+      notice.textContent = `${def.icon} ${text}`;
       choicesEl.appendChild(notice);
-      pendingNotice = null;
-    }
+    });
+    pendingNotices = [];
 
     if (scene.isChapterEnd) {
       const continueBtn = makeChoiceButton("Continuar");

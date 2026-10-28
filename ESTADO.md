@@ -46,7 +46,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ### Fragmentos de memoria
 - Se ganan solo al **elegir** una opción con `memory`. No hay un total fijo. Tienen que salir de decisiones importantes: las tres primeras opciones (bosque, resplandor, canto) no dan ninguno.
-- Al ganar uno aparece un aviso flotante arriba («✦ Fragmento de memoria · nombre»), que se va solo; si lo tocás, abre el inventario. No queda escrito dentro de la historia.
+- Al ganar uno aparece un aviso arriba de las opciones de la escena siguiente («✦ Fragmento de memoria: nombre.»), en azul pálido. Va en el mismo lugar y con el mismo formato que el aviso de objeto («◆ Te pusiste el pantalón viejo.»). Ya no hay aviso flotante.
 - En el inventario se listan como «Fragmentos de memoria · N».
 - Los actuales:
 
@@ -91,7 +91,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Definir el contenido real del Capítulo II.
 
 ### Diseño
-- [ ] Ubicación del aviso flotante de fragmento: por ahora está arriba, sobre el título; probablemente se cambie.
+- [x] Ubicación del aviso de fragmento: ahora va arriba de las opciones, igual que el de objeto.
 - [ ] Actualizar las instrucciones cuando se sumen tipos de decisión nuevos.
 
 ### Ilustraciones
