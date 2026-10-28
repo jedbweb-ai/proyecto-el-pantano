@@ -1159,12 +1159,16 @@
 
     inicio: {
       text: [
-        "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez.",
-        "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto — una voz, o varias, cantando en una lengua que no conocés y sin embargo entendés.",
+        // Primera vez: el despertar
+        { when: () => !visited.has("inicio"), text: "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez." },
+        { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto — una voz, o varias, cantando en una lengua que no conocés y sin embargo entendés." },
+        // Al volver desde el bosque
+        { when: () => visited.has("inicio"), text: "Desandás el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
         "¿Hacia dónde te dirigís?"
       ],
       choices: [
-        { text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
+        { when: () => !visited.has("bosque"), text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
+        { when: () => visited.has("bosque"), text: "Volver al bosque de troncos tallados", next: "bosque" },
         { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
         { text: "Ir tras el eco del canto", next: "canto" }
       ],
@@ -1174,29 +1178,31 @@
 
     bosque: {
       text: [
-        "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos se revelan como símbolos — espirales, ojos, runas gastadas por siglos de lluvia. En el centro de un claro encontrás una piedra cubierta de musgo, tan alta como vos, con un nombre grabado que casi podés leer: las primeras letras se parecen inquietantemente a algo tuyo.",
-        "El musgo cubre el resto de la inscripción. Podrías arrancarlo con las manos para ver más, aunque algo en la piedra te dice que no todo lo que olvidaste merece ser recordado. O podrías dejarla atrás y seguir camino, donde el bosque parece aclararse más adelante."
+        // Primera vez: la entrada completa al bosque
+        { when: () => !visited.has("bosque"), text: "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos se revelan como símbolos — espirales, ojos, runas gastadas por siglos de lluvia." },
+        { when: () => !visited.has("bosque"), text: "Seguís caminando, guiado por el rastro de árboles marcados, como si alguien los hubiera tallado para que nadie se perdiera… o para que todos terminaran en el mismo lugar. Entre la niebla aparece una cabaña. Es una cabaña de pantano, vieja y medio derrumbada: las tablas, hinchadas de humedad, se pudren sobre pilotes torcidos; el techo se hunde hacia un costado y la única ventana es un hueco negro, tapado a medias con trapos." },
+        { when: () => !visited.has("bosque"), text: "Al acercarte escuchás unos ruidos pequeños que vienen de adentro: algo que raspa la madera, se detiene y vuelve a raspar." },
+        // Si vuelve desde el pantano, va directo a la cabaña
+        { when: () => visited.has("bosque"), text: "Volvés a seguir el rastro de árboles tallados hasta la cabaña. Desde adentro siguen llegando esos ruidos pequeños: algo que raspa la madera, se detiene y vuelve a raspar." }
       ],
       choices: [
-        { text: "Arrancar el musgo y leer la piedra completa", next: "bosque_a" },
-        { text: "Dejar la piedra atrás y seguir camino", next: "bosque_b" }
+        { text: "Acercarte a la cabaña", next: "cabana" },
+        { text: "Volver hacia atrás, al pantano", next: "inicio" },
+        { text: "Continuar el camino de árboles tallados", next: "bosque_camino" }
       ]
     },
 
-    bosque_a: {
-      text: [
-        "Arrancás el musgo con las uñas doloridas. Las letras completas dicen algo que te hace tambalear hacia atrás, aunque no lograste retenerlo del todo — solo la certeza de que era tuyo, y de que dolía. Antes de poder comprenderlo mejor, un crujido entre los árboles te obliga a levantar la vista. Algo se mueve entre las sombras, algo que camina en dos patas pero no del todo como un hombre.",
-        "Contenés la respiración hasta que el crujido se aleja. El bosque vuelve a quedar en silencio, pero vos ya no estás tan seguro de estar solo."
-      ],
+    // PROVISORIO: falta el texto que dicta Julián
+    cabana: {
+      text: ["(Texto pendiente: acercarte a la cabaña.)"],
       choices: [
-        { text: "Seguir avanzando, con el corazón acelerado", next: "encrucijada" }
+        { text: "Seguir avanzando", next: "encrucijada" }
       ]
     },
 
-    bosque_b: {
-      text: [
-        "Dejás la piedra atrás. El fragmento de nombre que alcanzaste a ver te sigue pesando en el pecho, como una pregunta sin respuesta. El bosque se aclara poco a poco y el suelo empieza a ablandarse otra vez — señal de que el pantano no está lejos, sin importar qué camino elijas."
-      ],
+    // PROVISORIO: falta el texto que dicta Julián
+    bosque_camino: {
+      text: ["(Texto pendiente: continuar el camino de árboles tallados.)"],
       choices: [
         { text: "Seguir avanzando", next: "encrucijada" }
       ]
@@ -1298,20 +1304,8 @@
     },
     bosque: {
       src: "bosque.webp",
-      alt: "Un claro en un bosque de troncos tallados con espirales y runas. En el centro, una piedra alta cubierta de musgo.",
+      alt: "Entre troncos tallados con espirales, ojos y runas, una cabaña de pantano medio derrumbada sobre pilotes torcidos, con la ventana tapada con trapos.",
       fx: ["fog", "spores", { type: "glow", x: "50%", y: "12%", size: "55%", color: "rgba(226,232,196,0.35)", speed: "7s" }]
-    },
-    bosque_a: {
-      src: "bosque-sombra.webp",
-      alt: "Entre los árboles, en la penumbra, se recorta una silueta alta que camina en dos patas, pero no del todo como un hombre.",
-      fx: ["fog", "shadow"]
-    },
-    bosque_b: {
-      src: "bosque.webp",
-      scale: 1.18,
-      focus: "75% 50%",
-      alt: "Más adelante el bosque se aclara y la niebla se vuelve más pálida.",
-      fx: [{ type: "fog", strength: 1.4 }, { type: "spores", count: 8 }]
     },
     pantano: {
       src: "pantano-amuleto.webp",
@@ -1495,6 +1489,7 @@
 
   let current = "inicio";
   let collected = [];
+  let visited = new Set(); // escenas de las que el jugador ya salió alguna vez
 
   const menuScreen = document.getElementById("menu-screen");
   const instructionsScreen = document.getElementById("instructions-screen");
@@ -2291,6 +2286,7 @@
           playSfx("click_eleccion");
           const go = kb => {
             gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
+            visited.add(current);
             current = choice.next;
             renderScene(current, kb);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2350,6 +2346,7 @@
       if (choicesLocked()) return;
       playSfx("click_eleccion");
       collected = [];
+      visited = new Set();
       current = "inicio";
       resetInventory();
       closeInventory(false);

@@ -61,7 +61,14 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `requires: { test, reason }`: la opción se ve, pero queda bloqueada y muestra el motivo.
 - `types: [...]`: tipos de decisión extra.
 - `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos.
+- `visited.has("escena")`: verdadero si el jugador ya salió alguna vez de esa escena. Sirve para mostrar otro texto al volver a un lugar. Se usa en `inicio` y `bosque`.
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
+
+### Rama del bosque (en reescritura)
+- `bosque`: el camino de árboles tallados lleva a una cabaña de pantano medio derrumbada, con ruidos que vienen de adentro. Ya no está la piedra con musgo, y se borraron `bosque_a` y `bosque_b`.
+- Opciones: «Acercarte a la cabaña» (`cabana`), «Volver hacia atrás, al pantano» (`inicio`) y «Continuar el camino de árboles tallados» (`bosque_camino`).
+- **Al volver al inicio** desde el bosque se ve otro texto («Desandás el camino de árboles marcados…»), con las mismas tres opciones. El pantalón sigue tirado ahí si no se recogió.
+- **Al volver a elegir el bosque**, la opción dice «Volver al bosque de troncos tallados» y lleva directo a la cabaña, con un texto corto.
 
 ### Otros
 - **Ventana al comenzar:** «Este viaje no es apto para personas sensibles. ¿Estás seguro de empezar?».
@@ -81,7 +88,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 ## Pendientes
 
 ### Historia (lo próximo)
-- [ ] Revisar y modificar textos, recorridos y opciones de la historia.
+- [ ] Revisar y modificar textos, recorridos y opciones de la historia. Se está haciendo rama por rama, empezando por el bosque.
+- [ ] Escribir `cabana` («Acercarte a la cabaña») y `bosque_camino` («Continuar el camino de árboles tallados»). Hoy tienen un texto provisorio que lleva a la encrucijada.
 - [ ] Definir qué decisiones importantes dan fragmentos de memoria y cómo se llaman. Hoy solo queda «Lo que dejaste ir» (provisorio).
 - [ ] Definir los nuevos tipos de decisión y sus colores.
 - [ ] Decidir dónde aparecen en la historia la espada rota y la mochila. Recordar: **los lugares de cada objeto los define Julián**.
@@ -97,6 +105,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 ### Ilustraciones
 - [ ] Generar las 8 imágenes con los prompts de `img/README.md`: inicio, bosque, bosque-sombra, pantano-amuleto, pantano, canto, canto-ojos y encrucijada.
 - [ ] Después, ajustar la posición de los efectos en `SCENE_ART` para que coincidan con cada imagen.
+- [ ] Rehacer los prompts de `img/README.md` para la rama nueva del bosque: `bosque.webp` ahora es la cabaña (no la piedra), y `bosque-sombra.webp` ya no se usa. Faltan las imágenes de `cabana` y `bosque_camino`.
 
 ### Audio
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
