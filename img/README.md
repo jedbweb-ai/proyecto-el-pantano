@@ -1,4 +1,4 @@
-# Carpeta de imágenes — El Pantano
+# Carpeta de imágenes de El Pantano
 
 Colocá acá las ilustraciones con estos nombres exactos. Si una falta, la escena muestra un fondo provisorio con la leyenda «Ilustración pendiente», y los efectos animados (niebla, brillos, partículas) siguen funcionando encima. Nada se rompe.
 
@@ -13,7 +13,7 @@ Son **8 imágenes para las 11 escenas**: algunas escenas reusan la misma imagen 
 | `pantano.webp` | pantano_a, pantano_b | Vista amplia del pantano con el resplandor | pantano_a: brillo fuerte y rápido · pantano_b: ondas donde se hundió |
 | `canto.webp` | canto, canto_b | Figura pálida cantando sobre la roca con flores | niebla + luciérnagas (en canto: zoom sobre la figura; en canto_b: vista completa y más bruma) |
 | `canto-ojos.webp` | canto_a | Primer plano de los ojos abiertos | niebla + bruma que se cierra |
-| `encrucijada.webp` | encrucijada | Claro de piedra, espada rota, vela que flota | niebla + llama que parpadea |
+| `encrucijada.webp` | encrucijada | Claro de piedra, vela que flota | niebla + llama que parpadea |
 
 ## Formato
 
@@ -85,7 +85,7 @@ Close-up portrait of the same pale figure, face partly hidden by long hair tangl
 
 ### 8. `encrucijada.webp`
 ```
-A circular clearing where swamp mud gives way to ancient flat stones covered in silvery lichen. In the center, a broken sword driven into the mud up to the hilt. Beyond it, right of center, through thick fog, a single small candle flame floats in mid-air with no candle and no one holding it. Dead silence, ominous atmosphere.
+A circular clearing where swamp mud gives way to ancient flat stones covered in silvery lichen. Beyond the clearing, right of center, through thick fog, a single small candle flame floats in mid-air with no candle and no one holding it. Dead silence, ominous atmosphere.
 ```
 
 ## Ajustar los efectos a la imagen

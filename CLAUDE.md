@@ -1,4 +1,4 @@
-# El Pantano — Reglas para Claude
+# El Pantano: reglas para Claude
 
 Juego narrativo en HTML, CSS y JS, sin build. Todo el juego vive en `el-pantano-capitulo-1.html`; las ilustraciones van en `img/` y el audio en `audio/`, cada carpeta con su README.
 
@@ -15,6 +15,10 @@ Hablale a Julián en español.
 - Un objeto con un solo lugar se pone directo y avisa con `takeText` (por ejemplo «Te pusiste el pantalón viejo»), sin preguntar dónde llevarlo.
 
 ## Historia
+- Lo que dicta Julián se adapta al estilo del juego sin cambiar lo que pasa: segunda persona con voseo, presente, tono oscuro y sensorial, opciones cortas en infinitivo («Acercarte a la cabaña»). Mostrale la versión adaptada antes de pasarla al juego.
+- Sin guiones largos (—) en ningún texto: usá punto, coma o dos puntos.
+- Todo texto nuevo (del juego o de skills que creemos) se pasa por el skill The Humanizer antes de mostrárselo a Julián.
+- Los sonidos que nombre Julián se anotan en «Sonidos a buscar» (en `ESTADO.md`) y se agregan después, todos juntos.
 - Los fragmentos de memoria salen solo de decisiones importantes (`memory` en la opción). Sus nombres son provisorios hasta que Julián los defina.
 - Un tipo de decisión nuevo se agrega en `CHOICE_TYPES` con su color y su ícono; después hay que actualizar las instrucciones del juego.
 
