@@ -35,6 +35,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Amuleto partido | Mano izquierda, mano derecha o cuello | Sí: "Guardarte el amuleto" |
 | Pantalón viejo | Solo piernas (se pone directo) | Sí: tirado en la escena de inicio, con "Recoger el pantalón viejo" junto a las tres primeras opciones (bosque, resplandor, canto) |
 | Espada incandescente | Mano izquierda o mano derecha | Sí: apoyada en la puerta de la cabaña, con «Tomar la espada» |
+| Madera astillada | Mano izquierda o mano derecha | Sí: al asesinar a los goblins sin la espada, queda sola en una mano libre |
 | Espada manchada | Mano izquierda o mano derecha | Sí: la espada incandescente se transforma en esta al asesinar a los goblins con ella |
 | Mochila de cuero | Espalda (4 lugares adentro) | No, solo en modo prueba |
 
@@ -67,7 +68,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `types: [...]`: tipos de decisión extra.
 - `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos y el texto se actualiza. Con `{ id, label }` la opción lleva otro texto (por ejemplo «Tomar la espada»).
 - `inv.liesIn("objeto", "escena")`: verdadero si el objeto está en el suelo de esa escena. Sirve para cambiar el texto cuando ya se lo llevaron.
-- `effect: () => …`: la opción cambia algo al elegirla. Por ejemplo, `swapItem("espada_incandescente", "espada_manchada", aviso)` transforma un objeto en otro en el mismo lugar.
+- `effect: () => …`: la opción cambia algo al elegirla. Por ejemplo, `giveItem("madera")` pone un objeto en el primer lugar libre sin preguntar, y `swapItem("espada_incandescente", "espada_manchada", aviso)` transforma un objeto en otro en el mismo lugar.
 - `visited.has("escena")`: verdadero si el jugador ya salió alguna vez de esa escena. Sirve para mostrar otro texto al volver a un lugar. Se usa en `inicio` y `bosque`.
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
 
@@ -75,7 +76,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedás en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`). Al tomar la espada el texto cambia («La puerta quedó vacía…»).
 - `cabana_adentro`: tres goblins bebés que chillan. Dos opciones determinantes (rojas): «Asesinar a las criaturas» e «Irte y dejarlas vivas».
   - **Con la espada en la mano:** `cabana_matanza_espada`. La espada se mancha (pasa a ser «Espada manchada») y da «Infanticida armado».
-  - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso».
+  - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso». La madera queda en una mano libre, y al salir todavía podés tomar la espada con la otra.
   - Las dos matanzas tienen un solo botón, «Salir de la cabaña», que vuelve afuera. Si la espada sigue en la puerta, se puede tomar.
   - **Irte y dejarlas vivas:** da «Héroe de los goblins» y vuelve afuera, con los chillidos detrás de la puerta.
   - Después de entrar, afuera ya no aparece «Entrar a la cabaña» y el texto cambia según lo que hiciste.

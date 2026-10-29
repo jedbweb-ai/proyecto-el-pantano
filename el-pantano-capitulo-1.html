@@ -1214,6 +1214,7 @@
         { when: () => goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "La espada sigue apoyada contra la puerta, con la hoja encendida." },
         { when: () => !inv.liesIn("espada_incandescente", "cabana") && inv.has("espada_incandescente"), text: "La puerta quedó vacía. En tu mano, la espada sigue dando su luz tibia." },
         { when: () => inv.has("espada_manchada"), text: "La espada que llevás ya no da luz. La sangre se le secó sobre la hoja." },
+        { when: () => inv.has("madera"), text: "En la mano todavía tenés la madera, pegajosa de sangre." },
         { when: () => !inv.liesIn("espada_incandescente", "cabana") && !inv.has("espada_incandescente") && !inv.has("espada_manchada"), text: "La puerta quedó vacía." }
       ],
       choices: [
@@ -1233,7 +1234,9 @@
         // Con la espada en la mano: la espada se mancha (effect)
         { when: () => inv.has("espada_incandescente"), text: "Asesinar a las criaturas", next: "cabana_matanza_espada", types: ["determinante"], memory: "Infanticida armado",
           effect: () => swapItem("espada_incandescente", "espada_manchada", "La espada incandescente ahora es una espada manchada.") },
-        { when: () => !inv.has("espada_incandescente"), text: "Asesinar a las criaturas", next: "cabana_matanza_madera", types: ["determinante"], memory: "Infanticida monstruoso" },
+        // Sin la espada: usa una madera del piso y se queda con ella en una mano libre
+        { when: () => !inv.has("espada_incandescente"), text: "Asesinar a las criaturas", next: "cabana_matanza_madera", types: ["determinante"], memory: "Infanticida monstruoso",
+          effect: () => giveItem("madera") },
         { text: "Irte y dejarlas vivas", next: "cabana", types: ["determinante"], memory: "Héroe de los goblins" }
       ]
     },
@@ -1631,6 +1634,14 @@
             <rect class="mq-leather" x="-2" y="-6.5" width="4" height="12" rx="1"/>
             <circle class="mq-metal" cy="8" r="2.6"/>`
     },
+    madera: {
+      name: "Madera astillada",
+      ref: "la madera astillada",
+      desc: "Gruesa, astillada en una punta. Todavía tiene sangre de los goblins.",
+      fits: ["mano"],
+      art: `<path class="mq-leather" d="M-4 8 L-5 -34 L-1 -42 L1 -36 L4 -44 L5 8 Z"/>
+            <path class="mq-blood" d="M-5 -30 L-1 -42 L1 -36 L4 -44 L5 -26 Q2 -22 1 -27 Q-2 -20 -5 -24 Z"/>`
+    },
     mochila: {
       name: "Mochila de cuero",
       ref: "la mochila",
@@ -1785,6 +1796,16 @@
 
   function itemNames(ids) {
     return ids.map(id => ITEMS[id].ref).join(" y ");
+  }
+
+  // La historia le da un objeto al jugador sin preguntar: va al primer lugar
+  // libre donde entra (la madera de la cabaña). Si no hay lugar, no se lo lleva.
+  function giveItem(id) {
+    const slot = SLOTS.find(s => ITEMS[id].fits.includes(s.type) && !equipment[s.id]);
+    if (!slot) return;
+    equipment[slot.id] = id;
+    addNotice("item", ITEMS[id].takeText || `Ahora llevás ${ITEMS[id].ref} ${slot.place.toLowerCase()}.`);
+    markInventoryNew();
   }
 
   // Un objeto se transforma en otro en el mismo lugar (la espada que se mancha)
