@@ -269,6 +269,8 @@
   .mq-patch { fill: #4a3f2c; stroke: rgba(201,168,106,0.45); stroke-width: 1; stroke-dasharray: 2 1.5; }
   .mq-seam { fill: none; stroke: rgba(201,168,106,0.35); stroke-width: 1; }
   .mq-glow { fill: rgba(196,224,170,0.22); }
+  .mq-ember { fill: rgba(236,146,74,0.28); }
+  .mq-blood { fill: #6e1f1a; }
   .mq-cord { fill: none; stroke: #7a6340; stroke-width: 1.4; }
   .mq-strap { fill: none; stroke: #4a3d2a; stroke-width: 4; stroke-linecap: round; }
 
@@ -959,6 +961,7 @@
         <p>Elegí bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
         <p>Todo lo que encontrás lo llevás encima, y dónde lo llevás también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Tocá la silueta, arriba a la derecha, para ver qué cargás y los fragmentos de memoria que fuiste recuperando.</p>
         <p>Las opciones marcadas con ◆ te dan algo para llevar; las marcadas con ✦ dejan un fragmento de memoria. Algunas hacen las dos cosas.</p>
+        <p>Las opciones en rojo, marcadas con ✷, son decisiones determinantes: pesan más que las otras y también dejan un fragmento de memoria.</p>
       </div>
       <div class="choices">
         <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
@@ -1155,6 +1158,12 @@
   };
   /* -------------------------------------------------- */
 
+  // Lo que pasó en la cabaña de los goblins
+  const goblins = {
+    entered: () => visited.has("cabana_adentro"),
+    killed: () => visited.has("cabana_matanza_espada") || visited.has("cabana_matanza_madera")
+  };
+
   const scenes = {
 
     inicio: {
@@ -1192,11 +1201,60 @@
       ]
     },
 
-    // PROVISORIO: falta el texto que dicta Julián
     cabana: {
-      text: ["(Texto pendiente: acercarte a la cabaña.)"],
+      text: [
+        // Antes de entrar: el brillo de la espada solo se ve mientras siga apoyada en la puerta
+        { when: () => !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Mientras te acercás, ves un brillo pequeño entre la niebla, cerca de la puerta. Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
+        { when: () => !goblins.entered() && !inv.liesIn("espada_incandescente", "cabana"), text: "Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
+        // Al salir, según lo que hizo con los goblins
+        { when: () => goblins.killed(), text: "Salís de la cabaña. Adentro ya no se oye nada, y el silencio del pantano te pesa más que antes." },
+        { when: () => goblins.entered() && !goblins.killed(), text: "Salís de la cabaña y cerrás la puerta. Del otro lado de las tablas siguen los chillidos." },
+        // La espada
+        { when: () => !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Al llegar ves de dónde sale el brillo. Hay una espada apoyada contra la puerta, y su hoja resplandece como un metal que todavía no terminó de enfriarse." },
+        { when: () => goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "La espada sigue apoyada contra la puerta, con la hoja encendida." },
+        { when: () => !inv.liesIn("espada_incandescente", "cabana") && inv.has("espada_incandescente"), text: "La puerta quedó vacía. En tu mano, la espada sigue dando su luz tibia." },
+        { when: () => inv.has("espada_manchada"), text: "La espada que llevás ya no da luz. La sangre se le secó sobre la hoja." },
+        { when: () => !inv.liesIn("espada_incandescente", "cabana") && !inv.has("espada_incandescente") && !inv.has("espada_manchada"), text: "La puerta quedó vacía." }
+      ],
       choices: [
-        { text: "Seguir avanzando", next: "encrucijada" }
+        { when: () => !goblins.entered(), text: "Entrar a la cabaña", next: "cabana_adentro" },
+        { text: "Continuar el camino de árboles tallados", next: "bosque_camino" }
+      ],
+      // label: texto propio de la opción en vez de "Recoger…"
+      items: [{ id: "espada_incandescente", label: "Tomar la espada" }]
+    },
+
+    cabana_adentro: {
+      text: [
+        "Empujás la puerta y lo que ves adentro es grotesco. En un rincón, sobre un montón de trapos húmedos, hay tres goblins bebés. Se retuercen y chillan, y no sabés si están agonizando o si así es su naturaleza. Cada chillido te molesta más que el anterior.",
+        "Todo en este lugar te incomoda. Es una casa abandonada y rota en medio del pantano, con tres criaturas espantosas adentro que no dejan de hacer ese ruido horrible. Alguien tuvo que dejarlas acá. ¿Tienen padre, tienen madre? ¿Cómo llegaron a este lugar? Las preguntas te dan vueltas en la cabeza."
+      ],
+      choices: [
+        // Con la espada en la mano: la espada se mancha (effect)
+        { when: () => inv.has("espada_incandescente"), text: "Asesinar a las criaturas", next: "cabana_matanza_espada", types: ["determinante"], memory: "Infanticida armado",
+          effect: () => swapItem("espada_incandescente", "espada_manchada", "La espada incandescente ahora es una espada manchada.") },
+        { when: () => !inv.has("espada_incandescente"), text: "Asesinar a las criaturas", next: "cabana_matanza_madera", types: ["determinante"], memory: "Infanticida monstruoso" },
+        { text: "Irte y dejarlas vivas", next: "cabana", types: ["determinante"], memory: "Héroe de los goblins" }
+      ]
+    },
+
+    cabana_matanza_espada: {
+      text: [
+        "No lo pensás dos veces. Levantás la espada y lo hacés rápido, un golpe para cada uno. La sangre salpica las paredes, los trapos y tus brazos, y los chillidos se cortan de golpe.",
+        "Cuando bajás la hoja, la luz ya no está. La sangre la cubrió entera y apagó ese brillo de metal recién forjado. Lo que tenés en la mano ahora es una espada manchada."
+      ],
+      choices: [
+        { text: "Salir de la cabaña", next: "cabana" }
+      ]
+    },
+
+    cabana_matanza_madera: {
+      text: [
+        "Revisás la cabaña buscando algo que te sirva. En el piso, entre los trapos, encontrás una madera gruesa, astillada en una punta.",
+        "Lo que sigue es lento y torpe. La madera no corta, solo golpea, y hay que golpear muchas veces. Los chillidos se vuelven más agudos, después se ahogan, y se apagan de a uno. Cuando terminás tenés las manos pegajosas y astillas clavadas en las palmas. En el rincón quedan tres bultos quietos que ya no se parecen a nada."
+      ],
+      choices: [
+        { text: "Salir de la cabaña", next: "cabana" }
       ]
     },
 
@@ -1270,7 +1328,7 @@
 
     encrucijada: {
       text: [
-        "El bosque, el pantano y el eco del canto conducen, cada uno a su manera, al mismo lugar: un claro circular donde el lodo da paso a piedra antigua cubierta de líquenes plateados. En el centro, clavada en el barro, hay una espada rota hasta la empuñadura. Más allá, atravesando la niebla, ves una luz que parpadea como una vela, aunque no hay nadie sosteniéndola.",
+        "El bosque, el pantano y el eco del canto conducen, cada uno a su manera, al mismo lugar: un claro circular donde el lodo da paso a piedra antigua cubierta de líquenes plateados. Más allá, atravesando la niebla, ves una luz que parpadea como una vela, aunque no hay nadie sosteniéndola.",
         "El canto que escuchaste (o no) se detiene de golpe. El silencio que queda es peor.",
         "Algo en este lugar sabe que estás acá."
       ],
@@ -1343,7 +1401,7 @@
     },
     encrucijada: {
       src: "encrucijada.webp",
-      alt: "Un claro circular de piedra antigua con líquenes plateados. En el centro, una espada rota clavada en el barro; más allá, una llama flota sola en la niebla.",
+      alt: "Un claro circular de piedra antigua con líquenes plateados. Más allá, una llama flota sola en la niebla.",
       fx: ["fog", { type: "flame", x: "68%", y: "40%" }]
     }
   };
@@ -1537,7 +1595,7 @@
   // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
   // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
   // "takeText": aviso al agarrarlo cuando tiene un solo lugar y se pone directo.
-  // La espada y la mochila todavía no aparecen en la historia:
+  // La mochila todavía no aparece en la historia:
   // se pueden probar con el modo prueba (ver testItemsFromUrl).
   const ITEMS = {
     amuleto: {
@@ -1550,13 +1608,25 @@
             <path class="mq-metal" d="M-1.5 -8 A8 8 0 0 0 -1.5 8 L-3 3 L-0.5 0 L-3 -3 Z"/>
             <path class="mq-metal" d="M1.5 -8 A8 8 0 0 1 1.5 8 L0 3 L2.5 0 L0 -3 Z"/>`
     },
-    espada_rota: {
-      name: "Espada rota",
-      ref: "la espada rota",
-      desc: "Partida a mitad de la hoja. Lo que queda todavía corta.",
-      fits: ["mano", "cinturon"],
-      pose: { cinturon: "translate(126 172) rotate(170) scale(0.85)" },
-      art: `<path class="mq-metal" d="M-3 -9 L-3 -40 L-1 -44 L1 -39 L3 -42 L3 -9 Z"/>
+    espada_incandescente: {
+      name: "Espada incandescente",
+      ref: "la espada incandescente",
+      desc: "La hoja resplandece como un metal que todavía no terminó de enfriarse. Da una luz tibia.",
+      fits: ["mano"],
+      art: `<circle class="mq-ember" cy="-26" r="16"/>
+            <path class="mq-metal" d="M-3 -9 L-3 -46 L0 -52 L3 -46 L3 -9 Z"/>
+            <rect class="mq-metal" x="-10" y="-10" width="20" height="3.5" rx="1"/>
+            <rect class="mq-leather" x="-2" y="-6.5" width="4" height="12" rx="1"/>
+            <circle class="mq-metal" cy="8" r="2.6"/>`
+    },
+    espada_manchada: {
+      name: "Espada manchada",
+      ref: "la espada manchada",
+      desc: "Ya no da luz. La sangre de los goblins se secó sobre la hoja.",
+      fits: ["mano"],
+      art: `<path class="mq-metal" d="M-3 -9 L-3 -46 L0 -52 L3 -46 L3 -9 Z"/>
+            <path class="mq-blood" d="M-3 -44 L0 -50 L3 -44 L3 -30 Q1 -27 0 -31 Q-1 -24 -3 -28 Z"/>
+            <circle class="mq-blood" cx="1" cy="-20" r="1.3"/>
             <rect class="mq-metal" x="-10" y="-10" width="20" height="3.5" rx="1"/>
             <rect class="mq-leather" x="-2" y="-6.5" width="4" height="12" rx="1"/>
             <circle class="mq-metal" cy="8" r="2.6"/>`
@@ -1602,7 +1672,7 @@
     return Object.fromEntries(SLOTS.map(s => [s.id, null]));
   }
 
-  // Modo prueba: con ?objetos=pantalon_viejo,espada_rota en la URL, esos
+  // Modo prueba: con ?objetos=pantalon_viejo,mochila en la URL, esos
   // objetos aparecen en el suelo de la primera escena para probarlos sin
   // tocar la historia. Sin el parámetro, el juego queda igual que siempre.
   function testItemsFromUrl() {
@@ -1615,7 +1685,7 @@
   function initialDropped() {
     const lying = {};
     Object.entries(scenes).forEach(([sceneId, scene]) => {
-      if (scene.items) lying[sceneId] = scene.items.map(id => ({ id, contents: [] }));
+      if (scene.items) lying[sceneId] = scene.items.map(item => typeof item === "string" ? { id: item, contents: [] } : { ...item, contents: [] });
     });
     const test = testItemsFromUrl().map(id => ({ id, contents: [] }));
     if (test.length) lying.inicio = (lying.inicio || []).concat(test);
@@ -1645,7 +1715,9 @@
     has: id => slotsHolding(id).length > 0 || backpack.includes(id),
     isIn: (id, where) => where === "mochila"
       ? backpack.includes(id)
-      : slotsHolding(id).some(s => s === where || SLOT_BY_ID[s].type === where)
+      : slotsHolding(id).some(s => s === where || SLOT_BY_ID[s].type === where),
+    // liesIn: el objeto está en el suelo de esa escena (sin recoger o soltado ahí)
+    liesIn: (id, sceneId) => (dropped[sceneId] || []).some(entry => entry.id === id)
   };
 
   function currentPlacementKey(id) {
@@ -1713,6 +1785,15 @@
 
   function itemNames(ids) {
     return ids.map(id => ITEMS[id].ref).join(" y ");
+  }
+
+  // Un objeto se transforma en otro en el mismo lugar (la espada que se mancha)
+  function swapItem(fromId, toId, text) {
+    const slots = slotsHolding(fromId);
+    if (!slots.length) return;
+    slots.forEach(s => { equipment[s] = toId; });
+    addNotice("item", text);
+    markInventoryNew();
   }
 
   function markInventoryNew() {
@@ -2118,7 +2199,8 @@
   // varios tipos a la vez: el borde y el ícono pasan en degradado.
   const CHOICE_TYPES = {
     item:   { icon: "◆", rgb: "212,154,78",  text: "#ebb873" }, // agrega algo al inventario
-    memory: { icon: "✦", rgb: "143,180,200", text: "#bcd8e6" }  // deja un fragmento de memoria
+    memory: { icon: "✦", rgb: "143,180,200", text: "#bcd8e6" }, // deja un fragmento de memoria
+    determinante: { icon: "✷", rgb: "196,72,62", text: "#e8968c" } // decisión que pesa más; también deja un fragmento
   };
 
   // Tipos de una opción de la historia: los que se deducen solos ("take" →
@@ -2126,7 +2208,8 @@
   function choiceTypes(choice) {
     const types = [];
     if (choice.take) types.push("item");
-    if (choice.memory) types.push("memory");
+    // Las determinantes ya implican un fragmento: se ven solo en rojo
+    if (choice.memory && !(choice.types || []).includes("determinante")) types.push("memory");
     (choice.types || []).forEach(t => { if (!types.includes(t)) types.push(t); });
     return types;
   }
@@ -2285,6 +2368,7 @@
           if (choicesLocked()) return;
           playSfx("click_eleccion");
           const go = kb => {
+            if (choice.effect) choice.effect(); // effect: la opción cambia algo al elegirla
             gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
             visited.add(current);
             current = choice.next;
@@ -2302,13 +2386,14 @@
 
     // Lo que el jugador soltó en esta escena se puede volver a recoger
     (dropped[id] || []).forEach(entry => {
-      const btn = makeChoiceButton(`Recoger ${ITEMS[entry.id].ref}`);
+      const btn = makeChoiceButton(entry.label || `Recoger ${ITEMS[entry.id].ref}`);
       applyChoiceTypes(btn, ["item"]);
       btn.onclick = e => {
         if (choicesLocked()) return;
         playSfx("click_eleccion");
         takeItem(entry, kb => {
           dropped[id] = dropped[id].filter(other => other !== entry);
+          renderSceneText(id); // el texto puede cambiar sin el objeto en el suelo
           renderChoices(id, kb);
         }, e.detail === 0);
       };
@@ -2364,14 +2449,18 @@
     if (viaKeyboard) focusFirstButton(choicesEl);
   }
 
+  // Un párrafo puede ser texto o { when, text }: solo se muestra si "when" se cumple
+  function renderSceneText(id) {
+    sceneTextEl.innerHTML = scenes[id].text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
+  }
+
   function renderScene(id, viaKeyboard = false) {
     const scene = scenes[id];
     cardEl.classList.toggle("chapter-end", !!scene.isChapterEnd);
     renderSceneArt(SCENE_ART[id]);
     restartAnimation(sceneTextEl);
 
-    // Un párrafo puede ser texto o { when, text }: solo se muestra si "when" se cumple
-    sceneTextEl.innerHTML = scene.text.filter(isShown).map(p => `<p>${typeof p === "string" ? p : p.text}</p>`).join("");
+    renderSceneText(id);
 
     footerNote.textContent = "El pantano recuerda cada paso que das.";
     renderChoices(id, viaKeyboard);
