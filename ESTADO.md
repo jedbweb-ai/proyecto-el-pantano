@@ -1,6 +1,6 @@
 # El Pantano: estado del proyecto
 
-Última actualización: 28 de octubre de 2026.
+Última actualización: 29 de octubre de 2026.
 Juego publicado en: https://jedbweb-ai.github.io/proyecto-el-pantano/
 
 Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `img/` y el audio en `audio/`; cada carpeta tiene su propio README.
@@ -105,6 +105,24 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ---
 
+## Próxima sesión (lo que dejó dicho Julián el 29/10)
+1. **Seguir con «Continuar el camino de árboles tallados»** (`bosque_camino`): lo dicta Julián.
+2. **Correcciones de texto** de lo que se hizo el 28 y 29/10 (la cabaña, los goblins y las matanzas). Las aclara Julián.
+3. **Un cambio en una decisión u opción** de lo que se hizo esos días. También lo aclara Julián.
+
+### Lo que se hizo el 28 y 29/10 (ya publicado en `main`)
+- Se sacaron todos los guiones largos y se sumaron reglas de estilo en `CLAUDE.md`: adaptar lo dictado, no usar guiones largos y pasar los textos por The Humanizer.
+- La cabaña (`cabana`): espada incandescente en la puerta, «Tomar la espada», «Entrar a la cabaña» y «Continuar el camino de árboles tallados».
+- Adentro (`cabana_adentro`): tres goblins bebés y el tipo nuevo de decisión «Determinante» (rojo, ✷). Las tres salidas dan «Infanticida armado», «Infanticida monstruoso» o «Héroe de los goblins».
+- La espada se mancha si la usás. Sin la espada usás una madera, que te queda en la mano.
+- Se sacó la espada rota de la encrucijada y de los objetos.
+- Se anotaron los sonidos a buscar (ver Audio).
+- Pendientes que se decidieron en esta sesión y todavía no tienen respuesta de Julián:
+  - [ ] Confirmar el ícono ✷ del tipo «Determinante» (lo eligió Claude).
+  - [ ] Confirmar si «Tomar la espada» queda abajo de las otras opciones o va primera.
+  - [ ] Confirmar si la madera va directo a una mano o el juego pregunta en cuál.
+  - [ ] Revisar los textos que se sumaron sin dictado: al salir de la cabaña («Salís de la cabaña…»), la espada manchada y «En la mano todavía tenés la madera…».
+
 ## Pendientes
 
 ### Historia (lo próximo)
@@ -112,8 +130,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [x] Escribir `cabana` («Acercarte a la cabaña»).
 - [x] Escribir `cabana_adentro` («Entrar a la cabaña») con los tres goblins bebés y sus dos decisiones determinantes.
 - [ ] Escribir `bosque_camino` («Continuar el camino de árboles tallados»). Hoy tiene un texto provisorio que lleva a la encrucijada.
-- [ ] Definir qué decisiones importantes dan fragmentos de memoria y cómo se llaman. Hoy solo queda «Lo que dejaste ir» (provisorio).
-- [ ] Definir los nuevos tipos de decisión y sus colores.
+- [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
+- [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
