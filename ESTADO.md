@@ -68,6 +68,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `types: [...]`: tipos de decisión extra.
 - `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos y el texto se actualiza. Con `{ id, label }` la opción lleva otro texto (por ejemplo «Tomar la espada»).
 - `inv.liesIn("objeto", "escena")`: verdadero si el objeto está en el suelo de esa escena. Sirve para cambiar el texto cuando ya se lo llevaron.
+- `cameFrom`: la escena de la que viene el jugador. Sirve para cambiar el texto según por dónde llega (se usa en `cabana`).
+- Avisos sin tipo de decisión (`NOTICE_TYPES`): por ejemplo `addNotice("llave", "…")` muestra «🔒 …» arriba de las opciones. Todos los avisos van en ese lugar.
 - `effect: () => …`: la opción cambia algo al elegirla. Por ejemplo, `giveItem("madera")` pone un objeto en el primer lugar libre sin preguntar, y `swapItem("espada_incandescente", "espada_manchada", aviso)` transforma un objeto en otro en el mismo lugar.
 - `visited.has("escena")`: verdadero si el jugador ya salió alguna vez de esa escena. Sirve para mostrar otro texto al volver a un lugar. Se usa en `inicio` y `bosque`.
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
@@ -80,6 +82,9 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - Las dos matanzas tienen un solo botón, «Salir de la cabaña», que vuelve afuera. Si la espada sigue en la puerta, se puede tomar.
   - **Irte y dejarlas vivas:** da «Héroe de los goblins» y vuelve afuera, con los chillidos detrás de la puerta.
   - Después de entrar, afuera ya no aparece «Entrar a la cabaña» y el texto cambia según lo que hiciste.
+- `bosque_camino`: el camino de árboles tallados termina frente a una muralla negra y alta que se pierde en la niebla. Opciones: «Caminar hacia la izquierda y revisar la muralla» (`muralla_izquierda`) y «Caminar hacia la derecha y revisar la muralla» (`muralla_derecha`). Se llega desde el bosque o desde la cabaña, se haya entrado o no: cada camino sigue funcionando por su cuenta. Sin sonidos por ahora.
+- `muralla_izquierda`: la muralla sigue sin fin hasta una puerta negra en un recoveco. «Intentar abrir la puerta» muestra el aviso «🔒 Se necesita la llave trasera del mausoleo.» (en el mismo lugar que los avisos de objetos) y deja solo «Volver sobre tus pasos». Al volver más tarde se puede intentar de nuevo.
+- Al volver frente a la muralla (`bosque_camino`), el texto es «Volvés al lugar donde el bosque se termina…» y las opciones son izquierda, derecha y «Volver a la cabaña por el camino de árboles tallados». Al llegar así a la cabaña, el texto empieza con «Desandás el camino de árboles tallados…».
 - Se sacó la espada rota: ya no está en la encrucijada ni en los objetos.
 - `bosque`: el camino de árboles tallados lleva a una cabaña de pantano medio derrumbada, con ruidos que vienen de adentro. Ya no está la piedra con musgo, y se borraron `bosque_a` y `bosque_b`.
 - Opciones: «Acercarte a la cabaña» (`cabana`), «Volver hacia atrás, al pantano» (`inicio`) y «Continuar el camino de árboles tallados» (`bosque_camino`).
@@ -106,7 +111,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 ---
 
 ## Próxima sesión (lo que dejó dicho Julián el 29/10)
-1. **Seguir con «Continuar el camino de árboles tallados»** (`bosque_camino`): lo dicta Julián.
+1. ~~Seguir con «Continuar el camino de árboles tallados»~~ y ~~el lado izquierdo de la muralla~~ (hechos). Lo próximo: qué pasa al revisar la muralla hacia la derecha.
 2. **Correcciones de texto** de lo que se hizo el 28 y 29/10. Hecha: el orden de los párrafos de `cabana_adentro`. Si hay más, las aclara Julián.
 3. **Un cambio en una decisión u opción** de lo que se hizo esos días. También lo aclara Julián.
 
@@ -125,7 +130,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Revisar y modificar textos, recorridos y opciones de la historia. Se está haciendo rama por rama, empezando por el bosque.
 - [x] Escribir `cabana` («Acercarte a la cabaña»).
 - [x] Escribir `cabana_adentro` («Entrar a la cabaña») con los tres goblins bebés y sus dos decisiones determinantes.
-- [ ] Escribir `bosque_camino` («Continuar el camino de árboles tallados»). Hoy tiene un texto provisorio que lleva a la encrucijada.
+- [x] Escribir `bosque_camino` («Continuar el camino de árboles tallados»).
+- [x] Escribir `muralla_izquierda` (la puerta negra cerrada con llave).
+- [ ] Escribir `muralla_derecha` («Caminar hacia la derecha y revisar la muralla»). Hoy tiene un texto provisorio que lleva a la encrucijada.
+- [ ] Decidir dónde aparece la **llave trasera del mausoleo** y dónde se lleva en el cuerpo (lo define Julián). Con la llave, «Intentar abrir la puerta» de `muralla_izquierda` tiene que abrirla.
 - [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
@@ -151,6 +159,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `cabana_matanza_madera` (asesinar con la madera): golpes fuertes.
   - `cabana_matanza_espada` (asesinar con la espada): espada que corta carne.
   - `cabana_matanza_madera` y `cabana_matanza_espada`: un monstruo chico que agoniza.
+  - `muralla_izquierda` (intentar abrir la puerta): una puerta trabada que no se abre.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 
