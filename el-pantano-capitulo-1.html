@@ -1203,12 +1203,16 @@
 
     cabana: {
       text: [
+        // De vuelta desde la muralla, por el camino de árboles tallados
+        { when: () => cameFrom === "bosque_camino" && goblins.killed(), text: "Desandás el camino de árboles tallados hasta la cabaña. Adentro ya no se oye nada." },
+        { when: () => cameFrom === "bosque_camino" && !goblins.killed(), text: "Desandás el camino de árboles tallados hasta la cabaña. Desde adentro siguen llegando los chillidos, cortos y roncos." },
+        { when: () => cameFrom === "bosque_camino" && !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Cerca de la puerta, algo brilla entre la niebla." },
         // Antes de entrar: el brillo de la espada solo se ve mientras siga apoyada en la puerta
-        { when: () => !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Mientras te acercás, ves un brillo pequeño entre la niebla, cerca de la puerta. Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
-        { when: () => !goblins.entered() && !inv.liesIn("espada_incandescente", "cabana"), text: "Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
+        { when: () => cameFrom !== "bosque_camino" && !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Mientras te acercás, ves un brillo pequeño entre la niebla, cerca de la puerta. Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
+        { when: () => cameFrom !== "bosque_camino" && !goblins.entered() && !inv.liesIn("espada_incandescente", "cabana"), text: "Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
         // Al salir, según lo que hizo con los goblins
-        { when: () => goblins.killed(), text: "Salís de la cabaña. Adentro ya no se oye nada, y el silencio del pantano te pesa más que antes." },
-        { when: () => goblins.entered() && !goblins.killed(), text: "Salís de la cabaña y cerrás la puerta. Del otro lado de las tablas siguen los chillidos." },
+        { when: () => cameFrom !== "bosque_camino" && goblins.killed(), text: "Salís de la cabaña. Adentro ya no se oye nada, y el silencio del pantano te pesa más que antes." },
+        { when: () => cameFrom !== "bosque_camino" && goblins.entered() && !goblins.killed(), text: "Salís de la cabaña y cerrás la puerta. Del otro lado de las tablas siguen los chillidos." },
         // La espada
         { when: () => !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Al llegar ves de dónde sale el brillo. Hay una espada apoyada contra la puerta, y su hoja resplandece como un metal que todavía no terminó de enfriarse." },
         { when: () => goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "La espada sigue apoyada contra la puerta, con la hoja encendida." },
@@ -1262,9 +1266,41 @@
       ]
     },
 
-    // PROVISORIO: falta el texto que dicta Julián
+    // Se llega desde el bosque o desde la cabaña, haya entrado o no
     bosque_camino: {
-      text: ["(Texto pendiente: continuar el camino de árboles tallados.)"],
+      text: [
+        // Primera vez: la llegada a la muralla
+        { when: () => !visited.has("bosque_camino"), text: "Seguís el camino de árboles tallados. El trecho es largo, y durante mucho rato no aparece nada más: tronco tras tronco, todos marcados con los mismos símbolos." },
+        { when: () => !visited.has("bosque_camino"), text: "De golpe, el bosque se termina. La niebla es tan espesa que al principio no ves nada, hasta que delante tuyo empieza a asomar algo negro y alto. Es una muralla, o tal vez la pared de un edificio gigante, como si protegiera algo del otro lado." },
+        { when: () => !visited.has("bosque_camino"), text: "No ves nada que llame la atención. Solo una pared enorme que se extiende de izquierda a derecha hasta donde llega la vista y se pierde en la niebla por los dos lados." },
+        // Al volver de recorrer la muralla
+        { when: () => visited.has("bosque_camino"), text: "Volvés al lugar donde el bosque se termina, frente a la muralla negra." }
+      ],
+      choices: [
+        { text: "Caminar hacia la izquierda y revisar la muralla", next: "muralla_izquierda" },
+        { text: "Caminar hacia la derecha y revisar la muralla", next: "muralla_derecha" },
+        { when: () => visited.has("bosque_camino"), text: "Volver a la cabaña por el camino de árboles tallados", next: "cabana" }
+      ]
+    },
+
+    // La puerta negra necesita la llave trasera del mausoleo, que todavía no existe
+    muralla_izquierda: {
+      text: [
+        "Caminás hacia la izquierda, siguiendo la muralla. Sigue y sigue, siempre igual, y parece no tener fin.",
+        "Hasta que, en un recoveco de la piedra, aparece una puerta negra. Parece llevar hacia adentro de la muralla.",
+        { when: () => doorTried, text: "La puerta no se mueve. Está cerrada con llave." }
+      ],
+      choices: [
+        { when: () => !doorTried, text: "Intentar abrir la puerta", next: "muralla_izquierda",
+          effect: () => { doorTried = true; addNotice("llave", "Se necesita la llave trasera del mausoleo."); } },
+        // Al irse se puede volver a intentar más adelante
+        { text: "Volver sobre tus pasos", next: "bosque_camino", effect: () => { doorTried = false; } }
+      ]
+    },
+
+    // PROVISORIO: falta el texto que dicta Julián
+    muralla_derecha: {
+      text: ["(Texto pendiente: caminar hacia la derecha y revisar la muralla.)"],
       choices: [
         { text: "Seguir avanzando", next: "encrucijada" }
       ]
@@ -1552,6 +1588,8 @@
   let current = "inicio";
   let collected = [];
   let visited = new Set(); // escenas de las que el jugador ya salió alguna vez
+  let cameFrom = null;     // escena de la que viene el jugador
+  let doorTried = false;   // ya intentó abrir la puerta negra de la muralla en esta visita
 
   const menuScreen = document.getElementById("menu-screen");
   const instructionsScreen = document.getElementById("instructions-screen");
@@ -2225,6 +2263,11 @@
     determinante: { icon: "✷", rgb: "196,72,62", text: "#e8968c" } // decisión que pesa más; también deja un fragmento
   };
 
+  // Avisos que no son tipos de decisión, pero van en el mismo lugar que los demás
+  const NOTICE_TYPES = {
+    llave: { icon: "🔒", text: "#d8c9a8" } // algo necesita una llave que no tenés
+  };
+
   // Tipos de una opción de la historia: los que se deducen solos ("take" →
   // objeto, "memory" → recuerdo) más los que se indiquen con "types: [...]"
   function choiceTypes(choice) {
@@ -2358,7 +2401,7 @@
     lockChoices();
 
     pendingNotices.forEach(({ type, text }) => {
-      const def = CHOICE_TYPES[type];
+      const def = CHOICE_TYPES[type] || NOTICE_TYPES[type];
       const notice = document.createElement("p");
       notice.className = "placement-notice";
       notice.style.color = def.text;
@@ -2393,6 +2436,7 @@
             if (choice.effect) choice.effect(); // effect: la opción cambia algo al elegirla
             gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
             visited.add(current);
+            cameFrom = current;
             current = choice.next;
             renderScene(current, kb);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2454,6 +2498,8 @@
       playSfx("click_eleccion");
       collected = [];
       visited = new Set();
+      cameFrom = null;
+      doorTried = false;
       current = "inicio";
       resetInventory();
       closeInventory(false);
