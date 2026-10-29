@@ -74,7 +74,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ### Rama del bosque (en reescritura)
 - `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedás en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`). Al tomar la espada el texto cambia («La puerta quedó vacía…»).
-- `cabana_adentro`: tres goblins bebés que chillan. Dos opciones determinantes (rojas): «Asesinar a las criaturas» e «Irte y dejarlas vivas».
+- `cabana_adentro`: tres goblins bebés que chillan. El texto va en tres párrafos: la cabaña rota, los goblins en el rincón y las preguntas («¿Tienen padre, tienen madre?»). Dos opciones determinantes (rojas): «Asesinar a las criaturas» e «Irte y dejarlas vivas».
   - **Con la espada en la mano:** `cabana_matanza_espada`. La espada se mancha (pasa a ser «Espada manchada») y da «Infanticida armado».
   - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso». La madera queda en una mano libre, y al salir todavía podés tomar la espada con la otra.
   - Las dos matanzas tienen un solo botón, «Salir de la cabaña», que vuelve afuera. Si la espada sigue en la puerta, se puede tomar.
@@ -107,7 +107,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ## Próxima sesión (lo que dejó dicho Julián el 29/10)
 1. **Seguir con «Continuar el camino de árboles tallados»** (`bosque_camino`): lo dicta Julián.
-2. **Correcciones de texto** de lo que se hizo el 28 y 29/10 (la cabaña, los goblins y las matanzas). Las aclara Julián.
+2. **Correcciones de texto** de lo que se hizo el 28 y 29/10. Hecha: el orden de los párrafos de `cabana_adentro`. Si hay más, las aclara Julián.
 3. **Un cambio en una decisión u opción** de lo que se hizo esos días. También lo aclara Julián.
 
 ### Lo que se hizo el 28 y 29/10 (ya publicado en `main`)
@@ -117,11 +117,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - La espada se mancha si la usás. Sin la espada usás una madera, que te queda en la mano.
 - Se sacó la espada rota de la encrucijada y de los objetos.
 - Se anotaron los sonidos a buscar (ver Audio).
-- Pendientes que se decidieron en esta sesión y todavía no tienen respuesta de Julián:
-  - [ ] Confirmar el ícono ✷ del tipo «Determinante» (lo eligió Claude).
-  - [ ] Confirmar si «Tomar la espada» queda abajo de las otras opciones o va primera.
-  - [ ] Confirmar si la madera va directo a una mano o el juego pregunta en cuál.
-  - [ ] Revisar los textos que se sumaron sin dictado: al salir de la cabaña («Salís de la cabaña…»), la espada manchada y «En la mano todavía tenés la madera…».
+- Julián confirmó lo que había decidido Claude: el ícono ✷, «Tomar la espada» abajo de las otras opciones, la madera directo a una mano (después se puede cambiar desde el inventario) y los textos que no fueron dictados.
 
 ## Pendientes
 
