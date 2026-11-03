@@ -962,6 +962,8 @@
         <p>Todo lo que encontrás lo llevás encima, y dónde lo llevás también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Tocá la silueta, arriba a la derecha, para ver qué cargás y los fragmentos de memoria que fuiste recuperando.</p>
         <p>Las opciones marcadas con ◆ te dan algo para llevar; las marcadas con ✦ dejan un fragmento de memoria. Algunas hacen las dos cosas.</p>
         <p>Las opciones en rojo, marcadas con ✷, son decisiones determinantes: pesan más que las otras y también dejan un fragmento de memoria.</p>
+        <p>Las opciones en gris, marcadas con ⚔, aparecen solo por algo que llevás encima.</p>
+        <p>En el pantano se puede morir. Si te pasa, podés volver dos decisiones atrás y elegir otro camino.</p>
       </div>
       <div class="choices">
         <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
@@ -1164,6 +1166,18 @@
     killed: () => visited.has("cabana_matanza_espada") || visited.has("cabana_matanza_madera")
   };
 
+  // La criatura de la muralla (la madre de los goblins). outcome: cómo terminó
+  // el encuentro ("muerta", "espantada", "se_fue", "se_lo_llevo", "huiste")
+  const creature = {
+    outcome: null,
+    // Cómo reacciona al verte, según lo que hiciste en la cabaña y lo que llevás
+    mode: () => goblins.killed() ? "furia"
+      : inv.has("espada_incandescente") ? "luz"
+      : goblins.entered() ? "perdon" : "extrano",
+    // El cuerpo queda en el barro si la criatura murió, se espantó o se fue sola
+    bodyStays: () => ["muerta", "espantada", "se_fue"].includes(creature.outcome)
+  };
+
   const scenes = {
 
     inicio: {
@@ -1340,17 +1354,160 @@
       ],
       choices: [
         // note: aviso chico dentro de la opción. Lo que pase depende de lo que hizo con la espada
-        { text: "Continuar acercándote", next: "muralla_pelea",
+        { when: () => !creature.outcome, text: "Continuar acercándote", next: "muralla_pelea",
           note: "⚔ Lo que hiciste con la espada va a cambiar lo que pase." },
+        // Ya se resolvió lo de la criatura: queda el cuerpo o no queda nada
+        { when: () => creature.bodyStays(), text: "Continuar acercándote", next: "muralla_cuerpo" },
+        { when: () => !!creature.outcome && !creature.bodyStays(), text: "Continuar acercándote", next: "muralla_fin" },
         { text: "Volver sobre tus pasos", next: "bosque_camino" }
       ]
     },
 
-    // PROVISORIO: falta lo que dicta Julián (cambia según lo que hizo con la espada)
+    // La criatura del pantano arrastra un cuerpo. Es la madre de los goblins:
+    // lo que pasa depende de lo que hizo en la cabaña y de lo que lleva encima
     muralla_pelea: {
-      text: ["(Texto pendiente: continuar acercándote.)"],
+      text: [
+        "Llegás al lugar donde se apagaron los ruidos. Hay un cuerpo tirado en el barro, boca abajo, y no sabés si respira.",
+        "Una criatura del pantano lo tiene agarrado de un tobillo y lo arrastra, despacio, hacia el agua profunda. Es alta y flaca, con la piel gris y húmeda, y unos brazos tan largos que los nudillos le rozan el suelo.",
+        { when: () => goblins.entered(), text: "Tiene los mismos ojos que las criaturas de la cabaña." },
+        { when: () => inv.has("casco"), text: "La armadura del cuerpo tiene las mismas marcas que el casco que llevás puesto." },
+        { when: () => !inv.has("casco") && visited.has("muralla_casco"), text: "La armadura del cuerpo tiene las mismas marcas que el casco." },
+        // A. Mató a los goblins: huele la sangre de sus crías
+        { when: () => creature.mode() === "furia", text: "La criatura levanta la cabeza y huele el aire. Suelta el tobillo y se da vuelta hacia vos muy despacio. En sus ojos ves que sabe lo que hiciste." },
+        // B. Lleva la espada incandescente
+        { when: () => creature.mode() === "luz", text: "La criatura se da vuelta. La luz de la espada le da de lleno en la cara y entrecierra los ojos, sin soltar el cuerpo." },
+        // C. Dejó vivos a los goblins: reconoce su olor y se va
+        { when: () => creature.mode() === "perdon", text: "La criatura suelta el cuerpo y se te acerca despacio. Te huele de cerca, el cuello, las manos. Se queda quieta un largo rato. Después suelta un sonido bajo, casi un ronroneo, y se mete en el agua sin el cuerpo." },
+        // D. Nunca entró a la cabaña
+        { when: () => creature.mode() === "extrano", text: "La criatura suelta el cuerpo y se te acerca despacio. Te huele de cerca, el cuello, las manos, como si buscara algo que no encuentra." }
+      ],
+      choices: [
+        // A. Furia
+        { when: () => creature.mode() === "furia" && inv.has("espada_manchada"), text: "Hacerle frente con la espada", next: "muralla_pelea_espada",
+          note: "Llevás la espada manchada.", types: ["llevas", "determinante"], memory: "La madre del pantano",
+          effect: () => { creature.outcome = "muerta"; } },
+        { when: () => creature.mode() === "furia" && inv.has("madera") && inv.has("casco"), text: "Defenderte con la madera", next: "muralla_pelea_madera",
+          note: "Llevás la madera astillada.", types: ["llevas"], effect: () => { creature.outcome = "espantada"; } },
+        { when: () => creature.mode() === "furia" && inv.has("madera") && !inv.has("casco"), text: "Defenderte con la madera", next: "muerte_madera",
+          note: "Llevás la madera astillada.", types: ["llevas"] },
+        // A o B. La luz de la espada incandescente la espanta
+        { when: () => (creature.mode() === "furia" || creature.mode() === "luz") && inv.has("espada_incandescente"), text: "Alzar la espada", next: "muralla_luz",
+          note: "La espada incandescente da luz.", types: ["llevas"], effect: () => { creature.outcome = "espantada"; } },
+        // B y D. Quedarte quieto: se lleva el cuerpo
+        { when: () => creature.mode() === "luz" || creature.mode() === "extrano", text: "Quedarte quieto", next: "muralla_se_lo_lleva",
+          effect: () => { creature.outcome = "se_lo_llevo"; } },
+        // A y D. Huir: el casco te salva del zarpazo
+        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && inv.has("casco"), text: "Huir por donde viniste", next: "muralla_huida",
+          effect: () => { creature.outcome = "huiste"; } },
+        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && !inv.has("casco"), text: "Huir por donde viniste", next: "muerte_huida" },
+        { when: () => creature.mode() === "furia", text: "Quedarte quieto", next: "muerte_quieto" },
+        // C. Se fue sola
+        { when: () => creature.mode() === "perdon", text: "Acercarte al cuerpo", next: "muralla_cuerpo", effect: () => { creature.outcome = "se_fue"; } },
+        { when: () => creature.mode() === "perdon" || creature.mode() === "luz", text: "Volver sobre tus pasos", next: "bosque_camino",
+          effect: () => { if (creature.mode() === "perdon") creature.outcome = "se_fue"; } }
+      ]
+    },
+
+    muralla_pelea_espada: {
+      text: [
+        { when: () => inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te da en la cabeza: el casco se abolla, pero aguanta. Antes de que vuelva a golpear, le clavás la espada en el pecho." },
+        { when: () => !inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te abre un tajo en la cara, caliente, que te nubla un ojo. Antes de que vuelva a golpear, le clavás la espada en el pecho." },
+        "Cae al barro con un chillido que se parece demasiado al de sus crías."
+      ],
+      choices: [
+        { text: "Acercarte al cuerpo", next: "muralla_cuerpo" }
+      ]
+    },
+
+    // Solo se llega con el casco puesto: sin el casco, la madera no alcanza
+    muralla_pelea_madera: {
+      text: [
+        "La criatura se te tira encima. El primer zarpazo te da en la cabeza: el casco se abolla, pero aguanta.",
+        "Le clavás la punta astillada de la madera en un ojo. La criatura retrocede chillando y se hunde en el agua."
+      ],
+      choices: [
+        { text: "Acercarte al cuerpo", next: "muralla_cuerpo" }
+      ]
+    },
+
+    muralla_luz: {
+      text: [
+        "Levantás la espada y la hoja brilla todavía más. La criatura chilla, suelta el tobillo y retrocede hasta hundirse en el agua. Las burbujas tardan en desaparecer."
+      ],
+      choices: [
+        { text: "Acercarte al cuerpo", next: "muralla_cuerpo" }
+      ]
+    },
+
+    muralla_se_lo_lleva: {
+      text: [
+        { when: () => cameFrom === "muralla_pelea" && inv.has("espada_incandescente"), text: "No te movés. La criatura te mira un momento más y sigue arrastrando el cuerpo. El agua se lo traga sin hacer ruido." },
+        { when: () => cameFrom === "muralla_pelea" && !inv.has("espada_incandescente"), text: "No te movés. La criatura te huele un rato más, pierde el interés y vuelve al cuerpo. Lo arrastra hasta el agua, que se lo traga sin hacer ruido." },
+        "Más allá, el pantano y la muralla se extienden sin límite, hasta perderse en la niebla. Es imposible seguir avanzando. El único camino es volver sobre tus pasos."
+      ],
       choices: [
         { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ]
+    },
+
+    // Con el casco puesto: el zarpazo pega en el casco y escapás
+    muralla_huida: {
+      text: [
+        "Salís corriendo junto a la muralla. Un zarpazo te alcanza en la cabeza y el casco suena como una campana, pero no parás.",
+        "Detrás tuyo el barro salpica cada vez más cerca, hasta que de golpe deja de oírse. Cuando te das vuelta, no hay nada. Solo la niebla."
+      ],
+      choices: [
+        { text: "Volver frente a la muralla", next: "bosque_camino" }
+      ]
+    },
+
+    // El cuerpo está muerto y tiene un anillo
+    muralla_cuerpo: {
+      text: [
+        { when: () => !visited.has("muralla_cuerpo"), text: "Te acercás al cuerpo y lo das vuelta. Tiene los ojos abiertos y la boca llena de barro. Está muerto." },
+        { when: () => !visited.has("muralla_cuerpo") && inv.liesIn("anillo", "muralla_cuerpo"), text: "En uno de los dedos brilla un anillo." },
+        { when: () => visited.has("muralla_cuerpo"), text: "El cuerpo sigue tirado en el barro, con los ojos abiertos." },
+        { when: () => visited.has("muralla_cuerpo") && inv.liesIn("anillo", "muralla_cuerpo"), text: "El anillo sigue en su dedo." }
+      ],
+      choices: [
+        { when: () => !visited.has("muralla_cuerpo") && inv.liesIn("anillo", "muralla_cuerpo"), text: "Dejarle el anillo", next: "muralla_fin" },
+        { when: () => visited.has("muralla_cuerpo") || !inv.liesIn("anillo", "muralla_cuerpo"), text: "Seguir hacia adelante", next: "muralla_fin" },
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ],
+      items: [{ id: "anillo", label: "Tomar el anillo" }]
+    },
+
+    // El camino de la derecha se termina acá
+    muralla_fin: {
+      text: [
+        { when: () => cameFrom === "muralla_silencio", text: "Volvés al lugar donde estaba la criatura. No queda rastro de ella ni del cuerpo, solo unas marcas en el barro que se pierden en el agua." },
+        "Más allá, el pantano y la muralla se extienden sin límite, hasta perderse en la niebla. Es imposible seguir avanzando. El único camino es volver sobre tus pasos."
+      ],
+      choices: [
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ]
+    },
+
+    // Muertes: el jugador puede volver dos decisiones atrás (ver isDeath)
+    muerte_madera: {
+      isDeath: true,
+      text: [
+        "Levantás la madera y la criatura la parte de un golpe, como si fuera una rama seca. El segundo golpe te da en la cabeza.",
+        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
+      ]
+    },
+    muerte_huida: {
+      isDeath: true,
+      text: [
+        "Salís corriendo, pero la criatura es más rápida. Un zarpazo te da en la nuca.",
+        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
+      ]
+    },
+    muerte_quieto: {
+      isDeath: true,
+      text: [
+        "No te movés. La criatura se te tira encima antes de que alcances a pensar.",
+        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
       ]
     },
 
@@ -1670,6 +1827,8 @@
     { id: "ropa",      label: "Abrigo",             place: "Puesto como abrigo",        type: "ropa",     at: [[100, 122]], layer: "clothes" },
     { id: "manoIzq",   label: "Mano izquierda",     place: "En la mano izquierda",      type: "mano",     at: [[49, 212]], rotate: -24 },
     { id: "manoDer",   label: "Mano derecha",       place: "En la mano derecha",        type: "mano",     at: [[151, 212]], rotate: 24 },
+    { id: "dedoIzq",   label: "Dedo de la mano izquierda", place: "En un dedo de la mano izquierda", type: "dedo", at: [[44, 224]], scale: 0.6 },
+    { id: "dedoDer",   label: "Dedo de la mano derecha",   place: "En un dedo de la mano derecha",   type: "dedo", at: [[156, 224]], scale: 0.6 },
     { id: "cinturon",  label: "Cinturón",           place: "En el cinturón",            type: "cinturon", at: [[100, 164]] },
     { id: "piernas",   label: "Piernas",            place: "Puesto en las piernas",     type: "piernas",  at: [[100, 250]], layer: "clothes" },
     { id: "bolsillo1", label: "Bolsillo izquierdo", place: "En el bolsillo izquierdo",  type: "bolsillo", at: [[87, 184]], scale: 0.55 },
@@ -1680,7 +1839,7 @@
   const SLOT_BY_ID = Object.fromEntries(SLOTS.map(s => [s.id, s]));
 
   // Catálogo de objetos. "ref" es el nombre con artículo para usar en frases. "fits": en qué tipo de lugar puede ir cada uno
-  // ("mano", "cuello", "cinturon", "bolsillo", "espalda", "cabeza", "ropa",
+  // ("mano", "dedo", "cuello", "cinturon", "bolsillo", "espalda", "cabeza", "ropa",
   // "piernas", "pies" o "mochila" = adentro de la mochila). "hands: 2" ocupa las dos
   // manos. "capacity" lo convierte en contenedor (la mochila). "pose" ajusta
   // el dibujo en un lugar puntual. "art" es el dibujo SVG centrado en 0,0.
@@ -1737,6 +1896,16 @@
       capacity: 4,
       art: `<rect class="mq-leather" x="-38" y="-36" width="76" height="72" rx="12"/>
             <path class="mq-leather" d="M-30 -30 Q0 -40 30 -30 L28 -6 Q0 2 -28 -6 Z"/>`
+    },
+    anillo: {
+      name: "Anillo del muerto",
+      ref: "el anillo",
+      desc: "Lo sacaste del dedo de un cadáver junto a la muralla. Todavía tiene barro entre las grietas.",
+      fits: ["dedo"],
+      art: `<circle class="mq-metal" r="7"/>
+            <circle r="4" fill="#1a211c"/>
+            <circle class="mq-ember" cy="-7" r="3.5"/>
+            <circle class="mq-metal" cy="-7" r="2"/>`
     },
     casco: {
       name: "Casco gastado",
@@ -2319,12 +2488,14 @@
   const CHOICE_TYPES = {
     item:   { icon: "◆", rgb: "212,154,78",  text: "#ebb873" }, // agrega algo al inventario
     memory: { icon: "✦", rgb: "143,180,200", text: "#bcd8e6" }, // deja un fragmento de memoria
-    determinante: { icon: "✷", rgb: "196,72,62", text: "#e8968c" } // decisión que pesa más; también deja un fragmento
+    determinante: { icon: "✷", rgb: "196,72,62", text: "#e8968c" }, // decisión que pesa más; también deja un fragmento
+    llevas: { icon: "⚔", rgb: "150,162,172", text: "#cdd5db" } // «Por lo que llevás»: solo aparece gracias a un objeto
   };
 
   // Avisos que no son tipos de decisión, pero van en el mismo lugar que los demás
   const NOTICE_TYPES = {
-    llave: { icon: "🔒", text: "#d8c9a8" } // algo necesita una llave que no tenés
+    llave: { icon: "🔒", text: "#d8c9a8" }, // algo necesita una llave que no tenés
+    muerte: { icon: "☠", text: "#e8968c" }  // el jugador murió
   };
 
   // Tipos de una opción de la historia: los que se deducen solos ("take" →
@@ -2453,6 +2624,31 @@
     return typeof entry === "string" || !entry.when || entry.when();
   }
 
+  // Historial para volver atrás al morir: antes de cada decisión se guarda una
+  // copia de todo lo que puede cambiar (escena, objetos, fragmentos, visitas…)
+  let history = [];
+
+  function snapshot() {
+    return structuredClone({ current, collected, visited, cameFrom, doorTried,
+      creatureOutcome: creature.outcome, equipment, backpack, dropped });
+  }
+
+  function restore(snap) {
+    ({ current, collected, visited, cameFrom, doorTried, equipment, backpack, dropped } = structuredClone(snap));
+    creature.outcome = snap.creatureOutcome;
+    pendingNotices = [];
+  }
+
+  // Vuelve a como estaba todo "steps" decisiones antes
+  function rewind(steps, viaKeyboard) {
+    const i = Math.max(0, history.length - steps);
+    const snap = history[i];
+    history = history.slice(0, i);
+    if (snap) restore(snap);
+    renderScene(current, viaKeyboard);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function renderChoices(id, viaKeyboard = false) {
     choicesView = kb => renderChoices(id, kb);
     const scene = scenes[id];
@@ -2468,6 +2664,25 @@
       choicesEl.appendChild(notice);
     });
     pendingNotices = [];
+
+    // isDeath: el jugador murió. Puede volver dos decisiones atrás
+    if (scene.isDeath) {
+      const notice = document.createElement("p");
+      notice.className = "placement-notice";
+      notice.style.color = NOTICE_TYPES.muerte.text;
+      notice.textContent = `${NOTICE_TYPES.muerte.icon} Moriste.`;
+      choicesEl.appendChild(notice);
+      const backBtn = makeChoiceButton("Volver dos decisiones atrás");
+      backBtn.onclick = e => {
+        if (choicesLocked()) return;
+        playSfx("click_eleccion");
+        rewind(2, e.detail === 0);
+      };
+      choicesEl.appendChild(backBtn);
+      footerNote.textContent = "El pantano te deja volver. Esta vez.";
+      if (viaKeyboard) focusFirstButton(choicesEl);
+      return;
+    }
 
     if (scene.isChapterEnd) {
       const continueBtn = makeChoiceButton("Continuar");
@@ -2492,7 +2707,9 @@
         btn.onclick = e => {
           if (choicesLocked()) return;
           playSfx("click_eleccion");
+          const snap = snapshot(); // para poder volver atrás si muere
           const go = kb => {
+            history.push(snap);
             if (choice.effect) choice.effect(); // effect: la opción cambia algo al elegirla
             gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
             visited.add(current);
@@ -2560,6 +2777,8 @@
       visited = new Set();
       cameFrom = null;
       doorTried = false;
+      creature.outcome = null;
+      history = [];
       current = "inicio";
       resetInventory();
       closeInventory(false);

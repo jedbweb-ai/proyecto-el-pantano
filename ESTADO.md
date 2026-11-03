@@ -19,7 +19,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 ### Inventario: la silueta
 - Un botón con una silueta, arriba a la derecha, que solo aparece durante el juego. Cuando hay algo nuevo se enciende un punto dorado.
 - El panel muestra un maniquí sin rostro con los objetos dibujados donde los llevás.
-- Lugares del cuerpo, cada uno con capacidad limitada: cabeza, cuello, abrigo, mano izquierda, mano derecha, cinturón, piernas, dos bolsillos, espalda y pies.
+- Lugares del cuerpo, cada uno con capacidad limitada: cabeza, cuello, abrigo, mano izquierda, mano derecha, dedo de la mano izquierda, dedo de la mano derecha (solo dos lugares para anillos), cinturón, piernas, dos bolsillos, espalda y pies.
 - Si llevás una mochila en la espalda, aparece la sección "Adentro de la mochila", con 4 lugares.
 - Desde el panel se puede pasar un objeto a otro lugar libre o soltarlo.
 - **Al agarrar un objeto:**
@@ -38,6 +38,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Madera astillada | Mano izquierda o mano derecha | Sí: al asesinar a los goblins sin la espada, queda sola en una mano libre |
 | Espada manchada | Mano izquierda o mano derecha | Sí: la espada incandescente se transforma en esta al asesinar a los goblins con ella |
 | Casco gastado | Solo cabeza (se pone directo) | Sí: tirado junto a la muralla, a la derecha, con «Ponerte el casco» |
+| Anillo del muerto | Dedo de la mano izquierda o dedo de la mano derecha | Sí: en el dedo del cuerpo junto a la muralla, con «Tomar el anillo». Más adelante va a tener un impacto en la historia |
 | Mochila de cuero | Espalda (4 lugares adentro) | No, solo en modo prueba |
 
 ### Tipos de decisión (`CHOICE_TYPES`)
@@ -45,6 +46,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - **Objeto ◆:** agrega algo al inventario. Se usa en las opciones con `take` (como "Guardarte el amuleto") y en "Recoger…": las dos se ven exactamente igual. No se inventa otro color para recoger objetos.
 - **Recuerdo ✦ (azul pálido):** deja un fragmento de memoria. Se usa en las opciones con `memory`.
 - **Determinante ✷ (rojo):** decisiones que pesan más. También dejan un fragmento, pero se ven solo en rojo, sin el degradado con el azul. Se marcan con `types: ["determinante"]` y `memory`. Las instrucciones del juego ya lo explican.
+- **Por lo que llevás ⚔ (gris acero):** opciones que solo aparecen gracias a un objeto. Adentro del botón, en letra chica (`note`), dice qué objeto la habilita. Las opciones de objetos que no tenés quedan ocultas. Se marcan con `types: ["llevas"]`. Las instrucciones del juego ya lo explican.
 - **Varios tipos a la vez:** el borde y los íconos pasan en degradado.
 - **Para sumar un tipo nuevo:** se agrega una línea en `CHOICE_TYPES`, con su color y su ícono, y se marca en las opciones con `types: ["nombre"]`.
 
@@ -60,6 +62,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Infanticida armado | Asesinar a las criaturas, con la espada incandescente en la mano |
 | Infanticida monstruoso | Asesinar a las criaturas, sin la espada (con una madera del piso) |
 | Héroe de los goblins | Irte y dejarlas vivas |
+| La madre del pantano (provisorio) | Hacerle frente con la espada (matar a la criatura de la muralla) |
 
 ### Herramientas para escribir la historia (objeto `scenes`)
 - `take: "id"`: la opción agarra un objeto.
@@ -70,6 +73,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `types: [...]`: tipos de decisión extra.
 - `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos y el texto se actualiza. Con `{ id, label }` la opción lleva otro texto (por ejemplo «Tomar la espada»).
 - `inv.liesIn("objeto", "escena")`: verdadero si el objeto está en el suelo de esa escena. Sirve para cambiar el texto cuando ya se lo llevaron.
+- `isDeath: true` (en la escena): el jugador muere. Se ve «☠ Moriste.» y el botón «Volver dos decisiones atrás». Antes de cada decisión el juego guarda una copia de todo (escena, objetos, fragmentos, visitas, la criatura) en `history`, y al morir vuelve a la de dos decisiones antes. Las opciones que matan no se marcan. Las instrucciones lo explican.
+- `creature.mode()` y `creature.outcome`: cómo reacciona la criatura de la muralla y cómo terminó el encuentro.
 - `cameFrom`: la escena de la que viene el jugador. Sirve para cambiar el texto según por dónde llega (se usa en `cabana`).
 - Avisos sin tipo de decisión (`NOTICE_TYPES`): por ejemplo `addNotice("llave", "…")` muestra «🔒 …» arriba de las opciones. Todos los avisos van en ese lugar.
 - `effect: () => …`: la opción cambia algo al elegirla. Por ejemplo, `giveItem("madera")` pone un objeto en el primer lugar libre sin preguntar, y `swapItem("espada_incandescente", "espada_manchada", aviso)` transforma un objeto en otro en el mismo lugar.
@@ -89,7 +94,14 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `muralla_derecha`: la muralla sigue a la izquierda y a lo lejos se oyen golpes, espadas y gritos. Opciones: «Seguir caminando» (`muralla_casco`) y «Volver sobre tus pasos» (`bosque_camino`). Si ya se llegó al silencio, el texto dice «Desde adelante ya no llega ningún ruido.».
 - `muralla_casco`: pisás algo de metal: un casco gastado con marcas. Opciones: «Ponerte el casco» (te quedás en la escena), «Dejarlo tirado» (sigue a `muralla_silencio`) y «Volver sobre tus pasos». Después de ponértelo, o al volver a pasar, la opción de seguir dice «Seguir hacia adelante». Si lo dejaste, sigue tirado ahí.
 - `muralla_silencio`: los golpes y los gritos crecen y de golpe se callan. Opciones: «Continuar acercándote» (`muralla_pelea`), con el aviso «⚔ Lo que hiciste con la espada va a cambiar lo que pase.», y «Volver sobre tus pasos». Al volver: «Volvés al lugar donde se apagaron los ruidos…».
-- `muralla_pelea`: provisoria, con «(Texto pendiente…)». Es la primera variable del juego: lo que pase depende de lo que hiciste con la espada (no tomarla, tenerla incandescente o manchada).
+- `muralla_pelea`: la primera variable del juego. Un cuerpo en el barro y una criatura del pantano (la madre de los goblins) que lo arrastra al agua. Si entraste a la cabaña tiene «los mismos ojos»; si viste el casco, la armadura del cuerpo tiene sus mismas marcas. Según lo que hiciste (`creature.mode()`):
+  - **Mataste a los goblins** (furia): «⚔ Hacerle frente con la espada» (espada manchada: la matás, determinante, da «La madre del pantano»; con casco el zarpazo pega en el casco, sin casco te deja un tajo), «⚔ Defenderte con la madera» (con casco la espantás; sin casco morís), «⚔ Alzar la espada» (si además tenés la incandescente), «Huir por donde viniste» (con casco escapás; sin casco morís) y «Quedarte quieto» (morís).
+  - **Tenés la espada incandescente** (luz): «⚔ Alzar la espada» (la espanta), «Quedarte quieto» (se lleva el cuerpo) y «Volver sobre tus pasos».
+  - **Dejaste vivos a los goblins** (perdón): te huele, ronronea y se va sin el cuerpo. «Acercarte al cuerpo» o volver.
+  - **Nunca entraste a la cabaña** (extraño): «Quedarte quieto» (se lleva el cuerpo) o «Huir por donde viniste» (con casco escapás; sin casco morís).
+- Escenas de cada salida: `muralla_pelea_espada`, `muralla_pelea_madera`, `muralla_luz`, `muralla_se_lo_lleva`, `muralla_huida` y las muertes `muerte_madera`, `muerte_huida` y `muerte_quieto`.
+- `muralla_cuerpo`: el cuerpo está muerto y tiene un anillo. «Tomar el anillo» (pregunta en qué dedo), «Dejarle el anillo» y «Volver sobre tus pasos».
+- `muralla_fin`: el pantano y la muralla se extienden sin límite y es imposible seguir. Solo queda «Volver sobre tus pasos». Si la criatura se llevó el cuerpo, al volver dice que no queda rastro.
 - Al volver frente a la muralla (`bosque_camino`), el texto es «Volvés al lugar donde el bosque se termina…» y las opciones son izquierda, derecha y «Volver a la cabaña por el camino de árboles tallados». Al llegar así a la cabaña, el texto empieza con «Desandás el camino de árboles tallados…».
 - Se sacó la espada rota: ya no está en la encrucijada ni en los objetos.
 - `bosque`: el camino de árboles tallados lleva a una cabaña de pantano medio derrumbada, con ruidos que vienen de adentro. Ya no está la piedra con musgo, y se borraron `bosque_a` y `bosque_b`.
@@ -141,7 +153,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [x] Escribir `muralla_derecha` (los ruidos de pelea a lo lejos).
 - [x] Escribir `muralla_casco` (el casco gastado en el suelo).
 - [x] Escribir `muralla_silencio` (los ruidos se apagan de golpe).
-- [ ] Escribir `muralla_pelea` («Continuar acercándote»): cambia según lo que hiciste con la espada. Lo dicta Julián.
+- [x] Escribir `muralla_pelea`, la criatura, el cuerpo con el anillo y el final del camino de la derecha.
+- [x] Sumar las muertes con «Volver dos decisiones atrás».
+- [ ] Julián va a probar todo el camino de la derecha y pasar correcciones.
+- [ ] Definir el impacto del anillo más adelante en la historia.
 - [ ] Decidir dónde aparece la **llave trasera del mausoleo** y dónde se lleva en el cuerpo (lo define Julián). Con la llave, «Intentar abrir la puerta» de `muralla_izquierda` tiene que abrirla.
 - [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
@@ -172,6 +187,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `muralla_derecha`: a lo lejos, golpes, choque de espadas y gritos lejanos.
   - `muralla_casco`: un pie que pisa algo de metal.
   - `muralla_silencio`: golpes, espadas y gritos que se intensifican y se cortan de golpe.
+  - `muralla_pelea` y sus salidas: zarpazos, el casco que se abolla o suena como una campana, la madera que se parte, la espada que se clava, el chillido de la criatura, el chapoteo al hundirse en el agua y el ronroneo.
+  - Las muertes: un cuerpo que cae al barro.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 
