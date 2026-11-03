@@ -1389,24 +1389,27 @@
           note: "Llevás la espada manchada.", types: ["llevas", "determinante"], memory: "La madre del pantano",
           effect: () => { creature.outcome = "muerta"; } },
         { when: () => creature.mode() === "furia" && inv.has("madera") && inv.has("casco"), text: "Defenderte con la madera", next: "muralla_pelea_madera",
-          note: "Llevás la madera astillada.", types: ["llevas"], effect: () => { creature.outcome = "espantada"; } },
+          note: "Llevás la madera astillada.", types: ["llevas"], memory: "El ojo de la madre", effect: () => { creature.outcome = "espantada"; } },
         { when: () => creature.mode() === "furia" && inv.has("madera") && !inv.has("casco"), text: "Defenderte con la madera", next: "muerte_madera",
-          note: "Llevás la madera astillada.", types: ["llevas"] },
+          note: "Llevás la madera astillada.", types: ["llevas"], memory: "El ojo de la madre" },
         // A o B. La luz de la espada incandescente la espanta
         { when: () => (creature.mode() === "furia" || creature.mode() === "luz") && inv.has("espada_incandescente"), text: "Alzar la espada", next: "muralla_luz",
-          note: "La espada incandescente da luz.", types: ["llevas"], effect: () => { creature.outcome = "espantada"; } },
+          note: "La espada incandescente da luz.", types: ["llevas"], memory: "La luz que la hizo chillar", effect: () => { creature.outcome = "espantada"; } },
         // B y D. Quedarte quieto: se lleva el cuerpo
-        { when: () => creature.mode() === "luz" || creature.mode() === "extrano", text: "Quedarte quieto", next: "muralla_se_lo_lleva",
+        { when: () => creature.mode() === "luz", text: "Quedarte quieto", next: "muralla_se_lo_lleva", memory: "El cuerpo que se tragó el agua",
+          effect: () => { creature.outcome = "se_lo_llevo"; } },
+        { when: () => creature.mode() === "extrano", text: "Quedarte quieto", next: "muralla_se_lo_lleva", memory: "Un olor que no reconoce",
           effect: () => { creature.outcome = "se_lo_llevo"; } },
         // A y D. Huir: el casco te salva del zarpazo
-        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && inv.has("casco"), text: "Huir por donde viniste", next: "muralla_huida",
+        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && inv.has("casco"), text: "Huir por donde viniste", next: "muralla_huida", memory: "La campana del casco",
           effect: () => { creature.outcome = "huiste"; } },
-        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && !inv.has("casco"), text: "Huir por donde viniste", next: "muerte_huida" },
-        { when: () => creature.mode() === "furia", text: "Quedarte quieto", next: "muerte_quieto" },
+        { when: () => (creature.mode() === "furia" || creature.mode() === "extrano") && !inv.has("casco"), text: "Huir por donde viniste", next: "muerte_huida", memory: "La campana del casco" },
+        { when: () => creature.mode() === "furia", text: "Quedarte quieto", next: "muerte_quieto", memory: "Quieto ante la madre" },
         // C. Se fue sola
-        { when: () => creature.mode() === "perdon", text: "Acercarte al cuerpo", next: "muralla_cuerpo", effect: () => { creature.outcome = "se_fue"; } },
-        { when: () => creature.mode() === "perdon" || creature.mode() === "luz", text: "Volver sobre tus pasos", next: "bosque_camino",
-          effect: () => { if (creature.mode() === "perdon") creature.outcome = "se_fue"; } }
+        { when: () => creature.mode() === "perdon", text: "Acercarte al cuerpo", next: "muralla_cuerpo", memory: "El olor de sus crías", effect: () => { creature.outcome = "se_fue"; } },
+        { when: () => creature.mode() === "perdon", text: "Volver sobre tus pasos", next: "bosque_camino", memory: "El olor de sus crías",
+          effect: () => { creature.outcome = "se_fue"; } },
+        { when: () => creature.mode() === "luz", text: "Volver sobre tus pasos", next: "bosque_camino" }
       ]
     },
 
@@ -2713,7 +2716,8 @@
           const go = kb => {
             history.push(snap);
             if (choice.effect) choice.effect(); // effect: la opción cambia algo al elegirla
-            gainFragment(choice.memory); // memory: la opción deja un fragmento de memoria
+            // memory: la opción deja un fragmento de memoria (al morir no se gana)
+            if (!scenes[choice.next].isDeath) gainFragment(choice.memory);
             visited.add(current);
             cameFrom = current;
             current = choice.next;
