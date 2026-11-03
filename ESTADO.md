@@ -82,7 +82,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
 
 ### Rama del bosque (en reescritura)
-- `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedás en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`). Al tomar la espada el texto cambia («La puerta quedó vacía…»).
+- `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedás en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`) y «Volver hacia atrás, al pantano» (`inicio`), para no quedar atrapado entre la cabaña y la muralla. Al tomar la espada el texto cambia («La puerta quedó vacía…»).
 - `cabana_adentro`: tres goblins bebés que chillan. El texto va en tres párrafos: la cabaña rota, los goblins en el rincón y las preguntas («¿Tienen padre, tienen madre?»). Dos opciones determinantes (rojas): «Asesinar a las criaturas» e «Irte y dejarlas vivas».
   - **Con la espada en la mano:** `cabana_matanza_espada`. La espada se mancha (pasa a ser «Espada manchada») y da «Infanticida armado».
   - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso». La madera queda en una mano libre, y al salir todavía podés tomar la espada con la otra.
