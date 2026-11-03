@@ -1237,7 +1237,9 @@
       ],
       choices: [
         { when: () => !goblins.entered(), text: "Entrar a la cabaña", next: "cabana_adentro" },
-        { text: "Continuar el camino de árboles tallados", next: "bosque_camino" }
+        { text: "Continuar el camino de árboles tallados", next: "bosque_camino" },
+        // Para no quedar atrapado entre la cabaña y la muralla
+        { text: "Volver hacia atrás, al pantano", next: "inicio" }
       ],
       // label: texto propio de la opción en vez de "Recoger…"
       items: [{ id: "espada_incandescente", label: "Tomar la espada" }]
