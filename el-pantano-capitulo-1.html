@@ -711,6 +711,23 @@
     margin-bottom: 26px;
   }
 
+  /* Al morir: el recorrido del jugador */
+  .death-recap-title {
+    margin: 6px 0 4px;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+  .death-recap {
+    margin: 0 0 6px;
+    padding-left: 24px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--parchment-dim);
+  }
+  .death-fragments { margin: 0 0 8px; font-size: 14px; font-style: italic; color: #bcd8e6; }
+
   .restart-btn {
     display: block;
     margin: 0 auto;
@@ -2632,16 +2649,31 @@
   // Historial para volver atrás al morir: antes de cada decisión se guarda una
   // copia de todo lo que puede cambiar (escena, objetos, fragmentos, visitas…)
   let history = [];
+  let journey = []; // las decisiones que tomó el jugador, en orden (se muestran al morir)
 
   function snapshot() {
-    return structuredClone({ current, collected, visited, cameFrom, doorTried,
+    return structuredClone({ current, collected, visited, cameFrom, doorTried, journey,
       creatureOutcome: creature.outcome, equipment, backpack, dropped });
   }
 
   function restore(snap) {
-    ({ current, collected, visited, cameFrom, doorTried, equipment, backpack, dropped } = structuredClone(snap));
+    ({ current, collected, visited, cameFrom, doorTried, journey, equipment, backpack, dropped } = structuredClone(snap));
     creature.outcome = snap.creatureOutcome;
     pendingNotices = [];
+  }
+
+  // Deja todo como al empezar el juego
+  function resetGame() {
+    collected = [];
+    visited = new Set();
+    cameFrom = null;
+    doorTried = false;
+    creature.outcome = null;
+    history = [];
+    journey = [];
+    pendingNotices = [];
+    current = "inicio";
+    resetInventory();
   }
 
   // Vuelve a como estaba todo "steps" decisiones antes
@@ -2677,6 +2709,27 @@
       notice.style.color = NOTICE_TYPES.muerte.text;
       notice.textContent = `${NOTICE_TYPES.muerte.icon} Moriste.`;
       choicesEl.appendChild(notice);
+
+      // Todo lo que hizo el jugador hasta morir
+      const recapTitle = document.createElement("p");
+      recapTitle.className = "death-recap-title";
+      recapTitle.textContent = "Lo que hiciste";
+      choicesEl.appendChild(recapTitle);
+      const recap = document.createElement("ol");
+      recap.className = "death-recap";
+      journey.forEach(step => {
+        const li = document.createElement("li");
+        li.textContent = step;
+        recap.appendChild(li);
+      });
+      choicesEl.appendChild(recap);
+      if (collected.length) {
+        const frags = document.createElement("p");
+        frags.className = "death-fragments";
+        frags.textContent = `✦ Fragmentos de memoria: ${collected.join(", ")}.`;
+        choicesEl.appendChild(frags);
+      }
+
       const backBtn = makeChoiceButton("Volver dos decisiones atrás");
       backBtn.onclick = e => {
         if (choicesLocked()) return;
@@ -2684,6 +2737,15 @@
         rewind(2, e.detail === 0);
       };
       choicesEl.appendChild(backBtn);
+      const restartBtn = makeChoiceButton("Volver a empezar");
+      restartBtn.onclick = e => {
+        if (choicesLocked()) return;
+        playSfx("click_eleccion");
+        resetGame();
+        renderScene(current, e.detail === 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+      choicesEl.appendChild(restartBtn);
       footerNote.textContent = "El pantano te deja volver. Esta vez.";
       if (viaKeyboard) focusFirstButton(choicesEl);
       return;
@@ -2715,6 +2777,7 @@
           const snap = snapshot(); // para poder volver atrás si muere
           const go = kb => {
             history.push(snap);
+            journey.push(choice.text);
             if (choice.effect) choice.effect(); // effect: la opción cambia algo al elegirla
             // memory: la opción deja un fragmento de memoria (al morir no se gana)
             if (!scenes[choice.next].isDeath) gainFragment(choice.memory);
@@ -2741,6 +2804,7 @@
         if (choicesLocked()) return;
         playSfx("click_eleccion");
         takeItem(entry, kb => {
+          journey.push(entry.label || `Recoger ${ITEMS[entry.id].ref}`);
           dropped[id] = dropped[id].filter(other => other !== entry);
           renderSceneText(id); // el texto puede cambiar sin el objeto en el suelo
           renderChoices(id, kb);
@@ -2779,14 +2843,7 @@
     restartBtn.onclick = e => {
       if (choicesLocked()) return;
       playSfx("click_eleccion");
-      collected = [];
-      visited = new Set();
-      cameFrom = null;
-      doorTried = false;
-      creature.outcome = null;
-      history = [];
-      current = "inicio";
-      resetInventory();
+      resetGame();
       closeInventory(false);
       invBtn.hidden = true;
       gameScreen.style.display = "none";
