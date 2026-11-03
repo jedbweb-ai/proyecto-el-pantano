@@ -63,6 +63,14 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Infanticida monstruoso | Asesinar a las criaturas, sin la espada (con una madera del piso) |
 | Héroe de los goblins | Irte y dejarlas vivas |
 | La madre del pantano (provisorio) | Hacerle frente con la espada (matar a la criatura de la muralla) |
+| El ojo de la madre (provisorio) | Defenderte con la madera (le clavás la madera en un ojo) |
+| La luz que la hizo chillar (provisorio) | Alzar la espada incandescente (la criatura chilla y se hunde) |
+| El cuerpo que se tragó el agua (provisorio) | Quedarte quieto con la espada incandescente (se lleva el cuerpo) |
+| Un olor que no reconoce (provisorio) | Quedarte quieto sin haber entrado a la cabaña (te huele y se lleva el cuerpo) |
+| El olor de sus crías (provisorio) | Dejaste vivos a los goblins: te huele, ronronea y se va («Acercarte al cuerpo» o «Volver sobre tus pasos») |
+| La campana del casco (provisorio) | Huir por donde viniste con el casco puesto |
+
+- Las opciones que pueden matarte llevan el mismo fragmento que su variante segura, para que se vean iguales (✦). Al morir el fragmento no se gana (ver `isDeath`).
 
 ### Herramientas para escribir la historia (objeto `scenes`)
 - `take: "id"`: la opción agarra un objeto.
