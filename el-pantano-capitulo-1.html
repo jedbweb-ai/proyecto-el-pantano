@@ -1302,7 +1302,9 @@
     muralla_derecha: {
       text: [
         "Seguís caminando hacia la derecha. La muralla sigue a tu izquierda, alta y negra, y se extiende igual que antes.",
-        "Pero a lo lejos, muy a lo lejos, empezás a oír golpes, el choque de unas espadas y gritos que apenas llegan a través de la niebla."
+        { when: () => !visited.has("muralla_silencio"), text: "Pero a lo lejos, muy a lo lejos, empezás a oír golpes, el choque de unas espadas y gritos que apenas llegan a través de la niebla." },
+        // Después de que se apagaron los ruidos
+        { when: () => visited.has("muralla_silencio"), text: "Desde adelante ya no llega ningún ruido." }
       ],
       choices: [
         { text: "Seguir caminando", next: "muralla_casco" },
@@ -1310,9 +1312,43 @@
       ]
     },
 
-    // PROVISORIO: falta pasar el texto del casco
+    // Un casco gastado tirado junto a la muralla
     muralla_casco: {
-      text: ["(Texto pendiente: seguir caminando junto a la muralla.)"],
+      text: [
+        // Primera vez
+        { when: () => !visited.has("muralla_casco"), text: "Avanzás un trecho más, hasta que tu pie pisa algo duro. Por el ruido, parece metal." },
+        { when: () => !visited.has("muralla_casco"), text: "Te agachás a revisarlo. Es un casco gastado, con unas marcas en el metal." },
+        // Al volver a pasar
+        { when: () => visited.has("muralla_casco"), text: "Pasás otra vez por el lugar donde encontraste el casco." },
+        { when: () => visited.has("muralla_casco") && inv.liesIn("casco", "muralla_casco"), text: "Sigue ahí tirado, con sus marcas en el metal." }
+      ],
+      choices: [
+        // Mientras el casco esté en el suelo la primera vez, se puede dejar tirado y seguir
+        { when: () => !visited.has("muralla_casco") && inv.liesIn("casco", "muralla_casco"), text: "Dejarlo tirado", next: "muralla_silencio" },
+        { when: () => visited.has("muralla_casco") || !inv.liesIn("casco", "muralla_casco"), text: "Seguir hacia adelante", next: "muralla_silencio" },
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ],
+      items: [{ id: "casco", label: "Ponerte el casco" }]
+    },
+
+    // Los ruidos de la pelea crecen y de golpe se apagan
+    muralla_silencio: {
+      text: [
+        { when: () => !visited.has("muralla_silencio"), text: "Te seguís acercando. Los golpes y los gritos se vuelven cada vez más fuertes." },
+        { when: () => !visited.has("muralla_silencio"), text: "Das unos pasos más y, de golpe, todo se calla. No se oye nada más." },
+        { when: () => visited.has("muralla_silencio"), text: "Volvés al lugar donde se apagaron los ruidos. Sigue sin oírse nada." }
+      ],
+      choices: [
+        // note: aviso chico dentro de la opción. Lo que pase depende de lo que hizo con la espada
+        { text: "Continuar acercándote", next: "muralla_pelea",
+          note: "⚔ Lo que hiciste con la espada va a cambiar lo que pase." },
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ]
+    },
+
+    // PROVISORIO: falta lo que dicta Julián (cambia según lo que hizo con la espada)
+    muralla_pelea: {
+      text: ["(Texto pendiente: continuar acercándote.)"],
       choices: [
         { text: "Volver sobre tus pasos", next: "bosque_camino" }
       ]
@@ -1701,6 +1737,17 @@
       capacity: 4,
       art: `<rect class="mq-leather" x="-38" y="-36" width="76" height="72" rx="12"/>
             <path class="mq-leather" d="M-30 -30 Q0 -40 30 -30 L28 -6 Q0 2 -28 -6 Z"/>`
+    },
+    casco: {
+      name: "Casco gastado",
+      ref: "el casco gastado",
+      desc: "Metal viejo y abollado, con unas marcas raspadas en la superficie.",
+      fits: ["cabeza"],
+      takeText: "Te pusiste el casco gastado.",
+      art: `<path class="mq-metal" d="M-23 12 Q-24 -17 0 -18 Q24 -17 23 12 Q0 7 -23 12 Z"/>
+            <path class="mq-seam" d="M0 -18 L0 8"/>
+            <path class="mq-metal" d="M-2.5 9 L-2.5 22 L2.5 22 L2.5 9 Z"/>
+            <path class="mq-seam" d="M-14 -6 l5 4 M-12 -9 l6 5 M10 -4 l6 -3 M9 0 l5 -2"/>`
     },
     pantalon_viejo: {
       name: "Pantalón viejo",
@@ -2438,7 +2485,8 @@
       scene.choices.filter(isShown).forEach(choice => {
         // requires: la opción se ve pero queda bloqueada, con el motivo
         const blockedReason = choice.requires && !choice.requires.test() ? choice.requires.reason : null;
-        const btn = makeChoiceButton(choice.text, blockedReason);
+        // note: aviso chico dentro de la opción, sin bloquearla
+        const btn = makeChoiceButton(choice.text, blockedReason || choice.note);
         btn.disabled = !!blockedReason;
         applyChoiceTypes(btn, choiceTypes(choice));
         btn.onclick = e => {

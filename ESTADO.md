@@ -37,6 +37,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Espada incandescente | Mano izquierda o mano derecha | Sí: apoyada en la puerta de la cabaña, con «Tomar la espada» |
 | Madera astillada | Mano izquierda o mano derecha | Sí: al asesinar a los goblins sin la espada, queda sola en una mano libre |
 | Espada manchada | Mano izquierda o mano derecha | Sí: la espada incandescente se transforma en esta al asesinar a los goblins con ella |
+| Casco gastado | Solo cabeza (se pone directo) | Sí: tirado junto a la muralla, a la derecha, con «Ponerte el casco» |
 | Mochila de cuero | Espalda (4 lugares adentro) | No, solo en modo prueba |
 
 ### Tipos de decisión (`CHOICE_TYPES`)
@@ -65,6 +66,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `memory: "Nombre"`: la opción da un fragmento.
 - `when: () => …`: la opción o el párrafo solo aparece si se cumple la condición. Por ejemplo, `inv.isIn("amuleto", "cuello")`.
 - `requires: { test, reason }`: la opción se ve, pero queda bloqueada y muestra el motivo.
+- `note: "…"`: un aviso chico dentro de la opción, en itálica, sin bloquearla. Se usa en «Continuar acercándote» («⚔ Lo que hiciste con la espada va a cambiar lo que pase.»).
 - `types: [...]`: tipos de decisión extra.
 - `items: ["id"]` (en la escena): objetos tirados en el suelo desde el principio, con la opción "Recoger…" abajo. El jugador se queda en la misma escena al recogerlos y el texto se actualiza. Con `{ id, label }` la opción lleva otro texto (por ejemplo «Tomar la espada»).
 - `inv.liesIn("objeto", "escena")`: verdadero si el objeto está en el suelo de esa escena. Sirve para cambiar el texto cuando ya se lo llevaron.
@@ -84,8 +86,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - Después de entrar, afuera ya no aparece «Entrar a la cabaña» y el texto cambia según lo que hiciste.
 - `bosque_camino`: el camino de árboles tallados termina frente a una muralla negra y alta que se pierde en la niebla. Opciones: «Caminar hacia la izquierda y revisar la muralla» (`muralla_izquierda`) y «Caminar hacia la derecha y revisar la muralla» (`muralla_derecha`). Se llega desde el bosque o desde la cabaña, se haya entrado o no: cada camino sigue funcionando por su cuenta. Sin sonidos por ahora.
 - `muralla_izquierda`: la muralla sigue sin fin hasta una puerta negra en un recoveco. «Intentar abrir la puerta» muestra el aviso «🔒 Se necesita la llave trasera del mausoleo.» (en el mismo lugar que los avisos de objetos) y deja solo «Volver sobre tus pasos». Al volver más tarde se puede intentar de nuevo.
-- `muralla_derecha`: la muralla sigue a la izquierda y a lo lejos se oyen golpes, espadas y gritos. Opciones: «Seguir caminando» (`muralla_casco`) y «Volver sobre tus pasos» (`bosque_camino`).
-- `muralla_casco`: provisoria, con «(Texto pendiente…)». Ahí va el casco gastado.
+- `muralla_derecha`: la muralla sigue a la izquierda y a lo lejos se oyen golpes, espadas y gritos. Opciones: «Seguir caminando» (`muralla_casco`) y «Volver sobre tus pasos» (`bosque_camino`). Si ya se llegó al silencio, el texto dice «Desde adelante ya no llega ningún ruido.».
+- `muralla_casco`: pisás algo de metal: un casco gastado con marcas. Opciones: «Ponerte el casco» (te quedás en la escena), «Dejarlo tirado» (sigue a `muralla_silencio`) y «Volver sobre tus pasos». Después de ponértelo, o al volver a pasar, la opción de seguir dice «Seguir hacia adelante». Si lo dejaste, sigue tirado ahí.
+- `muralla_silencio`: los golpes y los gritos crecen y de golpe se callan. Opciones: «Continuar acercándote» (`muralla_pelea`), con el aviso «⚔ Lo que hiciste con la espada va a cambiar lo que pase.», y «Volver sobre tus pasos». Al volver: «Volvés al lugar donde se apagaron los ruidos…».
+- `muralla_pelea`: provisoria, con «(Texto pendiente…)». Es la primera variable del juego: lo que pase depende de lo que hiciste con la espada (no tomarla, tenerla incandescente o manchada).
 - Al volver frente a la muralla (`bosque_camino`), el texto es «Volvés al lugar donde el bosque se termina…» y las opciones son izquierda, derecha y «Volver a la cabaña por el camino de árboles tallados». Al llegar así a la cabaña, el texto empieza con «Desandás el camino de árboles tallados…».
 - Se sacó la espada rota: ya no está en la encrucijada ni en los objetos.
 - `bosque`: el camino de árboles tallados lleva a una cabaña de pantano medio derrumbada, con ruidos que vienen de adentro. Ya no está la piedra con musgo, y se borraron `bosque_a` y `bosque_b`.
@@ -135,7 +139,9 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [x] Escribir `bosque_camino` («Continuar el camino de árboles tallados»).
 - [x] Escribir `muralla_izquierda` (la puerta negra cerrada con llave).
 - [x] Escribir `muralla_derecha` (los ruidos de pelea a lo lejos).
-- [ ] Escribir `muralla_casco` (el casco gastado en el suelo).
+- [x] Escribir `muralla_casco` (el casco gastado en el suelo).
+- [x] Escribir `muralla_silencio` (los ruidos se apagan de golpe).
+- [ ] Escribir `muralla_pelea` («Continuar acercándote»): cambia según lo que hiciste con la espada. Lo dicta Julián.
 - [ ] Decidir dónde aparece la **llave trasera del mausoleo** y dónde se lleva en el cuerpo (lo define Julián). Con la llave, «Intentar abrir la puerta» de `muralla_izquierda` tiene que abrirla.
 - [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
@@ -164,6 +170,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `cabana_matanza_madera` y `cabana_matanza_espada`: un monstruo chico que agoniza.
   - `muralla_izquierda` (intentar abrir la puerta): una puerta trabada que no se abre.
   - `muralla_derecha`: a lo lejos, golpes, choque de espadas y gritos lejanos.
+  - `muralla_casco`: un pie que pisa algo de metal.
+  - `muralla_silencio`: golpes, espadas y gritos que se intensifican y se cortan de golpe.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 
