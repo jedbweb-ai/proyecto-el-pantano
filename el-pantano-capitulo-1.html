@@ -1298,11 +1298,23 @@
       ]
     },
 
-    // PROVISORIO: falta el texto que dicta Julián
+    // A lo lejos se oye una pelea
     muralla_derecha: {
-      text: ["(Texto pendiente: caminar hacia la derecha y revisar la muralla.)"],
+      text: [
+        "Seguís caminando hacia la derecha. La muralla sigue a tu izquierda, alta y negra, y se extiende igual que antes.",
+        "Pero a lo lejos, muy a lo lejos, empezás a oír golpes, el choque de unas espadas y gritos que apenas llegan a través de la niebla."
+      ],
       choices: [
-        { text: "Seguir avanzando", next: "encrucijada" }
+        { text: "Seguir caminando", next: "muralla_casco" },
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
+      ]
+    },
+
+    // PROVISORIO: falta pasar el texto del casco
+    muralla_casco: {
+      text: ["(Texto pendiente: seguir caminando junto a la muralla.)"],
+      choices: [
+        { text: "Volver sobre tus pasos", next: "bosque_camino" }
       ]
     },
 
