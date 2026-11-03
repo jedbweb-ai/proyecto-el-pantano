@@ -18,7 +18,8 @@ Hablale a Julián en español.
 - Lo que dicta Julián se adapta al estilo del juego sin cambiar lo que pasa: segunda persona con voseo, presente, tono oscuro y sensorial, opciones cortas en infinitivo («Acercarte a la cabaña»). Mostrale la versión adaptada antes de pasarla al juego.
 - Sin guiones largos (—) en ningún texto: usá punto, coma o dos puntos.
 - Todo texto nuevo (del juego o de skills que creemos) se pasa por el skill The Humanizer antes de mostrárselo a Julián.
-- Los sonidos que nombre Julián se anotan en «Sonidos a buscar» (en `ESTADO.md`) y se agregan después, todos juntos.
+- Lo que dicta Julián es una referencia general. Las decisiones chicas de adaptación las toma Claude sin preguntar y se las cuenta al mostrar el texto: reusar frases que ya existen en el juego (por ejemplo «Volver sobre tus pasos» para volver al lugar anterior), no repetir imágenes de otras escenas y ajustar la puntuación al ritmo de la escena.
+- Los sonidos se anotan solos en «Sonidos a buscar» (en `ESTADO.md`): los que nombre Julián y también los que aparecen en el texto que dicta (golpes, gritos, crujidos…), sin preguntar. Se agregan después, todos juntos.
 - Los fragmentos de memoria salen solo de decisiones importantes (`memory` en la opción). Sus nombres son provisorios hasta que Julián los defina.
 - Un tipo de decisión nuevo se agrega en `CHOICE_TYPES` con su color y su ícono; después hay que actualizar las instrucciones del juego.
 
