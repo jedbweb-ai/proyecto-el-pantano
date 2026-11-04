@@ -69,6 +69,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Un olor que no reconoce (provisorio) | Quedarte quieto sin haber entrado a la cabaña (te huele y se lleva el cuerpo) |
 | El olor de sus crías (provisorio) | Dejaste vivos a los goblins: te huele, ronronea y se va («Acercarte al cuerpo» o «Volver sobre tus pasos») |
 | La campana del casco (provisorio) | Huir por donde viniste con el casco puesto |
+| Cobarde del pantano (provisorio) | Irte corriendo cuando la criatura del pantano te habla |
 
 - Las opciones que pueden matarte llevan el mismo fragmento que su variante segura, para que se vean iguales (✦). Al morir el fragmento no se gana (ver `isDeath`).
 
@@ -124,7 +125,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `pantano_escuchar`: «Empiezas a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.». Después depende de lo que llevas:
   - **Espada manchada:** la voz se calla de golpe. Opciones: «Seguir caminando» (`pantano_seguir`) y «Volver sobre tus pasos».
   - **Madera ensangrentada:** «Quedarte a escuchar la voz» lleva a `muerte_voz`: algo sale del barro y te arrastra al agua. La opción se ve igual que la otra.
-  - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Por ahora solo tiene «Volver sobre tus pasos»: faltan las opciones de la conversación.
+  - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Opciones:
+    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos».
+    - «Quedarte callado» (`pantano_insiste`): la criatura insiste, más cerca («Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»). Quedan «Irte corriendo» y «Responderle».
+    - «Responderle» (`pantano_responder`): provisoria, la conversación la define Julián. Más adelante estas opciones van a cambiar según los objetos y los fragmentos.
 - `pantano_seguir`: provisoria, con «(Texto pendiente…)».
 - En `inicio`, al volver desde el pantano el texto es «Desandas el camino por el lodo, de espaldas al resplandor…», y la opción pasa a ser «Volver hacia el resplandor del pantano», que lleva directo a `pantano_voz` (el amuleto no se vuelve a encontrar).
 
@@ -183,7 +187,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
 - [ ] Escribir `pantano_seguir` («Seguir caminando» sin escuchar la voz). Lo dicta Julián.
 - [x] Escribir los tres casos de `pantano_escuchar` (espada manchada, madera, sin sangre).
-- [ ] Escribir la conversación con la criatura que habla (opciones después de «¿Me entiendes?»). Lo dicta Julián.
+- [x] Opciones después de «¿Me entiendes?»: irte corriendo, quedarte callado o responderle.
+- [ ] Escribir la conversación de «Responderle» (`pantano_responder`). Lo dicta Julián.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
