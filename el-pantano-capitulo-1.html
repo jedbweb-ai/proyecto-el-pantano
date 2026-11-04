@@ -1203,13 +1203,17 @@
         { when: () => !visited.has("inicio"), text: "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez." },
         { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto. Es una voz, o varias, que cantan en una lengua que no conocés y que sin embargo entendés." },
         // Al volver desde el bosque
-        { when: () => visited.has("inicio"), text: "Desandás el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
+        { when: () => visited.has("inicio") && !(cameFrom || "").startsWith("pantano"), text: "Desandás el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
+        // Al volver desde el pantano del amuleto
+        { when: () => visited.has("inicio") && (cameFrom || "").startsWith("pantano"), text: "Desandás el camino por el lodo, de espaldas al resplandor, hasta el lugar donde despertaste. La niebla sigue ahí, y también el eco del canto." },
         "¿Hacia dónde te dirigís?"
       ],
       choices: [
         { when: () => !visited.has("bosque"), text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
         { when: () => visited.has("bosque"), text: "Volver al bosque de troncos tallados", next: "bosque" },
-        { text: "Seguir hacia el resplandor del pantano", next: "pantano" },
+        { when: () => !visited.has("pantano"), text: "Seguir hacia el resplandor del pantano", next: "pantano" },
+        // El amuleto ya se encontró: va directo a donde se oye la voz
+        { when: () => visited.has("pantano"), text: "Volver hacia el resplandor del pantano", next: "pantano_voz" },
         { text: "Ir tras el eco del canto", next: "canto" }
       ],
       // items: objetos tirados en la escena, con la opción "Recoger…" abajo
@@ -1536,7 +1540,7 @@
     pantano: {
       text: [
         "Avanzás hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacás un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
-        "Podrías guardarte el amuleto, que quizás sea tuyo o quizás explique algo, o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
+        "Podrías guardarte el amuleto o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
       ],
       choices: [
         { text: "Guardarte el amuleto", next: "pantano_a", take: "amuleto" },
@@ -1551,7 +1555,7 @@
         { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho, y no es solo el del amuleto." }
       ],
       choices: [
-        { text: "Seguir avanzando", next: "encrucijada" }
+        { text: "Seguir avanzando", next: "pantano_voz" }
       ]
     },
 
@@ -1560,7 +1564,38 @@
         "Dejás que el amuleto se hunda de nuevo. El agua se lo traga sin un solo sonido, y por un segundo te preguntás si hiciste bien. El resplandor sigue ahí adelante, indiferente a tu decisión, esperando de todas formas."
       ],
       choices: [
-        { text: "Seguir avanzando", next: "encrucijada" }
+        { text: "Seguir avanzando", next: "pantano_voz" }
+      ]
+    },
+
+    // Una voz que intenta comunicarse con el jugador
+    pantano_voz: {
+      text: [
+        { when: () => cameFrom === "pantano_a" || cameFrom === "pantano_b", text: "Seguís avanzando por el pantano, con el lodo hasta las rodillas. De a poco empezás a oír una voz. No sabés de dónde sale, pero parece que intenta decirte algo." },
+        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b", text: "Volvés a avanzar por el lodo hacia el resplandor. La voz sigue ahí, como si te hubiera estado esperando." }
+      ],
+      choices: [
+        { text: "Seguir caminando", next: "pantano_seguir" },
+        { text: "Quedarte a escuchar la voz", next: "pantano_escuchar" },
+        { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    pantano_escuchar: {
+      text: [
+        "Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad."
+      ],
+      // PROVISORIO: falta lo que dicta Julián
+      choices: [
+        { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    // PROVISORIO: falta lo que dicta Julián
+    pantano_seguir: {
+      text: ["(Texto pendiente: seguir caminando sin escuchar la voz.)"],
+      choices: [
+        { text: "Volver sobre tus pasos", next: "inicio" }
       ]
     },
 
