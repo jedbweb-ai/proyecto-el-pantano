@@ -92,7 +92,7 @@
     text-transform: uppercase;
   }
 
-  /* ---------- Inventario: la silueta con lo que llevás encima ---------- */
+  /* ---------- Inventario: la silueta con lo que llevas encima ---------- */
   .inv-overlay {
     position: fixed;
     inset: 0;
@@ -274,7 +274,7 @@
   .mq-cord { fill: none; stroke: #7a6340; stroke-width: 1.4; }
   .mq-strap { fill: none; stroke: #4a3d2a; stroke-width: 4; stroke-linecap: round; }
 
-  /* "¿Dónde lo llevás?" y opciones bloqueadas */
+  /* "¿Dónde lo llevas?" y opciones bloqueadas */
   .placement-prompt { margin: 0 0 2px; font-size: 16px; color: var(--parchment); }
   .placement-prompt strong { color: var(--gold-bright); font-weight: normal; font-style: italic; }
   .placement-hint { margin: 0 0 4px; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--mist); }
@@ -974,13 +974,13 @@
 
     <main class="card">
       <div class="scene-text instructions-text">
-        <p>«El Pantano» es un juego estilo «elegí tu propia aventura», donde cada decisión que tomás tiene efectos distintos a lo largo de la aventura.</p>
-        <p>Elegí bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
-        <p>Todo lo que encontrás lo llevás encima, y dónde lo llevás también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Tocá la silueta, arriba a la derecha, para ver qué cargás y los fragmentos de memoria que fuiste recuperando.</p>
+        <p>«El Pantano» es un juego estilo «elige tu propia aventura», donde cada decisión que tomas tiene efectos distintos a lo largo de la aventura.</p>
+        <p>Elige bien tu camino: cada decisión traerá sus propios beneficios o consecuencias.</p>
+        <p>Todo lo que encuentras lo llevas encima, y dónde lo llevas también importa: tus manos, tu cuello o tus bolsillos tienen lugar limitado. Toca la silueta, arriba a la derecha, para ver qué cargas y los fragmentos de memoria que fuiste recuperando.</p>
         <p>Las opciones marcadas con ◆ te dan algo para llevar; las marcadas con ✦ dejan un fragmento de memoria. Algunas hacen las dos cosas.</p>
         <p>Las opciones en rojo, marcadas con ✷, son decisiones determinantes: pesan más que las otras y también dejan un fragmento de memoria.</p>
-        <p>Las opciones en gris, marcadas con ⚔, aparecen solo por algo que llevás encima.</p>
-        <p>En el pantano se puede morir. Si te pasa, podés volver dos decisiones atrás y elegir otro camino.</p>
+        <p>Las opciones en gris, marcadas con ⚔, aparecen solo por algo que llevas encima.</p>
+        <p>En el pantano se puede morir. Si te pasa, puedes volver dos decisiones atrás y elegir otro camino.</p>
       </div>
       <div class="choices">
         <button class="choice-btn" id="btn-back-menu">Volver al menú</button>
@@ -1011,7 +1011,7 @@
 
   <button class="sound-btn" id="sound-btn" aria-label="Silenciar música y efectos" aria-pressed="false" title="Silenciar música y efectos">🔊</button>
 
-  <button class="inv-btn" id="inv-btn" type="button" aria-label="Ver lo que llevás encima" title="Lo que llevás encima" hidden>
+  <button class="inv-btn" id="inv-btn" type="button" aria-label="Ver lo que llevas encima" title="Lo que llevas encima" hidden>
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="5" r="3.3" fill="currentColor"/>
       <path d="M6.5 22 L8 10.6 Q12 8.4 16 10.6 L17.5 22 Z" fill="currentColor"/>
@@ -1034,11 +1034,11 @@
   <div class="inv-overlay" id="inv-overlay" hidden>
     <div class="inv-panel" role="dialog" aria-modal="true" aria-labelledby="inv-title">
       <button class="inv-close" id="inv-close" type="button" aria-label="Cerrar">×</button>
-      <h2 class="inv-title" id="inv-title" tabindex="-1">Lo que llevás encima</h2>
-      <p class="inv-sub">No sabés quién sos. Solo lo que cargás.</p>
+      <h2 class="inv-title" id="inv-title" tabindex="-1">Lo que llevas encima</h2>
+      <p class="inv-sub">No sabes quién eres. Solo lo que cargas.</p>
       <div class="inv-layout">
         <div class="inv-figure">
-          <svg id="inv-svg" viewBox="0 -16 200 384" role="img" aria-label="Silueta de un maniquí sin rostro con los objetos que llevás encima"></svg>
+          <svg id="inv-svg" viewBox="0 -16 200 384" role="img" aria-label="Silueta de un maniquí sin rostro con los objetos que llevas encima"></svg>
           <div class="inv-fragments" id="inv-fragments"></div>
         </div>
         <div>
@@ -1053,7 +1053,7 @@
   <div class="chapter-transition" id="chapter-transition">
     <div class="chapter-transition-number" id="chapter-transition-number">Capítulo 1</div>
     <div class="chapter-transition-subtitle" id="chapter-transition-subtitle"></div>
-    <div class="chapter-transition-hint" aria-hidden="true">Tocá para continuar</div>
+    <div class="chapter-transition-hint" aria-hidden="true">Toca para continuar</div>
   </div>
 </div>
 
@@ -1061,7 +1061,7 @@
 (function(){
 
   /* ---------- Audio: música ambiente + efectos ----------
-     Colocá tus archivos en una carpeta "audio" junto a este HTML.
+     Coloca tus archivos en una carpeta "audio" junto a este HTML.
      Por ahora solo trabajamos: música del menú, música del Capítulo I
      (una sola pista, todavía sin variantes por escena/elección) y el
      sonido de click en los botones. Ver audio/README.md para el detalle.
@@ -1187,7 +1187,7 @@
   // el encuentro ("muerta", "espantada", "se_fue", "se_lo_llevo", "huiste")
   const creature = {
     outcome: null,
-    // Cómo reacciona al verte, según lo que hiciste en la cabaña y lo que llevás
+    // Cómo reacciona al verte, según lo que hiciste en la cabaña y lo que llevas
     mode: () => goblins.killed() ? "furia"
       : inv.has("espada_incandescente") ? "luz"
       : goblins.entered() ? "perdon" : "extrano",
@@ -1200,13 +1200,13 @@
     inicio: {
       text: [
         // Primera vez: el despertar
-        { when: () => !visited.has("inicio"), text: "Abrís los ojos y lo primero que sentís es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconocés, envuelto en una niebla espesa que apaga los sonidos del mundo. No recordás tu nombre. No recordás cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez." },
-        { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos creés distinguir formas talladas en la corteza. Frente a vos, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto. Es una voz, o varias, que cantan en una lengua que no conocés y que sin embargo entendés." },
+        { when: () => !visited.has("inicio"), text: "Abres los ojos y lo primero que sientes es el frío del lodo trepando por tus piernas. Estás hundido hasta las rodillas en un pantano que no reconoces, envuelto en una niebla espesa que apaga los sonidos del mundo. No recuerdas tu nombre. No recuerdas cómo llegaste hasta acá. Solo el latido de tu corazón y el peso húmedo del aire, dulce y podrido a la vez." },
+        { when: () => !visited.has("inicio"), text: "A tu izquierda se extiende un bosque tan denso que la luz apenas lo atraviesa; entre los troncos retorcidos crees distinguir formas talladas en la corteza. Frente a ti, el pantano continúa hacia el horizonte, donde el agua brilla con un resplandor que no debería estar ahí. Y a tu derecha, apenas un susurro, te llega el eco de un canto. Es una voz, o varias, que cantan en una lengua que no conoces y que sin embargo entiendes." },
         // Al volver desde el bosque
-        { when: () => visited.has("inicio") && !(cameFrom || "").startsWith("pantano"), text: "Desandás el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
+        { when: () => visited.has("inicio") && !(cameFrom || "").startsWith("pantano"), text: "Desandas el camino de árboles marcados hasta que el bosque te devuelve al pantano, al mismo lodo donde despertaste. La niebla sigue ahí, y también el resplandor y el eco del canto." },
         // Al volver desde el pantano del amuleto
-        { when: () => visited.has("inicio") && (cameFrom || "").startsWith("pantano"), text: "Desandás el camino por el lodo, de espaldas al resplandor, hasta el lugar donde despertaste. La niebla sigue ahí, y también el eco del canto." },
-        "¿Hacia dónde te dirigís?"
+        { when: () => visited.has("inicio") && (cameFrom || "").startsWith("pantano"), text: "Desandas el camino por el lodo, de espaldas al resplandor, hasta el lugar donde despertaste. La niebla sigue ahí, y también el eco del canto." },
+        "¿Hacia dónde te diriges?"
       ],
       choices: [
         { when: () => !visited.has("bosque"), text: "Adentrarte en el bosque de troncos tallados", next: "bosque" },
@@ -1224,10 +1224,10 @@
       text: [
         // Primera vez: la entrada completa al bosque
         { when: () => !visited.has("bosque"), text: "Cada paso entre los árboles hace crujir algo que no es exactamente madera. Las formas talladas en los troncos resultan ser símbolos: espirales, ojos y runas gastadas por siglos de lluvia." },
-        { when: () => !visited.has("bosque"), text: "Seguís caminando, guiado por el rastro de árboles marcados, como si alguien los hubiera tallado para que nadie se perdiera… o para que todos terminaran en el mismo lugar. Entre la niebla aparece una cabaña. Es una cabaña de pantano, vieja y medio derrumbada: las tablas, hinchadas de humedad, se pudren sobre pilotes torcidos; el techo se hunde hacia un costado y la única ventana es un hueco negro, tapado a medias con trapos." },
-        { when: () => !visited.has("bosque"), text: "Al acercarte escuchás unos ruidos pequeños que vienen de adentro: algo que raspa la madera, se detiene y vuelve a raspar." },
+        { when: () => !visited.has("bosque"), text: "Sigues caminando, guiado por el rastro de árboles marcados, como si alguien los hubiera tallado para que nadie se perdiera… o para que todos terminaran en el mismo lugar. Entre la niebla aparece una cabaña. Es una cabaña de pantano, vieja y medio derrumbada: las tablas, hinchadas de humedad, se pudren sobre pilotes torcidos; el techo se hunde hacia un costado y la única ventana es un hueco negro, tapado a medias con trapos." },
+        { when: () => !visited.has("bosque"), text: "Al acercarte escuchas unos ruidos pequeños que vienen de adentro: algo que raspa la madera, se detiene y vuelve a raspar." },
         // Si vuelve desde el pantano, va directo a la cabaña
-        { when: () => visited.has("bosque"), text: "Volvés a seguir el rastro de árboles tallados hasta la cabaña. Desde adentro siguen llegando esos ruidos pequeños: algo que raspa la madera, se detiene y vuelve a raspar." }
+        { when: () => visited.has("bosque"), text: "Vuelves a seguir el rastro de árboles tallados hasta la cabaña. Desde adentro siguen llegando esos ruidos pequeños: algo que raspa la madera, se detiene y vuelve a raspar." }
       ],
       choices: [
         { text: "Acercarte a la cabaña", next: "cabana" },
@@ -1239,21 +1239,21 @@
     cabana: {
       text: [
         // De vuelta desde la muralla, por el camino de árboles tallados
-        { when: () => cameFrom === "bosque_camino" && goblins.killed(), text: "Desandás el camino de árboles tallados hasta la cabaña. Adentro ya no se oye nada." },
-        { when: () => cameFrom === "bosque_camino" && !goblins.killed(), text: "Desandás el camino de árboles tallados hasta la cabaña. Desde adentro siguen llegando los chillidos, cortos y roncos." },
+        { when: () => cameFrom === "bosque_camino" && goblins.killed(), text: "Desandas el camino de árboles tallados hasta la cabaña. Adentro ya no se oye nada." },
+        { when: () => cameFrom === "bosque_camino" && !goblins.killed(), text: "Desandas el camino de árboles tallados hasta la cabaña. Desde adentro siguen llegando los chillidos, cortos y roncos." },
         { when: () => cameFrom === "bosque_camino" && !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Cerca de la puerta, algo brilla entre la niebla." },
         // Antes de entrar: el brillo de la espada solo se ve mientras siga apoyada en la puerta
-        { when: () => cameFrom !== "bosque_camino" && !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Mientras te acercás, ves un brillo pequeño entre la niebla, cerca de la puerta. Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
+        { when: () => cameFrom !== "bosque_camino" && !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Mientras te acercas, ves un brillo pequeño entre la niebla, cerca de la puerta. Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
         { when: () => cameFrom !== "bosque_camino" && !goblins.entered() && !inv.liesIn("espada_incandescente", "cabana"), text: "Cada paso hace crujir las maderas podridas que rodean la cabaña. Adentro, los ruidos se vuelven más claros. Son chillidos cortos y roncos, como de un animal chico y deforme, y se mezclan con algo que se arrastra sobre las tablas, se queda quieto y vuelve a moverse." },
         // Al salir, según lo que hizo con los goblins
-        { when: () => cameFrom !== "bosque_camino" && goblins.killed(), text: "Salís de la cabaña. Adentro ya no se oye nada, y el silencio del pantano te pesa más que antes." },
-        { when: () => cameFrom !== "bosque_camino" && goblins.entered() && !goblins.killed(), text: "Salís de la cabaña y cerrás la puerta. Del otro lado de las tablas siguen los chillidos." },
+        { when: () => cameFrom !== "bosque_camino" && goblins.killed(), text: "Sales de la cabaña. Adentro ya no se oye nada, y el silencio del pantano te pesa más que antes." },
+        { when: () => cameFrom !== "bosque_camino" && goblins.entered() && !goblins.killed(), text: "Sales de la cabaña y cierras la puerta. Del otro lado de las tablas siguen los chillidos." },
         // La espada
         { when: () => !goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "Al llegar ves de dónde sale el brillo. Hay una espada apoyada contra la puerta, y su hoja resplandece como un metal que todavía no terminó de enfriarse." },
         { when: () => goblins.entered() && inv.liesIn("espada_incandescente", "cabana"), text: "La espada sigue apoyada contra la puerta, con la hoja encendida." },
         { when: () => !inv.liesIn("espada_incandescente", "cabana") && inv.has("espada_incandescente"), text: "La puerta quedó vacía. En tu mano, la espada sigue dando su luz tibia." },
-        { when: () => inv.has("espada_manchada"), text: "La espada que llevás ya no da luz. La sangre se le secó sobre la hoja." },
-        { when: () => inv.has("madera"), text: "En la mano todavía tenés la madera, pegajosa de sangre." },
+        { when: () => inv.has("espada_manchada"), text: "La espada que llevas ya no da luz. La sangre se le secó sobre la hoja." },
+        { when: () => inv.has("madera"), text: "En la mano todavía tienes la madera, pegajosa de sangre." },
         { when: () => !inv.liesIn("espada_incandescente", "cabana") && !inv.has("espada_incandescente") && !inv.has("espada_manchada"), text: "La puerta quedó vacía." }
       ],
       choices: [
@@ -1268,8 +1268,8 @@
 
     cabana_adentro: {
       text: [
-        "Empujás la puerta y lo que ves adentro es grotesco. La cabaña está abandonada y rota, perdida en medio del pantano, y todo en este lugar te incomoda.",
-        "En un rincón, sobre un montón de trapos húmedos, hay tres goblins bebés. Se retuercen y chillan, y no sabés si están agonizando o si así es su naturaleza. Son criaturas espantosas, y cada chillido te molesta más que el anterior.",
+        "Empujas la puerta y lo que ves adentro es grotesco. La cabaña está abandonada y rota, perdida en medio del pantano, y todo en este lugar te incomoda.",
+        "En un rincón, sobre un montón de trapos húmedos, hay tres goblins bebés. Se retuercen y chillan, y no sabes si están agonizando o si así es su naturaleza. Son criaturas espantosas, y cada chillido te molesta más que el anterior.",
         "Alguien tuvo que dejarlas acá. ¿Tienen padre, tienen madre? ¿Cómo llegaron a este lugar? Las preguntas te dan vueltas en la cabeza."
       ],
       choices: [
@@ -1285,8 +1285,8 @@
 
     cabana_matanza_espada: {
       text: [
-        "No lo pensás dos veces. Levantás la espada y lo hacés rápido, un golpe para cada uno. La sangre salpica las paredes, los trapos y tus brazos, y los chillidos se cortan de golpe.",
-        "Cuando bajás la hoja, la luz ya no está. La sangre la cubrió entera y apagó ese brillo de metal recién forjado. Lo que tenés en la mano ahora es una espada manchada."
+        "No lo piensas dos veces. Levantas la espada y lo haces rápido, un golpe para cada uno. La sangre salpica las paredes, los trapos y tus brazos, y los chillidos se cortan de golpe.",
+        "Cuando bajas la hoja, la luz ya no está. La sangre la cubrió entera y apagó ese brillo de metal recién forjado. Lo que tienes en la mano ahora es una espada manchada."
       ],
       choices: [
         { text: "Salir de la cabaña", next: "cabana" }
@@ -1295,8 +1295,8 @@
 
     cabana_matanza_madera: {
       text: [
-        "Revisás la cabaña buscando algo que te sirva. En el piso, entre los trapos, encontrás una madera gruesa, astillada en una punta.",
-        "Lo que sigue es lento y torpe. La madera no corta, solo golpea, y hay que golpear muchas veces. Los chillidos se vuelven más agudos, después se ahogan, y se apagan de a uno. Cuando terminás tenés las manos pegajosas y astillas clavadas en las palmas. En el rincón quedan tres bultos quietos que ya no se parecen a nada."
+        "Revisas la cabaña buscando algo que te sirva. En el piso, entre los trapos, encuentras una madera gruesa, astillada en una punta.",
+        "Lo que sigue es lento y torpe. La madera no corta, solo golpea, y hay que golpear muchas veces. Los chillidos se vuelven más agudos, después se ahogan, y se apagan de a uno. Cuando terminas tienes las manos pegajosas y astillas clavadas en las palmas. En el rincón quedan tres bultos quietos que ya no se parecen a nada."
       ],
       choices: [
         { text: "Salir de la cabaña", next: "cabana" }
@@ -1307,11 +1307,11 @@
     bosque_camino: {
       text: [
         // Primera vez: la llegada a la muralla
-        { when: () => !visited.has("bosque_camino"), text: "Seguís el camino de árboles tallados. El trecho es largo, y durante mucho rato no aparece nada más: tronco tras tronco, todos marcados con los mismos símbolos." },
+        { when: () => !visited.has("bosque_camino"), text: "Sigues el camino de árboles tallados. El trecho es largo, y durante mucho rato no aparece nada más: tronco tras tronco, todos marcados con los mismos símbolos." },
         { when: () => !visited.has("bosque_camino"), text: "De golpe, el bosque se termina. La niebla es tan espesa que al principio no ves nada, hasta que delante tuyo empieza a asomar algo negro y alto. Es una muralla, o tal vez la pared de un edificio gigante, como si protegiera algo del otro lado." },
         { when: () => !visited.has("bosque_camino"), text: "No ves nada que llame la atención. Solo una pared enorme que se extiende de izquierda a derecha hasta donde llega la vista y se pierde en la niebla por los dos lados." },
         // Al volver de recorrer la muralla
-        { when: () => visited.has("bosque_camino"), text: "Volvés al lugar donde el bosque se termina, frente a la muralla negra." }
+        { when: () => visited.has("bosque_camino"), text: "Vuelves al lugar donde el bosque se termina, frente a la muralla negra." }
       ],
       choices: [
         { text: "Caminar hacia la izquierda y revisar la muralla", next: "muralla_izquierda" },
@@ -1323,7 +1323,7 @@
     // La puerta negra necesita la llave trasera del mausoleo, que todavía no existe
     muralla_izquierda: {
       text: [
-        "Caminás hacia la izquierda, siguiendo la muralla. Sigue y sigue, siempre igual, y parece no tener fin.",
+        "Caminas hacia la izquierda, siguiendo la muralla. Sigue y sigue, siempre igual, y parece no tener fin.",
         "Hasta que, en un recoveco de la piedra, aparece una puerta negra. Parece llevar hacia adentro de la muralla.",
         { when: () => doorTried, text: "La puerta no se mueve. Está cerrada con llave." }
       ],
@@ -1338,8 +1338,8 @@
     // A lo lejos se oye una pelea
     muralla_derecha: {
       text: [
-        "Seguís caminando hacia la derecha. La muralla sigue a tu izquierda, alta y negra, y se extiende igual que antes.",
-        { when: () => !visited.has("muralla_silencio"), text: "Pero a lo lejos, muy a lo lejos, empezás a oír golpes, el choque de unas espadas y gritos que apenas llegan a través de la niebla." },
+        "Sigues caminando hacia la derecha. La muralla sigue a tu izquierda, alta y negra, y se extiende igual que antes.",
+        { when: () => !visited.has("muralla_silencio"), text: "Pero a lo lejos, muy a lo lejos, empiezas a oír golpes, el choque de unas espadas y gritos que apenas llegan a través de la niebla." },
         // Después de que se apagaron los ruidos
         { when: () => visited.has("muralla_silencio"), text: "Desde adelante ya no llega ningún ruido." }
       ],
@@ -1353,10 +1353,10 @@
     muralla_casco: {
       text: [
         // Primera vez
-        { when: () => !visited.has("muralla_casco"), text: "Avanzás un trecho más, hasta que tu pie pisa algo duro. Por el ruido, parece metal." },
-        { when: () => !visited.has("muralla_casco"), text: "Te agachás a revisarlo. Es un casco gastado, con unas marcas en el metal." },
+        { when: () => !visited.has("muralla_casco"), text: "Avanzas un trecho más, hasta que tu pie pisa algo duro. Por el ruido, parece metal." },
+        { when: () => !visited.has("muralla_casco"), text: "Te agachas a revisarlo. Es un casco gastado, con unas marcas en el metal." },
         // Al volver a pasar
-        { when: () => visited.has("muralla_casco"), text: "Pasás otra vez por el lugar donde encontraste el casco." },
+        { when: () => visited.has("muralla_casco"), text: "Pasas otra vez por el lugar donde encontraste el casco." },
         { when: () => visited.has("muralla_casco") && inv.liesIn("casco", "muralla_casco"), text: "Sigue ahí tirado, con sus marcas en el metal." }
       ],
       choices: [
@@ -1371,9 +1371,9 @@
     // Los ruidos de la pelea crecen y de golpe se apagan
     muralla_silencio: {
       text: [
-        { when: () => !visited.has("muralla_silencio"), text: "Te seguís acercando. Los golpes y los gritos se vuelven cada vez más fuertes." },
+        { when: () => !visited.has("muralla_silencio"), text: "Te sigues acercando. Los golpes y los gritos se vuelven cada vez más fuertes." },
         { when: () => !visited.has("muralla_silencio"), text: "Das unos pasos más y, de golpe, todo se calla. No se oye nada más." },
-        { when: () => visited.has("muralla_silencio"), text: "Volvés al lugar donde se apagaron los ruidos. Sigue sin oírse nada." }
+        { when: () => visited.has("muralla_silencio"), text: "Vuelves al lugar donde se apagaron los ruidos. Sigue sin oírse nada." }
       ],
       choices: [
         // note: aviso chico dentro de la opción. Lo que pase depende de lo que hizo con la espada
@@ -1390,13 +1390,13 @@
     // lo que pasa depende de lo que hizo en la cabaña y de lo que lleva encima
     muralla_pelea: {
       text: [
-        "Llegás al lugar donde se apagaron los ruidos. Hay un cuerpo tirado en el barro, boca abajo, y no sabés si respira.",
+        "Llegas al lugar donde se apagaron los ruidos. Hay un cuerpo tirado en el barro, boca abajo, y no sabes si respira.",
         "Una criatura del pantano lo tiene agarrado de un tobillo y lo arrastra, despacio, hacia el agua profunda. Es alta y flaca, con la piel gris y húmeda, y unos brazos tan largos que los nudillos le rozan el suelo.",
         { when: () => goblins.entered(), text: "Tiene los mismos ojos que las criaturas de la cabaña." },
-        { when: () => inv.has("casco"), text: "La armadura del cuerpo tiene las mismas marcas que el casco que llevás puesto." },
+        { when: () => inv.has("casco"), text: "La armadura del cuerpo tiene las mismas marcas que el casco que llevas puesto." },
         { when: () => !inv.has("casco") && visited.has("muralla_casco"), text: "La armadura del cuerpo tiene las mismas marcas que el casco." },
         // A. Mató a los goblins: huele la sangre de sus crías
-        { when: () => creature.mode() === "furia", text: "La criatura levanta la cabeza y huele el aire. Suelta el tobillo y se da vuelta hacia vos muy despacio. En sus ojos ves que sabe lo que hiciste." },
+        { when: () => creature.mode() === "furia", text: "La criatura levanta la cabeza y huele el aire. Suelta el tobillo y se da vuelta hacia ti muy despacio. En sus ojos ves que sabe lo que hiciste." },
         // B. Lleva la espada incandescente
         { when: () => creature.mode() === "luz", text: "La criatura se da vuelta. La luz de la espada le da de lleno en la cara y entrecierra los ojos, sin soltar el cuerpo." },
         // C. Dejó vivos a los goblins: reconoce su olor y se va
@@ -1407,12 +1407,12 @@
       choices: [
         // A. Furia
         { when: () => creature.mode() === "furia" && inv.has("espada_manchada"), text: "Hacerle frente con la espada", next: "muralla_pelea_espada",
-          note: "Llevás la espada manchada.", types: ["llevas", "determinante"], memory: "La madre del pantano",
+          note: "Llevas la espada manchada.", types: ["llevas", "determinante"], memory: "La madre del pantano",
           effect: () => { creature.outcome = "muerta"; } },
         { when: () => creature.mode() === "furia" && inv.has("madera") && inv.has("casco"), text: "Defenderte con la madera", next: "muralla_pelea_madera",
-          note: "Llevás la madera astillada.", types: ["llevas"], memory: "El ojo de la madre", effect: () => { creature.outcome = "espantada"; } },
+          note: "Llevas la madera astillada.", types: ["llevas"], memory: "El ojo de la madre", effect: () => { creature.outcome = "espantada"; } },
         { when: () => creature.mode() === "furia" && inv.has("madera") && !inv.has("casco"), text: "Defenderte con la madera", next: "muerte_madera",
-          note: "Llevás la madera astillada.", types: ["llevas"], memory: "El ojo de la madre" },
+          note: "Llevas la madera astillada.", types: ["llevas"], memory: "El ojo de la madre" },
         // A o B. La luz de la espada incandescente la espanta
         { when: () => (creature.mode() === "furia" || creature.mode() === "luz") && inv.has("espada_incandescente"), text: "Alzar la espada", next: "muralla_luz",
           note: "La espada incandescente da luz.", types: ["llevas"], memory: "La luz que la hizo chillar", effect: () => { creature.outcome = "espantada"; } },
@@ -1436,8 +1436,8 @@
 
     muralla_pelea_espada: {
       text: [
-        { when: () => inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te da en la cabeza: el casco se abolla, pero aguanta. Antes de que vuelva a golpear, le clavás la espada en el pecho." },
-        { when: () => !inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te abre un tajo en la cara, caliente, que te nubla un ojo. Antes de que vuelva a golpear, le clavás la espada en el pecho." },
+        { when: () => inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te da en la cabeza: el casco se abolla, pero aguanta. Antes de que vuelva a golpear, le clavas la espada en el pecho." },
+        { when: () => !inv.has("casco"), text: "La criatura se te tira encima. El primer zarpazo te abre un tajo en la cara, caliente, que te nubla un ojo. Antes de que vuelva a golpear, le clavas la espada en el pecho." },
         "Cae al barro con un chillido que se parece demasiado al de sus crías."
       ],
       choices: [
@@ -1449,7 +1449,7 @@
     muralla_pelea_madera: {
       text: [
         "La criatura se te tira encima. El primer zarpazo te da en la cabeza: el casco se abolla, pero aguanta.",
-        "Le clavás la punta astillada de la madera en un ojo. La criatura retrocede chillando y se hunde en el agua."
+        "Le clavas la punta astillada de la madera en un ojo. La criatura retrocede chillando y se hunde en el agua."
       ],
       choices: [
         { text: "Acercarte al cuerpo", next: "muralla_cuerpo" }
@@ -1458,7 +1458,7 @@
 
     muralla_luz: {
       text: [
-        "Levantás la espada y la hoja brilla todavía más. La criatura chilla, suelta el tobillo y retrocede hasta hundirse en el agua. Las burbujas tardan en desaparecer."
+        "Levantas la espada y la hoja brilla todavía más. La criatura chilla, suelta el tobillo y retrocede hasta hundirse en el agua. Las burbujas tardan en desaparecer."
       ],
       choices: [
         { text: "Acercarte al cuerpo", next: "muralla_cuerpo" }
@@ -1467,8 +1467,8 @@
 
     muralla_se_lo_lleva: {
       text: [
-        { when: () => cameFrom === "muralla_pelea" && inv.has("espada_incandescente"), text: "No te movés. La criatura te mira un momento más y sigue arrastrando el cuerpo. El agua se lo traga sin hacer ruido." },
-        { when: () => cameFrom === "muralla_pelea" && !inv.has("espada_incandescente"), text: "No te movés. La criatura te huele un rato más, pierde el interés y vuelve al cuerpo. Lo arrastra hasta el agua, que se lo traga sin hacer ruido." },
+        { when: () => cameFrom === "muralla_pelea" && inv.has("espada_incandescente"), text: "No te mueves. La criatura te mira un momento más y sigue arrastrando el cuerpo. El agua se lo traga sin hacer ruido." },
+        { when: () => cameFrom === "muralla_pelea" && !inv.has("espada_incandescente"), text: "No te mueves. La criatura te huele un rato más, pierde el interés y vuelve al cuerpo. Lo arrastra hasta el agua, que se lo traga sin hacer ruido." },
         "Más allá, el pantano y la muralla se extienden sin límite, hasta perderse en la niebla. Es imposible seguir avanzando. El único camino es volver sobre tus pasos."
       ],
       choices: [
@@ -1476,10 +1476,10 @@
       ]
     },
 
-    // Con el casco puesto: el zarpazo pega en el casco y escapás
+    // Con el casco puesto: el zarpazo pega en el casco y escapas
     muralla_huida: {
       text: [
-        "Salís corriendo junto a la muralla. Un zarpazo te alcanza en la cabeza y el casco suena como una campana, pero no parás.",
+        "Sales corriendo junto a la muralla. Un zarpazo te alcanza en la cabeza y el casco suena como una campana, pero no paras.",
         "Detrás tuyo el barro salpica cada vez más cerca, hasta que de golpe deja de oírse. Cuando te das vuelta, no hay nada. Solo la niebla."
       ],
       choices: [
@@ -1490,7 +1490,7 @@
     // El cuerpo está muerto y tiene un anillo
     muralla_cuerpo: {
       text: [
-        { when: () => !visited.has("muralla_cuerpo"), text: "Te acercás al cuerpo y lo das vuelta. Tiene los ojos abiertos y la boca llena de barro. Está muerto." },
+        { when: () => !visited.has("muralla_cuerpo"), text: "Te acercas al cuerpo y lo das vuelta. Tiene los ojos abiertos y la boca llena de barro. Está muerto." },
         { when: () => !visited.has("muralla_cuerpo") && inv.liesIn("anillo", "muralla_cuerpo"), text: "En uno de los dedos brilla un anillo." },
         { when: () => visited.has("muralla_cuerpo"), text: "El cuerpo sigue tirado en el barro, con los ojos abiertos." },
         { when: () => visited.has("muralla_cuerpo") && inv.liesIn("anillo", "muralla_cuerpo"), text: "El anillo sigue en su dedo." }
@@ -1506,7 +1506,7 @@
     // El camino de la derecha se termina acá
     muralla_fin: {
       text: [
-        { when: () => cameFrom === "muralla_silencio", text: "Volvés al lugar donde estaba la criatura. No queda rastro de ella ni del cuerpo, solo unas marcas en el barro que se pierden en el agua." },
+        { when: () => cameFrom === "muralla_silencio", text: "Vuelves al lugar donde estaba la criatura. No queda rastro de ella ni del cuerpo, solo unas marcas en el barro que se pierden en el agua." },
         "Más allá, el pantano y la muralla se extienden sin límite, hasta perderse en la niebla. Es imposible seguir avanzando. El único camino es volver sobre tus pasos."
       ],
       choices: [
@@ -1518,28 +1518,28 @@
     muerte_madera: {
       isDeath: true,
       text: [
-        "Levantás la madera y la criatura la parte de un golpe, como si fuera una rama seca. El segundo golpe te da en la cabeza.",
-        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
+        "Levantas la madera y la criatura la parte de un golpe, como si fuera una rama seca. El segundo golpe te da en la cabeza.",
+        "Caes al barro y ya no ves nada. Lo último que sientes es una mano larga y fría que te agarra del tobillo."
       ]
     },
     muerte_huida: {
       isDeath: true,
       text: [
-        "Salís corriendo, pero la criatura es más rápida. Un zarpazo te da en la nuca.",
-        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
+        "Sales corriendo, pero la criatura es más rápida. Un zarpazo te da en la nuca.",
+        "Caes al barro y ya no ves nada. Lo último que sientes es una mano larga y fría que te agarra del tobillo."
       ]
     },
     muerte_quieto: {
       isDeath: true,
       text: [
-        "No te movés. La criatura se te tira encima antes de que alcances a pensar.",
-        "Caés al barro y ya no ves nada. Lo último que sentís es una mano larga y fría que te agarra del tobillo."
+        "No te mueves. La criatura se te tira encima antes de que alcances a pensar.",
+        "Caes al barro y ya no ves nada. Lo último que sientes es una mano larga y fría que te agarra del tobillo."
       ]
     },
 
     pantano: {
       text: [
-        "Avanzás hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacás un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
+        "Avanzas hacia el resplandor. El lodo se hace más profundo, tira de tus piernas como si no quisiera dejarte ir. A mitad de camino, tu pie golpea algo duro bajo el agua turbia: al hundir la mano, sacas un amuleto de metal ennegrecido, partido en dos mitades que aún encajan entre sí. Al tocarlo, un frío distinto al del pantano te sube por el brazo.",
         "Podrías guardarte el amuleto o dejarlo hundirse de nuevo en el barro, donde tal vez debería quedarse."
       ],
       choices: [
@@ -1551,8 +1551,8 @@
     pantano_a: {
       // El texto cambia según dónde decidió llevar el amuleto el jugador
       text: [
-        { when: () => inv.isIn("amuleto", "cuello"), text: "Del amuleto todavía cuelga un resto de cordón de cuero. Te lo pasás por la cabeza y las dos mitades quedan contra tu pecho, frías como piedras de río. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho, y no es solo el del amuleto." },
-        { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardás el amuleto en el puño cerrado. En cuanto lo hacés, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a vos, pero ahora sentís un peso extra sobre el pecho, y no es solo el del amuleto." }
+        { when: () => inv.isIn("amuleto", "cuello"), text: "Del amuleto todavía cuelga un resto de cordón de cuero. Te lo pasas por la cabeza y las dos mitades quedan contra tu pecho, frías como piedras de río. En cuanto lo haces, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a ti, pero ahora sientes un peso extra sobre el pecho, y no es solo el del amuleto." },
+        { when: () => !inv.isIn("amuleto", "cuello"), text: "Guardas el amuleto en el puño cerrado. En cuanto lo haces, el resplandor del agua se intensifica por un instante, como si algo, en algún lugar, hubiera notado el gesto. El pantano sigue extendiéndose frente a ti, pero ahora sientes un peso extra sobre el pecho, y no es solo el del amuleto." }
       ],
       choices: [
         { text: "Seguir avanzando", next: "pantano_voz" }
@@ -1561,7 +1561,7 @@
 
     pantano_b: {
       text: [
-        "Dejás que el amuleto se hunda de nuevo. El agua se lo traga sin un solo sonido, y por un segundo te preguntás si hiciste bien. El resplandor sigue ahí adelante, indiferente a tu decisión, esperando de todas formas."
+        "Dejas que el amuleto se hunda de nuevo. El agua se lo traga sin un solo sonido, y por un segundo te preguntas si hiciste bien. El resplandor sigue ahí adelante, indiferente a tu decisión, esperando de todas formas."
       ],
       choices: [
         { text: "Seguir avanzando", next: "pantano_voz" }
@@ -1571,8 +1571,8 @@
     // Una voz que intenta comunicarse con el jugador
     pantano_voz: {
       text: [
-        { when: () => cameFrom === "pantano_a" || cameFrom === "pantano_b", text: "Seguís avanzando por el pantano, con el lodo hasta las rodillas. De a poco empezás a oír una voz. No sabés de dónde sale, pero parece que intenta decirte algo." },
-        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b", text: "Volvés a avanzar por el lodo hacia el resplandor. La voz sigue ahí, como si te hubiera estado esperando." }
+        { when: () => cameFrom === "pantano_a" || cameFrom === "pantano_b", text: "Sigues avanzando por el pantano, con el lodo hasta las rodillas. De a poco empiezas a oír una voz. No sabes de dónde sale, pero parece que intenta decirte algo." },
+        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b", text: "Vuelves a avanzar por el lodo hacia el resplandor. La voz sigue ahí, como si te hubiera estado esperando." }
       ],
       choices: [
         { text: "Seguir caminando", next: "pantano_seguir" },
@@ -1583,15 +1583,15 @@
       ]
     },
 
-    // Lo que pasa al escuchar depende de lo que llevás
+    // Lo que pasa al escuchar depende de lo que llevas
     pantano_escuchar: {
       text: [
-        "Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.",
+        "Empiezas a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.",
         // Con la espada manchada, la voz se calla
         { when: () => inv.has("espada_manchada"), text: "Y de golpe se calla, justo cuando estabas por entenderla. Ya no se oye nada, solo el lodo alrededor de tus piernas y, en tu mano, la espada manchada de sangre." },
         // Sin sangre encima: la criatura habla
-        { when: () => !inv.has("espada_manchada"), text: "Hasta que entendés lo que dice." },
-        { when: () => !inv.has("espada_manchada"), text: "«Vos, que estás ahí. ¿Me entendés?»" },
+        { when: () => !inv.has("espada_manchada"), text: "Hasta que entiendes lo que dice." },
+        { when: () => !inv.has("espada_manchada"), text: "«Tú, que estás ahí. ¿Me entiendes?»" },
         { when: () => !inv.has("espada_manchada"), text: "La voz sale de algún lugar cerca del agua. Es grave y mojada, como si hablara con la boca llena de barro, pero cada palabra suena pensada." }
       ],
       choices: [
@@ -1604,8 +1604,8 @@
     muerte_voz: {
       isDeath: true,
       text: [
-        "Te quedás quieto, escuchando. La voz se calla de golpe. Entonces el agua se abre delante tuyo y algo sale del barro, directo hacia la madera que todavía tenés en la mano, pegajosa de sangre.",
-        "Te arrastra hacia abajo. Lo último que sentís es el agua helada cerrándose sobre tu cara."
+        "Te quedas quieto, escuchando. La voz se calla de golpe. Entonces el agua se abre delante tuyo y algo sale del barro, directo hacia la madera que todavía tienes en la mano, pegajosa de sangre.",
+        "Te arrastra hacia abajo. Lo último que sientes es el agua helada cerrándose sobre tu cara."
       ]
     },
 
@@ -1619,8 +1619,8 @@
 
     canto: {
       text: [
-        "Seguís el eco del canto hacia la derecha, donde la niebla se enrosca entre juncos altos como lanzas. La voz se hace más clara a cada paso, hasta que la ves: una figura sentada sobre una roca cubierta de flores que no deberían crecer en un pantano, con el pelo mezclado con el musgo y los ojos cerrados. Canta en una lengua antigua, y aunque no entendés las palabras, el sentido te llega igual, directo al pecho.",
-        "La figura no ha abierto los ojos, pero sabés, con una certeza incómoda, que es consciente de tu presencia."
+        "Sigues el eco del canto hacia la derecha, donde la niebla se enrosca entre juncos altos como lanzas. La voz se hace más clara a cada paso, hasta que la ves: una figura sentada sobre una roca cubierta de flores que no deberían crecer en un pantano, con el pelo mezclado con el musgo y los ojos cerrados. Canta en una lengua antigua, y aunque no entiendes las palabras, el sentido te llega igual, directo al pecho.",
+        "La figura no ha abierto los ojos, pero sabes, con una certeza incómoda, que es consciente de tu presencia."
       ],
       choices: [
         { text: "Acercarte y hablarle", next: "canto_a" },
@@ -1630,7 +1630,7 @@
 
     canto_a: {
       text: [
-        "Das un paso hacia ella y el canto se corta en seco. Los ojos que se abren no son del todo humanos. Tienen el color del agua estancada y te miran como quien reconoce algo que hacía tiempo esperaba. «Volviste», creés escuchar, aunque su boca no parece moverse. Antes de que puedas responder, la niebla se cierra a tu alrededor y la figura desaparece."
+        "Das un paso hacia ella y el canto se corta en seco. Los ojos que se abren no son del todo humanos. Tienen el color del agua estancada y te miran como quien reconoce algo que hacía tiempo esperaba. «Volviste», crees escuchar, aunque su boca no parece moverse. Antes de que puedas responder, la niebla se cierra a tu alrededor y la figura desaparece."
       ],
       choices: [
         { text: "Seguir camino, desconcertado", next: "encrucijada" }
@@ -1639,7 +1639,7 @@
 
     canto_b: {
       text: [
-        "Te alejás sin hacer ruido, el corazón latiendo con una mezcla de miedo y algo parecido a la nostalgia. El canto continúa a tus espaldas, cada vez más lejano, hasta que se funde otra vez con el silencio del pantano."
+        "Te alejas sin hacer ruido, el corazón latiendo con una mezcla de miedo y algo parecido a la nostalgia. El canto continúa a tus espaldas, cada vez más lejano, hasta que se funde otra vez con el silencio del pantano."
       ],
       choices: [
         { text: "Seguir camino", next: "encrucijada" }
@@ -1880,7 +1880,7 @@
     if (btn) btn.focus({ preventScroll: true });
   }
 
-  /* ---------- Inventario: lo que llevás encima ----------
+  /* ---------- Inventario: lo que llevas encima ----------
      El inventario es la silueta de un maniquí sin rostro. Cada objeto
      ocupa un lugar del cuerpo y cada lugar tiene capacidad limitada:
      una cosa por mano (o las dos manos para algo grande), un colgante,
@@ -2146,7 +2146,7 @@
     const slot = SLOTS.find(s => ITEMS[id].fits.includes(s.type) && !equipment[s.id]);
     if (!slot) return;
     equipment[slot.id] = id;
-    addNotice("item", ITEMS[id].takeText || `Ahora llevás ${ITEMS[id].ref} ${slot.place.toLowerCase()}.`);
+    addNotice("item", ITEMS[id].takeText || `Ahora llevas ${ITEMS[id].ref} ${slot.place.toLowerCase()}.`);
     markInventoryNew();
   }
 
@@ -2229,7 +2229,7 @@
     const title = `<div class="inv-fragments-title">Fragmentos de memoria · ${collected.length}</div>`;
     invFragmentsEl.innerHTML = title + (collected.length
       ? `<ol class="inv-fragments-list">${collected.map(name => `<li>✦ ${name}</li>`).join("")}</ol>`
-      : `<span class="inv-fragments-empty">Todavía no recordás nada.</span>`);
+      : `<span class="inv-fragments-empty">Todavía no recuerdas nada.</span>`);
   }
 
   function renderItemActions(id) {
@@ -2261,7 +2261,7 @@
     } else if (placementsFor(id).length > 1) {
       // Solo se avisa si el objeto podría ir a otro lado pero está todo ocupado
       const none = document.createElement("p");
-      none.textContent = "No tenés otro lugar libre donde llevarlo.";
+      none.textContent = "No tienes otro lugar libre donde llevarlo.";
       box.appendChild(none);
     }
 
@@ -2341,7 +2341,7 @@
   function afterInventoryChange(focusId) {
     playSfx("click_eleccion");
     renderInventory();
-    refreshChoices(); // las opciones de la escena pueden depender de dónde llevás cada cosa
+    refreshChoices(); // las opciones de la escena pueden depender de dónde llevas cada cosa
     focusInventoryItem(focusId);
   }
 
@@ -2549,7 +2549,7 @@
   }
 
   // Qué está mostrando el área de opciones (las de la escena o el "¿dónde lo
-  // llevás?"), para poder redibujarla cuando cambia el inventario.
+  // llevas?"), para poder redibujarla cuando cambia el inventario.
   let choicesView = null;
 
   function refreshChoices() {
@@ -2564,12 +2564,12 @@
     item:   { icon: "◆", rgb: "212,154,78",  text: "#ebb873" }, // agrega algo al inventario
     memory: { icon: "✦", rgb: "143,180,200", text: "#bcd8e6" }, // deja un fragmento de memoria
     determinante: { icon: "✷", rgb: "196,72,62", text: "#e8968c" }, // decisión que pesa más; también deja un fragmento
-    llevas: { icon: "⚔", rgb: "150,162,172", text: "#cdd5db" } // «Por lo que llevás»: solo aparece gracias a un objeto
+    llevas: { icon: "⚔", rgb: "150,162,172", text: "#cdd5db" } // «Por lo que llevas»: solo aparece gracias a un objeto
   };
 
   // Avisos que no son tipos de decisión, pero van en el mismo lugar que los demás
   const NOTICE_TYPES = {
-    llave: { icon: "🔒", text: "#d8c9a8" }, // algo necesita una llave que no tenés
+    llave: { icon: "🔒", text: "#d8c9a8" }, // algo necesita una llave que no tienes
     muerte: { icon: "☠", text: "#e8968c" }  // el jugador murió
   };
 
@@ -2645,7 +2645,7 @@
     if (only && !only.blockers.length && !only.disabled) {
       const item = ITEMS[entry.id];
       placeEntry(entry, only);
-      addNotice("item", item.takeText || `Ahora llevás ${item.ref} ${only.label.toLowerCase()}.`);
+      addNotice("item", item.takeText || `Ahora llevas ${item.ref} ${only.label.toLowerCase()}.`);
       onPlaced(viaKeyboard);
       return;
     }
@@ -2661,17 +2661,17 @@
 
     const prompt = document.createElement("p");
     prompt.className = "placement-prompt";
-    prompt.innerHTML = `¿Dónde llevás <strong>${item.ref}</strong>?`;
+    prompt.innerHTML = `¿Dónde llevas <strong>${item.ref}</strong>?`;
     choicesEl.appendChild(prompt);
     if (showHint) {
       const hint = document.createElement("p");
       hint.className = "placement-hint";
-      hint.textContent = "Dónde llevás cada cosa importa: puede abrir o cerrar caminos. Después podés reorganizarlo tocando la silueta, arriba a la derecha.";
+      hint.textContent = "Dónde llevas cada cosa importa: puede abrir o cerrar caminos. Después puedes reorganizarlo tocando la silueta, arriba a la derecha.";
       choicesEl.appendChild(hint);
     }
 
     placementsFor(entry.id).forEach(p => {
-      const reason = p.disabled || (p.blockers.length ? `Tenés que soltar ${itemNames(p.blockers)}` : null);
+      const reason = p.disabled || (p.blockers.length ? `Tienes que soltar ${itemNames(p.blockers)}` : null);
       const btn = makeChoiceButton(p.label, reason);
       btn.disabled = !!p.disabled;
       btn.onclick = e => {
