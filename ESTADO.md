@@ -121,7 +121,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `pantano`: se encuentra el amuleto. Se sacó «que quizás sea tuyo o quizás explique algo»: ahora dice «Podrías guardarte el amuleto o dejarlo hundirse de nuevo en el barro…».
 - `pantano_a` y `pantano_b` siguen a `pantano_voz` (ya no a la encrucijada).
 - `pantano_voz`: seguís por el pantano y empezás a oír una voz que parece querer decirte algo. Opciones: «Seguir caminando» (`pantano_seguir`), «Quedarte a escuchar la voz» (`pantano_escuchar`) y «Volver sobre tus pasos» (`inicio`). Al volver más tarde: «Volvés a avanzar por el lodo hacia el resplandor…».
-- `pantano_escuchar`: «Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.». Por ahora solo tiene «Volver sobre tus pasos».
+- `pantano_escuchar`: «Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.». Después depende de lo que llevás:
+  - **Espada manchada:** la voz se calla de golpe. Opciones: «Seguir caminando» (`pantano_seguir`) y «Volver sobre tus pasos».
+  - **Madera ensangrentada:** «Quedarte a escuchar la voz» lleva a `muerte_voz`: algo sale del barro y te arrastra al agua. La opción se ve igual que la otra.
+  - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Vos, que estás ahí. ¿Me entendés?». Es una criatura del pantano inteligente, con una voz grave y mojada. Por ahora solo tiene «Volver sobre tus pasos»: faltan las opciones de la conversación.
 - `pantano_seguir`: provisoria, con «(Texto pendiente…)».
 - En `inicio`, al volver desde el pantano el texto es «Desandás el camino por el lodo, de espaldas al resplandor…», y la opción pasa a ser «Volver hacia el resplandor del pantano», que lleva directo a `pantano_voz` (el amuleto no se vuelve a encontrar).
 
@@ -178,7 +181,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
 - [ ] Escribir `pantano_seguir` («Seguir caminando» sin escuchar la voz). Lo dicta Julián.
-- [ ] Escribir qué pasa después de `pantano_escuchar` (qué dice la voz). Lo dicta Julián.
+- [x] Escribir los tres casos de `pantano_escuchar` (espada manchada, madera, sin sangre).
+- [ ] Escribir la conversación con la criatura que habla (opciones después de «¿Me entendés?»). Lo dicta Julián.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
@@ -208,7 +212,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `muralla_pelea` y sus salidas: zarpazos, el casco que se abolla o suena como una campana, la madera que se parte, la espada que se clava, el chillido de la criatura, el chapoteo al hundirse en el agua y el ronroneo.
   - Las muertes: un cuerpo que cae al barro.
   - `pantano_voz`: una voz lejana que intenta comunicarse.
-  - `pantano_escuchar`: la voz que se oye cada vez más fuerte y más clara.
+  - `pantano_escuchar`: la voz que se oye cada vez más fuerte y más clara; la voz que se corta de golpe; una voz grave y mojada que habla.
+  - `muerte_voz`: el agua que se abre, algo que sale del barro y el agua que se cierra encima.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 

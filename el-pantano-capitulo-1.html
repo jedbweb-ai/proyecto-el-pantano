@@ -1576,18 +1576,36 @@
       ],
       choices: [
         { text: "Seguir caminando", next: "pantano_seguir" },
-        { text: "Quedarte a escuchar la voz", next: "pantano_escuchar" },
+        // Con la madera ensangrentada, quedarse a escuchar mata (la opción se ve igual)
+        { when: () => !inv.has("madera"), text: "Quedarte a escuchar la voz", next: "pantano_escuchar" },
+        { when: () => inv.has("madera"), text: "Quedarte a escuchar la voz", next: "muerte_voz" },
         { text: "Volver sobre tus pasos", next: "inicio" }
       ]
     },
 
+    // Lo que pasa al escuchar depende de lo que llevás
     pantano_escuchar: {
       text: [
-        "Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad."
+        "Empezás a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.",
+        // Con la espada manchada, la voz se calla
+        { when: () => inv.has("espada_manchada"), text: "Y de golpe se calla, justo cuando estabas por entenderla. Ya no se oye nada, solo el lodo alrededor de tus piernas y, en tu mano, la espada manchada de sangre." },
+        // Sin sangre encima: la criatura habla
+        { when: () => !inv.has("espada_manchada"), text: "Hasta que entendés lo que dice." },
+        { when: () => !inv.has("espada_manchada"), text: "«Vos, que estás ahí. ¿Me entendés?»" },
+        { when: () => !inv.has("espada_manchada"), text: "La voz sale de algún lugar cerca del agua. Es grave y mojada, como si hablara con la boca llena de barro, pero cada palabra suena pensada." }
       ],
-      // PROVISORIO: falta lo que dicta Julián
       choices: [
+        { when: () => inv.has("espada_manchada"), text: "Seguir caminando", next: "pantano_seguir" },
+        // PROVISORIO: faltan las opciones de la conversación con la criatura
         { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    muerte_voz: {
+      isDeath: true,
+      text: [
+        "Te quedás quieto, escuchando. La voz se calla de golpe. Entonces el agua se abre delante tuyo y algo sale del barro, directo hacia la madera que todavía tenés en la mano, pegajosa de sangre.",
+        "Te arrastra hacia abajo. Lo último que sentís es el agua helada cerrándose sobre tu cara."
       ]
     },
 
