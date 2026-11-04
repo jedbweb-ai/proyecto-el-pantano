@@ -1596,7 +1596,41 @@
       ],
       choices: [
         { when: () => inv.has("espada_manchada"), text: "Seguir caminando", next: "pantano_seguir" },
-        // PROVISORIO: faltan las opciones de la conversación con la criatura
+        { when: () => inv.has("espada_manchada"), text: "Volver sobre tus pasos", next: "inicio" },
+        // La criatura que habla
+        { when: () => !inv.has("espada_manchada"), text: "Irte corriendo", next: "pantano_huida", memory: "Cobarde del pantano" },
+        { when: () => !inv.has("espada_manchada"), text: "Quedarte callado", next: "pantano_insiste" },
+        { when: () => !inv.has("espada_manchada"), text: "Responderle", next: "pantano_responder" }
+      ]
+    },
+
+    // Se escapa de la criatura que habla
+    pantano_huida: {
+      text: [
+        "Sales corriendo por el lodo, sin mirar atrás. La voz te llama una vez más y después se pierde en la niebla."
+      ],
+      choices: [
+        { text: "Seguir caminando", next: "pantano_seguir" },
+        { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    // Se queda callado: la criatura insiste
+    pantano_insiste: {
+      text: [
+        "No dices nada. Por un rato solo se oye el agua.",
+        "Después la voz vuelve, más cerca: «Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»"
+      ],
+      choices: [
+        { text: "Irte corriendo", next: "pantano_huida", memory: "Cobarde del pantano" },
+        { text: "Responderle", next: "pantano_responder" }
+      ]
+    },
+
+    // PROVISORIO: la conversación con la criatura la define Julián
+    pantano_responder: {
+      text: ["(Texto pendiente: la conversación con la criatura.)"],
+      choices: [
         { text: "Volver sobre tus pasos", next: "inicio" }
       ]
     },
