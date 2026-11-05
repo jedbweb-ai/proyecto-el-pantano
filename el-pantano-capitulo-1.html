@@ -1198,6 +1198,8 @@
   // La criatura que habla da una sola oportunidad: una vez que el jugador se
   // aleja de la voz (huye, se calla, la ignora o vuelve), no aparece más
   const vozIda = () => visited.has("pantano_voz");
+  // La criatura pide que bajes la espada incandescente antes de seguir hablando
+  const vozPideLuz = () => inv.has("espada_incandescente") && !visited.has("pantano_bajar");
 
   const scenes = {
 
@@ -1633,12 +1635,74 @@
       ]
     },
 
-    // PROVISORIO: la conversación con la criatura la define Julián
+    // La conversación con la criatura que habla. Cada pregunta es una escena:
+    // al volver, la pregunta ya hecha desaparece (visited)
     pantano_responder: {
-      text: ["(Texto pendiente: la conversación con la criatura.)"],
+      text: [
+        { when: () => !visited.has("pantano_responder"), text: "Le dices que sí, que la entiendes." },
+        { when: () => !visited.has("pantano_responder"), text: "«Hace mucho que nadie me contesta.»" },
+        // Lo que nota según lo que hiciste antes
+        { when: () => !visited.has("pantano_responder") && inv.has("amuleto"), text: "«Lo encontraste. Estuvo mucho tiempo esperando en el barro.»" },
+        { when: () => !visited.has("pantano_responder") && visited.has("pantano_b"), text: "«Dejaste algo en el barro. Yo lo vi hundirse.»" },
+        { when: () => !visited.has("pantano_responder") && goblins.entered() && !goblins.killed(), text: "«Hueles a las crías de la cabaña. Las dejaste vivir.»" },
+        { when: () => !visited.has("pantano_responder") && inv.has("casco"), text: "«Ese casco era de alguien que conocí.»" },
+        { when: () => vozPideLuz(), text: "«Baja esa luz. Me quema los ojos.»" },
+        // Al volver de una pregunta
+        { when: () => visited.has("pantano_responder") && !vozPideLuz(), text: "La voz espera a que vuelvas a hablar." }
+      ],
       choices: [
+        // Con la espada incandescente, primero pide que la bajes
+        { when: () => vozPideLuz(), text: "Bajar la espada", next: "pantano_bajar",
+          note: "Llevas la espada incandescente.", types: ["llevas"] },
+        { when: () => vozPideLuz(), text: "No bajarla", next: "pantano_luz", memory: "La luz que no bajaste" },
+        // Las preguntas
+        { when: () => !vozPideLuz() && !visited.has("pantano_quien"), text: "«¿Quién eres?»", next: "pantano_quien" },
+        { when: () => !vozPideLuz() && !visited.has("pantano_donde"), text: "«¿Dónde estoy?»", next: "pantano_donde" },
+        { when: () => !vozPideLuz() && !visited.has("pantano_que"), text: "«¿Qué quieres de mí?»", next: "pantano_que" },
+        // Después de las tres preguntas
+        { when: () => !vozPideLuz() && ["pantano_quien", "pantano_donde", "pantano_que"].every(q => visited.has(q)) && !visited.has("pantano_quien_soy"),
+          text: "«¿Sabes quién soy?»", next: "pantano_quien_soy", memory: "La voz sin nombre" },
+        { when: () => !vozPideLuz(), text: "Despedirte y seguir caminando", next: "pantano_seguir" },
+        { when: () => !vozPideLuz(), text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    pantano_bajar: {
+      text: [
+        "Bajas la espada hasta que la hoja queda contra el barro. La luz se apaga un poco.",
+        "«Así está mejor.»"
+      ],
+      choices: [
+        { text: "Seguir hablando", next: "pantano_responder" }
+      ]
+    },
+
+    // No bajó la espada: la criatura se va
+    pantano_luz: {
+      text: [
+        "No bajas la espada. La voz suelta un gemido largo, como de dolor, y se aleja hasta que ya no se oye."
+      ],
+      choices: [
+        { text: "Seguir caminando", next: "pantano_seguir" },
         { text: "Volver sobre tus pasos", next: "inicio" }
       ]
+    },
+
+    pantano_quien: {
+      text: ["«Tuve un nombre. El pantano se lo quedó, como se quedó el tuyo.»"],
+      choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
+    },
+    pantano_donde: {
+      text: ["«En el lugar donde se hunde lo que nadie quiere recordar. Algunos llegan caminando. Tú llegaste dormido.»"],
+      choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
+    },
+    pantano_que: {
+      text: ["«Lo mismo que quiere todo lo que vive acá abajo: que te quedes un poco más.»"],
+      choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
+    },
+    pantano_quien_soy: {
+      text: ["«Sé lo que hiciste desde que despertaste. Quién eres, eso lo tienes que recordar tú.»"],
+      choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
     },
 
     muerte_voz: {
