@@ -136,7 +136,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
       - Con la espada incandescente pide «Baja esa luz. Me quema los ojos.» (`vozPideLuz()`): «⚔ Bajar la espada» (`pantano_bajar`, «Así está mejor.» y sigue la charla) o «No bajarla» (`pantano_luz`: se aleja con un gemido, da «La luz que no bajaste»).
       - Preguntas, cada una una sola vez: «¿Quién eres?» (`pantano_quien`), «¿Dónde estoy?» (`pantano_donde`), «¿Qué quieres de mí?» (`pantano_que`). Después de las tres aparece «¿Sabes quién soy?» (`pantano_quien_soy`), que da «La voz sin nombre». Es la última: la criatura se despide («Gracias por quedarte hablando conmigo. No suele pasar.»), se pierde en el pantano y quedan «Seguir caminando» y «Volver sobre tus pasos».
       - Siempre se puede terminar con «Despedirte y seguir caminando» (`pantano_seguir`) o «Volver sobre tus pasos».
-- `pantano_seguir`: provisoria, con «(Texto pendiente…)».
+- `pantano_seguir`: entre la niebla aparece una empalizada de troncos afilados: un puesto de avanzada en medio del pantano, con un guardia en la puerta (armadura y alabarda). Opciones: «Acercarte al guardia» (`pantano_guardia`) y «Volver sobre tus pasos». Se llega al ignorar la voz, al irte corriendo, al despedirte o cuando la voz se calla.
+- `pantano_guardia`: el guardia baja la alabarda hacia tu pecho y pregunta «¿Quién eres? ¿Qué haces aquí?» y «Nadie llega solo desde el pantano sin pasar antes por el puesto. ¿De dónde vienes?». Por ahora solo tiene «Volver sobre tus pasos»: faltan las respuestas.
 - En `inicio`, al volver desde el pantano el texto es «Desandas el camino por el lodo, de espaldas al resplandor…», y la opción pasa a ser «Volver hacia el resplandor del pantano», que lleva directo a `pantano_voz` (el amuleto no se vuelve a encontrar).
 
 ### Estilo de los textos
@@ -193,7 +194,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
-- [ ] Escribir `pantano_seguir` («Seguir caminando» sin escuchar la voz). Lo dicta Julián.
+- [x] Escribir `pantano_seguir` (el puesto de avanzada) y `pantano_guardia` (las preguntas del guardia).
+- [ ] Escribir las respuestas al guardia (`pantano_guardia`). Lo dicta Julián.
 - [x] Escribir los tres casos de `pantano_escuchar` (espada manchada, madera, sin sangre).
 - [x] Opciones después de «¿Me entiendes?»: irte corriendo, quedarte callado o responderle.
 - [x] Escribir la conversación de «Responderle» (`pantano_responder`) con las respuestas que propuso Claude.
@@ -228,6 +230,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `pantano_voz`: una voz lejana que intenta comunicarse.
   - `pantano_escuchar`: la voz que se oye cada vez más fuerte y más clara; la voz que se corta de golpe; una voz grave y mojada que habla.
   - `pantano_luz`: el gemido largo de la criatura que se aleja.
+  - `pantano_guardia`: el metal de la armadura y la alabarda que baja.
   - `muerte_voz`: el agua que se abre, algo que sale del barro y el agua que se cierra encima.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
