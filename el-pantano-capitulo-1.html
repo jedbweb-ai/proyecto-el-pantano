@@ -1721,9 +1721,28 @@
       ]
     },
 
-    // PROVISORIO: falta lo que dicta Julián
+    // Un puesto de avanzada en medio del pantano, con un guardia en la puerta
     pantano_seguir: {
-      text: ["(Texto pendiente: seguir caminando sin escuchar la voz.)"],
+      text: [
+        { when: () => !visited.has("pantano_seguir"), text: "Sigues caminando por el lodo. Al rato, entre la niebla, empieza a asomar una empalizada de troncos afilados, clavados en el barro." },
+        { when: () => !visited.has("pantano_seguir"), text: "Es un puesto de avanzada, un asentamiento pequeño en medio del pantano. En la puerta hay un guardia con armadura y una alabarda." },
+        { when: () => visited.has("pantano_seguir") && !visited.has("pantano_guardia"), text: "Vuelves al puesto de avanzada. El guardia sigue en la puerta, con la alabarda en la mano." },
+        { when: () => visited.has("pantano_guardia"), text: "Vuelves al puesto de avanzada. El guardia te sigue con la mirada desde la puerta." }
+      ],
+      choices: [
+        { text: "Acercarte al guardia", next: "pantano_guardia" },
+        { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
+    },
+
+    // El guardia desconfía: nadie llega solo desde el pantano
+    pantano_guardia: {
+      text: [
+        "Te acercas. El guardia te ve y baja la alabarda hasta ponerla delante tuyo, con la punta a la altura de tu pecho.",
+        "«¿Quién eres? ¿Qué haces aquí?»",
+        "Te mira de arriba abajo, sin moverse. «Nadie llega solo desde el pantano sin pasar antes por el puesto. ¿De dónde vienes?»"
+      ],
+      // PROVISORIO: las respuestas al guardia las define Julián
       choices: [
         { text: "Volver sobre tus pasos", next: "inicio" }
       ]
