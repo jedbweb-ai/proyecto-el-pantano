@@ -1700,9 +1700,17 @@
       text: ["«Lo mismo que quiere todo lo que vive acá abajo: que te quedes un poco más.»"],
       choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
     },
+    // Última pregunta: la criatura se despide y se va
     pantano_quien_soy: {
-      text: ["«Sé lo que hiciste desde que despertaste. Quién eres, eso lo tienes que recordar tú.»"],
-      choices: [{ text: "Seguir hablando", next: "pantano_responder" }]
+      text: [
+        "«Sé lo que hiciste desde que despertaste. Quién eres, eso lo tienes que recordar tú.»",
+        "Por un momento no dice nada más. Después, más bajo: «Gracias por quedarte hablando conmigo. No suele pasar.»",
+        "La voz se aleja y se pierde en el pantano."
+      ],
+      choices: [
+        { text: "Seguir caminando", next: "pantano_seguir" },
+        { text: "Volver sobre tus pasos", next: "inicio" }
+      ]
     },
 
     muerte_voz: {
