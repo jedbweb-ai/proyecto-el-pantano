@@ -122,11 +122,12 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - `pantano`: se encuentra el amuleto. Se sacó «que quizás sea tuyo o quizás explique algo»: ahora dice «Podrías guardarte el amuleto o dejarlo hundirse de nuevo en el barro…».
 - `pantano_a` y `pantano_b` siguen a `pantano_voz` (ya no a la encrucijada).
 - `pantano_voz`: sigues por el pantano y empiezas a oír una voz que parece querer decirte algo. Opciones: «Seguir caminando» (`pantano_seguir`), «Quedarte a escuchar la voz» (`pantano_escuchar`) y «Volver sobre tus pasos» (`inicio`). Al volver más tarde: «Vuelves a avanzar por el lodo hacia el resplandor…».
+- **La voz da una sola oportunidad** (`vozIda()`): una vez que te alejas de `pantano_voz` por cualquier motivo (huir, que se calle por la espada, responderle y volver, o ignorarla), no vuelve. Al volver dice «Ya no se oye ninguna voz, solo el agua.» y no está «Quedarte a escuchar la voz».
 - `pantano_escuchar`: «Empiezas a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.». Después depende de lo que llevas:
   - **Espada manchada:** la voz se calla de golpe. Opciones: «Seguir caminando» (`pantano_seguir`) y «Volver sobre tus pasos».
   - **Madera ensangrentada:** «Quedarte a escuchar la voz» lleva a `muerte_voz`: algo sale del barro y te arrastra al agua. La opción se ve igual que la otra.
   - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Opciones:
-    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos». Después de huir, la criatura no vuelve a aparecer: al volver a `pantano_voz` dice «Ya no se oye ninguna voz, solo el agua.» y no está «Quedarte a escuchar la voz» (ver `criaturaHuida()`).
+    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos».
     - «Quedarte callado» (`pantano_insiste`): la criatura insiste, más cerca («Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»). Quedan «Irte corriendo» y «Responderle».
     - «Responderle» (`pantano_responder`): provisoria, la conversación la define Julián. Más adelante estas opciones van a cambiar según los objetos y los fragmentos.
 - `pantano_seguir`: provisoria, con «(Texto pendiente…)».
