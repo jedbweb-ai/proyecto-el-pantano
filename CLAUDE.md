@@ -15,7 +15,7 @@ Hablale a Julián en español.
 - Un objeto con un solo lugar se pone directo y avisa con `takeText` (por ejemplo «Te pusiste el pantalón viejo»), sin preguntar dónde llevarlo.
 
 ## Historia
-- Lo que dicta Julián se adapta al estilo del juego sin cambiar lo que pasa: segunda persona con voseo, presente, tono oscuro y sensorial, opciones cortas en infinitivo («Acercarte a la cabaña»). Mostrale la versión adaptada antes de pasarla al juego.
+- Lo que dicta Julián se adapta al estilo del juego sin cambiar lo que pasa: segunda persona con tuteo (tú: «abres», «tienes», «llevas»; nunca «vos» ni voseo), presente, tono oscuro y sensorial, opciones cortas en infinitivo («Acercarte a la cabaña»). Mostrale la versión adaptada antes de pasarla al juego.
 - Sin guiones largos (—) en ningún texto: usá punto, coma o dos puntos.
 - Todo texto nuevo (del juego o de skills que creemos) se pasa por el skill The Humanizer antes de mostrárselo a Julián.
 - Lo que dicta Julián es una referencia general. Las decisiones chicas de adaptación las toma Claude sin preguntar y se las cuenta al mostrar el texto: reusar frases que ya existen en el juego (por ejemplo «Volver sobre tus pasos» para volver al lugar anterior), no repetir imágenes de otras escenas y ajustar la puntuación al ritmo de la escena.

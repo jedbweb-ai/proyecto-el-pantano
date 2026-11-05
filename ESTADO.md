@@ -18,14 +18,14 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ### Inventario: la silueta
 - Un botón con una silueta, arriba a la derecha, que solo aparece durante el juego. Cuando hay algo nuevo se enciende un punto dorado.
-- El panel muestra un maniquí sin rostro con los objetos dibujados donde los llevás.
+- El panel muestra un maniquí sin rostro con los objetos dibujados donde los llevas.
 - Lugares del cuerpo, cada uno con capacidad limitada: cabeza, cuello, abrigo, mano izquierda, mano derecha, dedo de la mano izquierda, dedo de la mano derecha (solo dos lugares para anillos), cinturón, piernas, dos bolsillos, espalda y pies.
-- Si llevás una mochila en la espalda, aparece la sección "Adentro de la mochila", con 4 lugares.
+- Si llevas una mochila en la espalda, aparece la sección "Adentro de la mochila", con 4 lugares.
 - Desde el panel se puede pasar un objeto a otro lugar libre o soltarlo.
 - **Al agarrar un objeto:**
-  - Si tiene varios lugares posibles, el juego pregunta «¿Dónde llevás…?».
+  - Si tiene varios lugares posibles, el juego pregunta «¿Dónde llevas…?».
   - Si tiene un solo lugar y está libre, se lo pone directo y avisa, por ejemplo «Te pusiste el pantalón viejo».
-  - Si el lugar está ocupado, avisa qué tenés que soltar.
+  - Si el lugar está ocupado, avisa qué tienes que soltar.
 - Lo que soltás queda en esa escena, con la opción "Recoger…".
 - Al terminar el capítulo, el inventario queda para mirar, sin acciones.
 
@@ -46,7 +46,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - **Objeto ◆:** agrega algo al inventario. Se usa en las opciones con `take` (como "Guardarte el amuleto") y en "Recoger…": las dos se ven exactamente igual. No se inventa otro color para recoger objetos.
 - **Recuerdo ✦ (azul pálido):** deja un fragmento de memoria. Se usa en las opciones con `memory`.
 - **Determinante ✷ (rojo):** decisiones que pesan más. También dejan un fragmento, pero se ven solo en rojo, sin el degradado con el azul. Se marcan con `types: ["determinante"]` y `memory`. Las instrucciones del juego ya lo explican.
-- **Por lo que llevás ⚔ (gris acero):** opciones que solo aparecen gracias a un objeto. Adentro del botón, en letra chica (`note`), dice qué objeto la habilita. Las opciones de objetos que no tenés quedan ocultas. Se marcan con `types: ["llevas"]`. Las instrucciones del juego ya lo explican.
+- **Por lo que llevas ⚔ (gris acero):** opciones que solo aparecen gracias a un objeto. Adentro del botón, en letra chica (`note`), dice qué objeto la habilita. Las opciones de objetos que no tienes quedan ocultas. Se marcan con `types: ["llevas"]`. Las instrucciones del juego ya lo explican.
 - **Varios tipos a la vez:** el borde y los íconos pasan en degradado.
 - **Para sumar un tipo nuevo:** se agrega una línea en `CHOICE_TYPES`, con su color y su ícono, y se marca en las opciones con `types: ["nombre"]`.
 
@@ -63,12 +63,13 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | Infanticida monstruoso | Asesinar a las criaturas, sin la espada (con una madera del piso) |
 | Héroe de los goblins | Irte y dejarlas vivas |
 | La madre del pantano (provisorio) | Hacerle frente con la espada (matar a la criatura de la muralla) |
-| El ojo de la madre (provisorio) | Defenderte con la madera (le clavás la madera en un ojo) |
+| El ojo de la madre (provisorio) | Defenderte con la madera (le clavas la madera en un ojo) |
 | La luz que la hizo chillar (provisorio) | Alzar la espada incandescente (la criatura chilla y se hunde) |
 | El cuerpo que se tragó el agua (provisorio) | Quedarte quieto con la espada incandescente (se lleva el cuerpo) |
 | Un olor que no reconoce (provisorio) | Quedarte quieto sin haber entrado a la cabaña (te huele y se lleva el cuerpo) |
 | El olor de sus crías (provisorio) | Dejaste vivos a los goblins: te huele, ronronea y se va («Acercarte al cuerpo» o «Volver sobre tus pasos») |
 | La campana del casco (provisorio) | Huir por donde viniste con el casco puesto |
+| Cobarde del pantano (provisorio) | Irte corriendo cuando la criatura del pantano te habla |
 
 - Las opciones que pueden matarte llevan el mismo fragmento que su variante segura, para que se vean iguales (✦). Al morir el fragmento no se gana (ver `isDeath`).
 
@@ -90,35 +91,50 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - Ejemplo ya en uso: el texto de `pantano_a` cambia según si el amuleto va en la mano o en el cuello.
 
 ### Rama del bosque (en reescritura)
-- `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedás en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`) y «Volver hacia atrás, al pantano» (`inicio`), para no quedar atrapado entre la cabaña y la muralla. Al tomar la espada el texto cambia («La puerta quedó vacía…»).
+- `cabana`: al acercarte crujen las maderas, se oyen chillidos de algo chico adentro y brilla una espada apoyada en la puerta. Opciones: «Tomar la espada» (te quedas en la escena), «Entrar a la cabaña» (`cabana_adentro`) y «Continuar el camino de árboles tallados» (`bosque_camino`) y «Volver hacia atrás, al pantano» (`inicio`), para no quedar atrapado entre la cabaña y la muralla. Al tomar la espada el texto cambia («La puerta quedó vacía…»).
 - `cabana_adentro`: tres goblins bebés que chillan. El texto va en tres párrafos: la cabaña rota, los goblins en el rincón y las preguntas («¿Tienen padre, tienen madre?»). Dos opciones determinantes (rojas): «Asesinar a las criaturas» e «Irte y dejarlas vivas».
   - **Con la espada en la mano:** `cabana_matanza_espada`. La espada se mancha (pasa a ser «Espada manchada») y da «Infanticida armado».
-  - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso». La madera queda en una mano libre, y al salir todavía podés tomar la espada con la otra.
+  - **Sin la espada:** `cabana_matanza_madera`. Matás a los goblins con una madera del piso y da «Infanticida monstruoso». La madera queda en una mano libre, y al salir todavía puedes tomar la espada con la otra.
   - Las dos matanzas tienen un solo botón, «Salir de la cabaña», que vuelve afuera. Si la espada sigue en la puerta, se puede tomar.
   - **Irte y dejarlas vivas:** da «Héroe de los goblins» y vuelve afuera, con los chillidos detrás de la puerta.
   - Después de entrar, afuera ya no aparece «Entrar a la cabaña» y el texto cambia según lo que hiciste.
 - `bosque_camino`: el camino de árboles tallados termina frente a una muralla negra y alta que se pierde en la niebla. Opciones: «Caminar hacia la izquierda y revisar la muralla» (`muralla_izquierda`) y «Caminar hacia la derecha y revisar la muralla» (`muralla_derecha`). Se llega desde el bosque o desde la cabaña, se haya entrado o no: cada camino sigue funcionando por su cuenta. Sin sonidos por ahora.
 - `muralla_izquierda`: la muralla sigue sin fin hasta una puerta negra en un recoveco. «Intentar abrir la puerta» muestra el aviso «🔒 Se necesita la llave trasera del mausoleo.» (en el mismo lugar que los avisos de objetos) y deja solo «Volver sobre tus pasos». Al volver más tarde se puede intentar de nuevo.
 - `muralla_derecha`: la muralla sigue a la izquierda y a lo lejos se oyen golpes, espadas y gritos. Opciones: «Seguir caminando» (`muralla_casco`) y «Volver sobre tus pasos» (`bosque_camino`). Si ya se llegó al silencio, el texto dice «Desde adelante ya no llega ningún ruido.».
-- `muralla_casco`: pisás algo de metal: un casco gastado con marcas. Opciones: «Ponerte el casco» (te quedás en la escena), «Dejarlo tirado» (sigue a `muralla_silencio`) y «Volver sobre tus pasos». Después de ponértelo, o al volver a pasar, la opción de seguir dice «Seguir hacia adelante». Si lo dejaste, sigue tirado ahí.
-- `muralla_silencio`: los golpes y los gritos crecen y de golpe se callan. Opciones: «Continuar acercándote» (`muralla_pelea`), con el aviso «⚔ Lo que hiciste con la espada va a cambiar lo que pase.», y «Volver sobre tus pasos». Al volver: «Volvés al lugar donde se apagaron los ruidos…».
+- `muralla_casco`: pisás algo de metal: un casco gastado con marcas. Opciones: «Ponerte el casco» (te quedas en la escena), «Dejarlo tirado» (sigue a `muralla_silencio`) y «Volver sobre tus pasos». Después de ponértelo, o al volver a pasar, la opción de seguir dice «Seguir hacia adelante». Si lo dejaste, sigue tirado ahí.
+- `muralla_silencio`: los golpes y los gritos crecen y de golpe se callan. Opciones: «Continuar acercándote» (`muralla_pelea`), con el aviso «⚔ Lo que hiciste con la espada va a cambiar lo que pase.», y «Volver sobre tus pasos». Al volver: «Vuelves al lugar donde se apagaron los ruidos…».
 - `muralla_pelea`: la primera variable del juego. Un cuerpo en el barro y una criatura del pantano (la madre de los goblins) que lo arrastra al agua. Si entraste a la cabaña tiene «los mismos ojos»; si viste el casco, la armadura del cuerpo tiene sus mismas marcas. Según lo que hiciste (`creature.mode()`):
-  - **Mataste a los goblins** (furia): «⚔ Hacerle frente con la espada» (espada manchada: la matás, determinante, da «La madre del pantano»; con casco el zarpazo pega en el casco, sin casco te deja un tajo), «⚔ Defenderte con la madera» (con casco la espantás; sin casco morís), «⚔ Alzar la espada» (si además tenés la incandescente), «Huir por donde viniste» (con casco escapás; sin casco morís) y «Quedarte quieto» (morís).
-  - **Tenés la espada incandescente** (luz): «⚔ Alzar la espada» (la espanta), «Quedarte quieto» (se lleva el cuerpo) y «Volver sobre tus pasos».
+  - **Mataste a los goblins** (furia): «⚔ Hacerle frente con la espada» (espada manchada: la matás, determinante, da «La madre del pantano»; con casco el zarpazo pega en el casco, sin casco te deja un tajo), «⚔ Defenderte con la madera» (con casco la espantás; sin casco morís), «⚔ Alzar la espada» (si además tienes la incandescente), «Huir por donde viniste» (con casco escapas; sin casco morís) y «Quedarte quieto» (morís).
+  - **Tienes la espada incandescente** (luz): «⚔ Alzar la espada» (la espanta), «Quedarte quieto» (se lleva el cuerpo) y «Volver sobre tus pasos».
   - **Dejaste vivos a los goblins** (perdón): te huele, ronronea y se va sin el cuerpo. «Acercarte al cuerpo» o volver.
-  - **Nunca entraste a la cabaña** (extraño): «Quedarte quieto» (se lleva el cuerpo) o «Huir por donde viniste» (con casco escapás; sin casco morís).
+  - **Nunca entraste a la cabaña** (extraño): «Quedarte quieto» (se lleva el cuerpo) o «Huir por donde viniste» (con casco escapas; sin casco morís).
 - Escenas de cada salida: `muralla_pelea_espada`, `muralla_pelea_madera`, `muralla_luz`, `muralla_se_lo_lleva`, `muralla_huida` y las muertes `muerte_madera`, `muerte_huida` y `muerte_quieto`.
 - `muralla_cuerpo`: el cuerpo está muerto y tiene un anillo. «Tomar el anillo» (pregunta en qué dedo), «Dejarle el anillo» y «Volver sobre tus pasos».
 - `muralla_fin`: el pantano y la muralla se extienden sin límite y es imposible seguir. Solo queda «Volver sobre tus pasos». Si la criatura se llevó el cuerpo, al volver dice que no queda rastro.
-- Al volver frente a la muralla (`bosque_camino`), el texto es «Volvés al lugar donde el bosque se termina…» y las opciones son izquierda, derecha y «Volver a la cabaña por el camino de árboles tallados». Al llegar así a la cabaña, el texto empieza con «Desandás el camino de árboles tallados…».
+- Al volver frente a la muralla (`bosque_camino`), el texto es «Vuelves al lugar donde el bosque se termina…» y las opciones son izquierda, derecha y «Volver a la cabaña por el camino de árboles tallados». Al llegar así a la cabaña, el texto empieza con «Desandas el camino de árboles tallados…».
 - Se sacó la espada rota: ya no está en la encrucijada ni en los objetos.
 - `bosque`: el camino de árboles tallados lleva a una cabaña de pantano medio derrumbada, con ruidos que vienen de adentro. Ya no está la piedra con musgo, y se borraron `bosque_a` y `bosque_b`.
 - Opciones: «Acercarte a la cabaña» (`cabana`), «Volver hacia atrás, al pantano» (`inicio`) y «Continuar el camino de árboles tallados» (`bosque_camino`).
-- **Al volver al inicio** desde el bosque se ve otro texto («Desandás el camino de árboles marcados…»), con las mismas tres opciones. El pantalón sigue tirado ahí si no se recogió.
+- **Al volver al inicio** desde el bosque se ve otro texto («Desandas el camino de árboles marcados…»), con las mismas tres opciones. El pantalón sigue tirado ahí si no se recogió.
 - **Al volver a elegir el bosque**, la opción dice «Volver al bosque de troncos tallados» y lleva directo a la cabaña, con un texto corto.
+
+### Rama del pantano (el amuleto)
+- `pantano`: se encuentra el amuleto. Se sacó «que quizás sea tuyo o quizás explique algo»: ahora dice «Podrías guardarte el amuleto o dejarlo hundirse de nuevo en el barro…».
+- `pantano_a` y `pantano_b` siguen a `pantano_voz` (ya no a la encrucijada).
+- `pantano_voz`: sigues por el pantano y empiezas a oír una voz que parece querer decirte algo. Opciones: «Seguir caminando» (`pantano_seguir`), «Quedarte a escuchar la voz» (`pantano_escuchar`) y «Volver sobre tus pasos» (`inicio`). Al volver más tarde: «Vuelves a avanzar por el lodo hacia el resplandor…».
+- `pantano_escuchar`: «Empiezas a prestar más atención. La voz se oye cada vez más fuerte, y cada vez con más claridad.». Después depende de lo que llevas:
+  - **Espada manchada:** la voz se calla de golpe. Opciones: «Seguir caminando» (`pantano_seguir`) y «Volver sobre tus pasos».
+  - **Madera ensangrentada:** «Quedarte a escuchar la voz» lleva a `muerte_voz`: algo sale del barro y te arrastra al agua. La opción se ve igual que la otra.
+  - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Opciones:
+    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos».
+    - «Quedarte callado» (`pantano_insiste`): la criatura insiste, más cerca («Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»). Quedan «Irte corriendo» y «Responderle».
+    - «Responderle» (`pantano_responder`): provisoria, la conversación la define Julián. Más adelante estas opciones van a cambiar según los objetos y los fragmentos.
+- `pantano_seguir`: provisoria, con «(Texto pendiente…)».
+- En `inicio`, al volver desde el pantano el texto es «Desandas el camino por el lodo, de espaldas al resplandor…», y la opción pasa a ser «Volver hacia el resplandor del pantano», que lleva directo a `pantano_voz` (el amuleto no se vuelve a encontrar).
 
 ### Estilo de los textos
 - Se sacaron todos los guiones largos (—) del juego y de los README. Las frases se reescribieron con punto, coma o dos puntos.
+- Todo el juego pasó del voseo al tuteo (4/11): «Abres los ojos», «sientes», «llevas», «Toca para continuar», «No sabes quién eres». La criatura dice «Tú, que estás ahí. ¿Me entiendes?». No se usa «vos».
 - De acá en adelante, lo que dicta Julián se adapta al estilo del juego y se pasa por el skill The Humanizer (reglas en `CLAUDE.md`).
 
 ### Otros
@@ -169,6 +185,10 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Definir qué otras decisiones importantes dan fragmentos de memoria. «Lo que dejaste ir» sigue siendo provisorio; los de los goblins los nombró Julián.
 - [ ] Definir otros tipos de decisión y sus colores (ya existe «Determinante», en rojo).
 - [ ] Decidir dónde aparece en la historia la mochila. Recordar: **los lugares de cada objeto los define Julián**.
+- [ ] Escribir `pantano_seguir` («Seguir caminando» sin escuchar la voz). Lo dicta Julián.
+- [x] Escribir los tres casos de `pantano_escuchar` (espada manchada, madera, sin sangre).
+- [x] Opciones después de «¿Me entiendes?»: irte corriendo, quedarte callado o responderle.
+- [ ] Escribir la conversación de «Responderle» (`pantano_responder`). Lo dicta Julián.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
@@ -197,6 +217,9 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - `muralla_silencio`: golpes, espadas y gritos que se intensifican y se cortan de golpe.
   - `muralla_pelea` y sus salidas: zarpazos, el casco que se abolla o suena como una campana, la madera que se parte, la espada que se clava, el chillido de la criatura, el chapoteo al hundirse en el agua y el ronroneo.
   - Las muertes: un cuerpo que cae al barro.
+  - `pantano_voz`: una voz lejana que intenta comunicarse.
+  - `pantano_escuchar`: la voz que se oye cada vez más fuerte y más clara; la voz que se corta de golpe; una voz grave y mojada que habla.
+  - `muerte_voz`: el agua que se abre, algo que sale del barro y el agua que se cierra encima.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
 
