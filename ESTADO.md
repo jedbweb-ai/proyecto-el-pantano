@@ -70,6 +70,8 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 | El olor de sus crías (provisorio) | Dejaste vivos a los goblins: te huele, ronronea y se va («Acercarte al cuerpo» o «Volver sobre tus pasos») |
 | La campana del casco (provisorio) | Huir por donde viniste con el casco puesto |
 | Cobarde del pantano (provisorio) | Irte corriendo cuando la criatura del pantano te habla |
+| La voz sin nombre (provisorio) | Preguntarle «¿Sabes quién soy?» a la criatura que habla |
+| La luz que no bajaste (provisorio) | No bajar la espada incandescente cuando la criatura te lo pide |
 
 - Las opciones que pueden matarte llevan el mismo fragmento que su variante segura, para que se vean iguales (✦). Al morir el fragmento no se gana (ver `isDeath`).
 
@@ -129,7 +131,11 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Opciones:
     - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos».
     - «Quedarte callado» (`pantano_insiste`): la criatura insiste, más cerca («Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»). Quedan «Irte corriendo» y «Responderle».
-    - «Responderle» (`pantano_responder`): provisoria, la conversación la define Julián. Más adelante estas opciones van a cambiar según los objetos y los fragmentos.
+    - «Responderle» (`pantano_responder`): la conversación. «Le dices que sí, que la entiendes.» y «Hace mucho que nadie me contesta.». La idea de fondo: el pantano se queda con los recuerdos de la gente.
+      - Según lo que hiciste, agrega: amuleto encima («Lo encontraste…»), amuleto hundido («Dejaste algo en el barro…»), goblins vivos («Hueles a las crías de la cabaña…»), casco («Ese casco era de alguien que conocí.»).
+      - Con la espada incandescente pide «Baja esa luz. Me quema los ojos.» (`vozPideLuz()`): «⚔ Bajar la espada» (`pantano_bajar`, «Así está mejor.» y sigue la charla) o «No bajarla» (`pantano_luz`: se aleja con un gemido, da «La luz que no bajaste»).
+      - Preguntas, cada una una sola vez: «¿Quién eres?» (`pantano_quien`), «¿Dónde estoy?» (`pantano_donde`), «¿Qué quieres de mí?» (`pantano_que`). Después de las tres aparece «¿Sabes quién soy?» (`pantano_quien_soy`), que da «La voz sin nombre».
+      - Siempre se puede terminar con «Despedirte y seguir caminando» (`pantano_seguir`) o «Volver sobre tus pasos».
 - `pantano_seguir`: provisoria, con «(Texto pendiente…)».
 - En `inicio`, al volver desde el pantano el texto es «Desandas el camino por el lodo, de espaldas al resplandor…», y la opción pasa a ser «Volver hacia el resplandor del pantano», que lleva directo a `pantano_voz` (el amuleto no se vuelve a encontrar).
 
@@ -154,10 +160,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 ---
 
 ## Próxima sesión (lo que dejó dicho Julián el 5/11)
-1. **La conversación con la criatura que habla** (`pantano_responder`). Claude propuso las respuestas y Julián tiene que decidir:
-   - Al responder: «Hace mucho que nadie me contesta.». Preguntas: «¿Quién eres?» («Tuve un nombre. El pantano se lo quedó, como se quedó el tuyo.»), «¿Dónde estoy?» («En el lugar donde se hunde lo que nadie quiere recordar…») y «¿Qué quieres de mí?» («…que te quedes un poco más.»). Después de las tres, «¿Sabes quién soy?», que da «La voz sin nombre».
-   - Lo que agrega según lo hecho: el amuleto (llevarlo o dejarlo hundirse), los goblins vivos, la espada incandescente («Baja esa luz…», con ⚔ «Bajar la espada») y el casco.
-   - Falta decidir: si la idea de que el pantano se queda con los recuerdos le sirve, y qué pasa al bajar la espada.
+1. ~~La conversación con la criatura que habla~~ (hecha el 5/11 con las respuestas propuestas; si bajas la espada sigue la charla, si no se va).
 2. **«Seguir caminando»** después de la voz (`pantano_seguir`), que sigue provisoria.
 3. Seguir probando todo en el celular y pasar correcciones.
 
@@ -193,7 +196,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 - [ ] Escribir `pantano_seguir` («Seguir caminando» sin escuchar la voz). Lo dicta Julián.
 - [x] Escribir los tres casos de `pantano_escuchar` (espada manchada, madera, sin sangre).
 - [x] Opciones después de «¿Me entiendes?»: irte corriendo, quedarte callado o responderle.
-- [ ] Escribir la conversación de «Responderle» (`pantano_responder`). Lo dicta Julián.
+- [x] Escribir la conversación de «Responderle» (`pantano_responder`) con las respuestas que propuso Claude.
 - [ ] Revisar el texto de borrador de `pantano_a` cuando el amuleto va al cuello: «Del amuleto todavía cuelga un resto de cordón de cuero…».
 - [ ] La variante del amuleto en la mano dice «peso extra sobre el pecho, y no es solo el del amuleto», pero en ese caso el amuleto está en el puño.
 - [ ] La encrucijada dice «El canto que escuchaste (o no)»: se podría adaptar según el camino que hizo el jugador.
@@ -224,6 +227,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - Las muertes: un cuerpo que cae al barro.
   - `pantano_voz`: una voz lejana que intenta comunicarse.
   - `pantano_escuchar`: la voz que se oye cada vez más fuerte y más clara; la voz que se corta de golpe; una voz grave y mojada que habla.
+  - `pantano_luz`: el gemido largo de la criatura que se aleja.
   - `muerte_voz`: el agua que se abre, algo que sale del barro y el agua que se cierra encima.
 - [ ] Reconvertir la música a 128 kbps (hoy está a 320 kbps; la del Capítulo I pesa 7,6 MB). Hace falta ffmpeg o una herramienta online.
 - [ ] El sonido de fragmento (`SFX_TRACKS.fragment`) está descargado pero desactivado.
