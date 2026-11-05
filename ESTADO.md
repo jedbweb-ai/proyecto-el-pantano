@@ -126,7 +126,7 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
   - **Espada manchada:** la voz se calla de golpe. Opciones: «Seguir caminando» (`pantano_seguir`) y «Volver sobre tus pasos».
   - **Madera ensangrentada:** «Quedarte a escuchar la voz» lleva a `muerte_voz`: algo sale del barro y te arrastra al agua. La opción se ve igual que la otra.
   - **Sin sangre encima** (sin espada o con la espada incandescente): la criatura habla. «Tú, que estás ahí. ¿Me entiendes?». Es una criatura del pantano inteligente, con una voz grave y mojada. Opciones:
-    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos».
+    - «Irte corriendo» (`pantano_huida`): escapas por el lodo y la voz se pierde en la niebla. Da «Cobarde del pantano». Después: «Seguir caminando» o «Volver sobre tus pasos». Después de huir, la criatura no vuelve a aparecer: al volver a `pantano_voz` dice «Ya no se oye ninguna voz, solo el agua.» y no está «Quedarte a escuchar la voz» (ver `criaturaHuida()`).
     - «Quedarte callado» (`pantano_insiste`): la criatura insiste, más cerca («Sé que estás ahí. Puedo oír cómo respiras. ¿Me entiendes?»). Quedan «Irte corriendo» y «Responderle».
     - «Responderle» (`pantano_responder`): provisoria, la conversación la define Julián. Más adelante estas opciones van a cambiar según los objetos y los fragmentos.
 - `pantano_seguir`: provisoria, con «(Texto pendiente…)».

@@ -1195,6 +1195,9 @@
     bodyStays: () => ["muerta", "espantada", "se_fue"].includes(creature.outcome)
   };
 
+  // Si el jugador se fue corriendo de la criatura que habla, no vuelve a aparecer
+  const criaturaHuida = () => visited.has("pantano_huida");
+
   const scenes = {
 
     inicio: {
@@ -1572,13 +1575,15 @@
     pantano_voz: {
       text: [
         { when: () => cameFrom === "pantano_a" || cameFrom === "pantano_b", text: "Sigues avanzando por el pantano, con el lodo hasta las rodillas. De a poco empiezas a oír una voz. No sabes de dónde sale, pero parece que intenta decirte algo." },
-        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b", text: "Vuelves a avanzar por el lodo hacia el resplandor. La voz sigue ahí, como si te hubiera estado esperando." }
+        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b" && !criaturaHuida(), text: "Vuelves a avanzar por el lodo hacia el resplandor. La voz sigue ahí, como si te hubiera estado esperando." },
+        // Si se fue corriendo, la criatura no vuelve a aparecer
+        { when: () => cameFrom !== "pantano_a" && cameFrom !== "pantano_b" && criaturaHuida(), text: "Vuelves a avanzar por el lodo hacia el resplandor. Ya no se oye ninguna voz, solo el agua." }
       ],
       choices: [
         { text: "Seguir caminando", next: "pantano_seguir" },
         // Con la madera ensangrentada, quedarse a escuchar mata (la opción se ve igual)
-        { when: () => !inv.has("madera"), text: "Quedarte a escuchar la voz", next: "pantano_escuchar" },
-        { when: () => inv.has("madera"), text: "Quedarte a escuchar la voz", next: "muerte_voz" },
+        { when: () => !criaturaHuida() && !inv.has("madera"), text: "Quedarte a escuchar la voz", next: "pantano_escuchar" },
+        { when: () => !criaturaHuida() && inv.has("madera"), text: "Quedarte a escuchar la voz", next: "muerte_voz" },
         { text: "Volver sobre tus pasos", next: "inicio" }
       ]
     },
