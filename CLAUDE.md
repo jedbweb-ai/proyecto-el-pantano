@@ -21,6 +21,7 @@ Hablale a Julián en español.
 - Lo que dicta Julián es una referencia general. Las decisiones chicas de adaptación las toma Claude sin preguntar y se las cuenta al mostrar el texto: reusar frases que ya existen en el juego (por ejemplo «Volver sobre tus pasos» para volver al lugar anterior), no repetir imágenes de otras escenas y ajustar la puntuación al ritmo de la escena.
 - Los sonidos se anotan solos en «Sonidos a buscar» (en `ESTADO.md`): los que nombre Julián y también los que aparecen en el texto que dicta (golpes, gritos, crujidos…), sin preguntar. Se agregan después, todos juntos.
 - Los fragmentos de memoria salen solo de decisiones importantes (`memory` en la opción). Sus nombres son provisorios hasta que Julián los defina.
+- Cada fragmento se consigue una sola vez y en un solo momento. Por eso las situaciones que dan fragmentos son una sola oportunidad: si el jugador se va, ese encuentro no vuelve a aparecer (por ejemplo, la voz del pantano con `vozIda()` y la criatura de la muralla con `creature.outcome`). No dejar idas y vueltas que permitan juntar varios fragmentos del mismo encuentro.
 - Un tipo de decisión nuevo se agrega en `CHOICE_TYPES` con su color y su ícono; después hay que actualizar las instrucciones del juego.
 
 ## Flujo de cada cambio

@@ -1,6 +1,6 @@
 # El Pantano: estado del proyecto
 
-Última actualización: 3 de noviembre de 2026.
+Última actualización: 5 de noviembre de 2026.
 Juego publicado en: https://jedbweb-ai.github.io/proyecto-el-pantano/
 
 Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `img/` y el audio en `audio/`; cada carpeta tiene su propio README.
@@ -153,19 +153,23 @@ Todo el juego vive en `el-pantano-capitulo-1.html`. Las ilustraciones van en `im
 
 ---
 
-## Próxima sesión (lo que dejó dicho Julián el 29/10)
-1. ~~Seguir con «Continuar el camino de árboles tallados»~~ y ~~el lado izquierdo de la muralla~~ (hechos). Lo próximo: qué pasa al revisar la muralla hacia la derecha.
-2. **Correcciones de texto** de lo que se hizo el 28 y 29/10. Hecha: el orden de los párrafos de `cabana_adentro`. Si hay más, las aclara Julián.
-3. **Un cambio en una decisión u opción** de lo que se hizo esos días. También lo aclara Julián.
+## Próxima sesión (lo que dejó dicho Julián el 5/11)
+1. **La conversación con la criatura que habla** (`pantano_responder`). Claude propuso las respuestas y Julián tiene que decidir:
+   - Al responder: «Hace mucho que nadie me contesta.». Preguntas: «¿Quién eres?» («Tuve un nombre. El pantano se lo quedó, como se quedó el tuyo.»), «¿Dónde estoy?» («En el lugar donde se hunde lo que nadie quiere recordar…») y «¿Qué quieres de mí?» («…que te quedes un poco más.»). Después de las tres, «¿Sabes quién soy?», que da «La voz sin nombre».
+   - Lo que agrega según lo hecho: el amuleto (llevarlo o dejarlo hundirse), los goblins vivos, la espada incandescente («Baja esa luz…», con ⚔ «Bajar la espada») y el casco.
+   - Falta decidir: si la idea de que el pantano se queda con los recuerdos le sirve, y qué pasa al bajar la espada.
+2. **«Seguir caminando»** después de la voz (`pantano_seguir`), que sigue provisoria.
+3. Seguir probando todo en el celular y pasar correcciones.
 
-### Lo que se hizo el 28 y 29/10 (ya publicado en `main`)
-- Se sacaron todos los guiones largos y se sumaron reglas de estilo en `CLAUDE.md`: adaptar lo dictado, no usar guiones largos y pasar los textos por The Humanizer.
-- La cabaña (`cabana`): espada incandescente en la puerta, «Tomar la espada», «Entrar a la cabaña» y «Continuar el camino de árboles tallados».
-- Adentro (`cabana_adentro`): tres goblins bebés y el tipo nuevo de decisión «Determinante» (rojo, ✷). Las tres salidas dan «Infanticida armado», «Infanticida monstruoso» o «Héroe de los goblins».
-- La espada se mancha si la usás. Sin la espada usás una madera, que te queda en la mano.
-- Se sacó la espada rota de la encrucijada y de los objetos.
-- Se anotaron los sonidos a buscar (ver Audio).
-- Julián confirmó lo que había decidido Claude: el ícono ✷, «Tomar la espada» abajo de las otras opciones, la madera directo a una mano (después se puede cambiar desde el inventario) y los textos que no fueron dictados.
+### Lo que se hizo del 3 al 5/11 (ya publicado en `main`)
+- El camino de la derecha de la muralla: el casco gastado, el silencio, la criatura del pantano (la madre de los goblins) con sus cuatro reacciones, el cuerpo con el anillo y el final del camino.
+- Lugares nuevos: dedo de la mano izquierda y dedo de la mano derecha (solo para anillos).
+- Tipo de decisión «Por lo que llevás» (⚔, gris acero) y el aviso chico dentro de las opciones (`note`).
+- Las muertes: «☠ Moriste.», la lista «Lo que hiciste», los fragmentos, «Volver dos decisiones atrás» y «Volver a empezar».
+- Un fragmento para cada salida de la criatura de la muralla.
+- Desde la cabaña se puede volver al pantano del inicio (antes el jugador quedaba atrapado).
+- El camino del amuleto: la voz, los tres casos de escucharla (espada manchada, madera, sin sangre), irte corriendo («Cobarde del pantano»), quedarte callado y responderle (provisorio). La voz da una sola oportunidad.
+- Todo el juego pasó del voseo al tuteo.
 
 ## Pendientes
 
